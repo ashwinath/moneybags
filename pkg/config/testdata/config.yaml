@@ -1,0 +1,6 @@
+postgres_db:
+  host: "127.0.0.1"
+  user: "postgres"
+  password: "very_secure"
+  db_name: "postgres"
+  port: 5432
