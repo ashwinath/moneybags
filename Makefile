@@ -21,7 +21,7 @@ db:
 		-e POSTGRES_PASSWORD=very_secure \
 		--name moneybags \
 		--restart=always \
-		postgres:15-alpine
+		postgres:16-alpine
 	@timeout 30 bash -c "until docker exec moneybags pg_isready; do sleep 2; done"
 
 .PHONY: run
