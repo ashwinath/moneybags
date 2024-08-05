@@ -5,6 +5,7 @@ option go_package = "./pbgo/configpb";
 
 message Config {
     PostgresDB postgres_db = 1;
+    TelegramConfig telegram_config = 2;
 }
 
 message PostgresDB {
@@ -13,4 +14,10 @@ message PostgresDB {
     string password = 3;
     string db_name = 4;
     uint32 port = 5;
+}
+
+message TelegramConfig {
+    string api_key = 1;
+    bool debug = 2;
+    string allowed_user = 3;
 }

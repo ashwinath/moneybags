@@ -26,4 +26,4 @@ db:
 
 .PHONY: run
 run:
-	go run cmd/moneybags.go --config pkg/config/testdata/config.yaml
+	go run cmd/moneybags.go --config local_config.yaml

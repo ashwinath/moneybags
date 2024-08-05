@@ -4,3 +4,7 @@ postgres_db:
   password: "very_secure"
   db_name: "postgres"
   port: 5432
+telegram_config:
+  api_key: "very secret"
+  debug: true
+  allowed_user: "hello"

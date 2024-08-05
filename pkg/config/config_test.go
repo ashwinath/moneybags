@@ -1,19 +1,16 @@
 package config
 
 import (
-	"os"
 	"path"
 	"testing"
 
 	"github.com/ashwinath/moneybags/pbgo/configpb"
+	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewConfig(t *testing.T) {
-	p, err := os.Getwd()
-	assert.Nil(t, err)
-
-	p = path.Join(p, "./testdata/config.yaml")
+	p := path.Join(utils.GetLocalRepoLocation(), "./pkg/config/testdata/config.yaml")
 
 	c, err := New(p)
 	assert.Nil(t, err)
@@ -25,6 +22,11 @@ func TestNewConfig(t *testing.T) {
 			Password: "very_secure",
 			DbName:   "postgres",
 			Port:     5432,
+		},
+		TelegramConfig: &configpb.TelegramConfig{
+			ApiKey:      "very secret",
+			Debug:       true,
+			AllowedUser: "hello",
 		},
 	}, c)
 }

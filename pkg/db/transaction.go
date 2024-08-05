@@ -3,7 +3,11 @@ package db
 import (
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
+
+const TransactionDatabaseName string = "transaction"
 
 type TransactionType string
 
@@ -49,11 +53,20 @@ func (t *Transaction) String() string {
 	)
 }
 
-// TODO: define functions
-type TransactionDB interface{}
+type TransactionDB interface {
+	InsertTransaction(tx *Transaction) (*Transaction, error)
+	DeleteTransaction(id uint) (*Transaction, error)
+	AggregateTransactions(o *FindTransactionOptions) (*float64, error)
+	QueryTransactionByOptions(o *FindTransactionOptions) ([]Transaction, error)
+	QueryTypeOwnSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult)
+	QueryReimburseSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult)
+	QuerySharedTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
+	QuerySharedReimCCTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
+	QueryMiscTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
+}
 
 type transactionDB struct {
-	*DB
+	db *gorm.DB
 }
 
 func NewTransactionDB(db *DB) (TransactionDB, error) {
@@ -62,6 +75,176 @@ func NewTransactionDB(db *DB) (TransactionDB, error) {
 	}
 
 	return &transactionDB{
-		DB: db,
+		db: db.DB,
 	}, nil
+}
+
+func (d *transactionDB) InsertTransaction(tx *Transaction) (*Transaction, error) {
+	result := d.db.Create(tx)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return d.queryTransaction(tx.ID)
+}
+
+func (d *transactionDB) queryTransaction(id uint) (*Transaction, error) {
+	tx := &Transaction{}
+	result := d.db.First(tx, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return tx, nil
+}
+
+// returns the old copy of the deleted transaction
+func (d *transactionDB) DeleteTransaction(id uint) (*Transaction, error) {
+	deletedTx, err := d.queryTransaction(id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := d.db.Delete(&Transaction{ID: id})
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return deletedTx, nil
+}
+
+type FindTransactionOptions struct {
+	StartDate time.Time
+	EndDate   time.Time
+	Types     []TransactionType
+}
+
+type findTransactionResult struct {
+	Total float64
+}
+
+func (d *transactionDB) AggregateTransactions(o *FindTransactionOptions) (*float64, error) {
+	result := findTransactionResult{}
+	res := d.db.Model(&Transaction{}).
+		Select("sum(amount) as total").
+		Where("date >= ? and date < ? and type in ?", o.StartDate, o.EndDate, o.Types).
+		Scan(&result)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &result.Total, nil
+}
+
+func (d *transactionDB) QueryTransactionByOptions(o *FindTransactionOptions) ([]Transaction, error) {
+	var transactions []Transaction
+	result := d.db.
+		Where("date >= ? and date < ? and type in ?", o.StartDate, o.EndDate, o.Types).
+		Order("date asc").
+		Find(&transactions)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return transactions, nil
+}
+
+type AsyncAggregateResult struct {
+	Result *float64
+	Error  error
+}
+
+type AsyncTransactionResults struct {
+	Result []Transaction
+	Error  error
+}
+
+func (d *transactionDB) QueryTypeOwnSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult) {
+	defer close(result)
+	othersOption := &FindTransactionOptions{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types:     []TransactionType{TypeOwn},
+	}
+
+	othersTotal, err := d.AggregateTransactions(othersOption)
+	result <- AsyncAggregateResult{
+		Result: othersTotal,
+		Error:  err,
+	}
+}
+
+func (d *transactionDB) QueryReimburseSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult) {
+	defer close(result)
+	reimOption := &FindTransactionOptions{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types: []TransactionType{
+			TypeReimburse,
+			TypeSharedReimburse,
+			TypeSpecialSharedReimburse,
+		},
+	}
+
+	reimTotal, err := d.AggregateTransactions(reimOption)
+	result <- AsyncAggregateResult{
+		Result: reimTotal,
+		Error:  err,
+	}
+}
+
+func (d *transactionDB) QuerySharedTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults) {
+	defer close(result)
+	sharedOption := &FindTransactionOptions{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types: []TransactionType{
+			TypeSharedReimburse,
+			TypeSpecialSharedReimburse,
+			TypeSpecialShared,
+			TypeShared,
+		},
+	}
+	sharedTransactions, err := d.QueryTransactionByOptions(sharedOption)
+	result <- AsyncTransactionResults{
+		Result: sharedTransactions,
+		Error:  err,
+	}
+}
+
+func (d *transactionDB) QuerySharedReimCCTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults) {
+	defer close(result)
+	sharedOption := &FindTransactionOptions{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types: []TransactionType{
+			TypeSharedCCReimburse,
+		},
+	}
+	sharedTransactions, err := d.QueryTransactionByOptions(sharedOption)
+	result <- AsyncTransactionResults{
+		Result: sharedTransactions,
+		Error:  err,
+	}
+}
+
+func (d *transactionDB) QueryMiscTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults) {
+	defer close(result)
+	sharedOption := &FindTransactionOptions{
+		StartDate: startDate,
+		EndDate:   endDate,
+		Types: []TransactionType{
+			TypeCreditCard,
+			TypeInsurance,
+			TypeTax,
+			TypeTithe,
+		},
+	}
+	sharedTransactions, err := d.QueryTransactionByOptions(sharedOption)
+	result <- AsyncTransactionResults{
+		Result: sharedTransactions,
+		Error:  err,
+	}
 }

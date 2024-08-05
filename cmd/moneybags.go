@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 
 	"github.com/ashwinath/moneybags/pkg/config"
 	"github.com/ashwinath/moneybags/pkg/db"
 	"github.com/ashwinath/moneybags/pkg/framework"
+	"github.com/ashwinath/moneybags/pkg/modules"
 	"go.uber.org/zap"
 )
 
@@ -38,9 +40,21 @@ func main() {
 	}
 
 	// Load framework
-	_ = framework.New(c, sugar, map[string]any{
-		"transaction": transactionDB,
+	fw := framework.New(c, sugar, map[string]any{
+		db.TransactionDatabaseName: transactionDB,
 	})
 
-	// TODO: load modules
+	// Load modules
+	telegram, err := modules.NewTelegramModule(fw)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise telegram module, %v", err)
+	}
+
+	// Run app
+	app := framework.NewApp(sugar, telegram)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	framework.ListenForSignal(cancel, sugar)
+
+	app.Run(ctx)
 }
