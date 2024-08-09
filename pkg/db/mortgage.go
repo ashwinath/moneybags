@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const MortgageDatabaseName string = "mortgage"
 
 type Mortgage struct {
 	ID                 uint      `gorm:"primaryKey"`
@@ -15,4 +21,21 @@ type Mortgage struct {
 
 func (Mortgage) TableName() string {
 	return "mortgage"
+}
+
+type MortgageDB interface {
+}
+
+type mortgageDB struct {
+	db *gorm.DB
+}
+
+func NewMortgageDB(db *DB) (MortgageDB, error) {
+	if err := db.DB.AutoMigrate(&Mortgage{}); err != nil {
+		return nil, err
+	}
+
+	return &mortgageDB{
+		db: db.DB,
+	}, nil
 }

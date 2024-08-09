@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const SharedExpenseDatabaseName string = "shared-expense"
 
 type SharedExpense struct {
 	ID          uint      `gorm:"primaryKey"`
@@ -11,4 +17,21 @@ type SharedExpense struct {
 
 func (SharedExpense) TableName() string {
 	return "shared_expense"
+}
+
+type SharedExpenseDB interface {
+}
+
+type sharedExpenseDB struct {
+	db *gorm.DB
+}
+
+func NewSharedExpenseDB(db *DB) (SharedExpenseDB, error) {
+	if err := db.DB.AutoMigrate(&SharedExpense{}); err != nil {
+		return nil, err
+	}
+
+	return &sharedExpenseDB{
+		db: db.DB,
+	}, nil
 }

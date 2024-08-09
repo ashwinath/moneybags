@@ -24,6 +24,18 @@ db:
 		postgres:16-alpine
 	@timeout 30 bash -c "until docker exec moneybags pg_isready; do sleep 2; done"
 
+.PHONY: remove-db
+remove-db:
+	@docker stop moneybags
+	@docker rm moneybags
+
+.PHONY: remake-db
+remake-db: remove-db db
+
+.PHONY: db-shell
+db-shell:
+	PGPASSWORD=very_secure psql -U postgres -d postgres -h 127.0.0.1 -p 5432
+
 .PHONY: run
 run:
 	go run cmd/moneybags.go --config local_config.yaml

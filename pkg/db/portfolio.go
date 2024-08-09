@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const PortfolioDatabaseName string = "portfolio"
 
 type Portfolio struct {
 	ID            uint      `gorm:"primaryKey"`
@@ -10,4 +16,21 @@ type Portfolio struct {
 	NAV           float64
 	SimpleReturns float64
 	Quantity      float64
+}
+
+type PortfolioDB interface {
+}
+
+type portfolioDB struct {
+	db *gorm.DB
+}
+
+func NewPortfolioDB(db *DB) (PortfolioDB, error) {
+	if err := db.DB.AutoMigrate(&Portfolio{}); err != nil {
+		return nil, err
+	}
+
+	return &portfolioDB{
+		db: db.DB,
+	}, nil
 }

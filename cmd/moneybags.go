@@ -34,15 +34,8 @@ func main() {
 	}
 	defer baseDB.Close()
 
-	transactionDB, err := db.NewTransactionDB(baseDB)
-	if err != nil {
-		sugar.Fatalf("Failed to initialise Transaction DB, %v", err)
-	}
-
 	// Load framework
-	fw := framework.New(c, sugar, map[string]any{
-		db.TransactionDatabaseName: transactionDB,
-	})
+	fw := framework.New(c, sugar, createDBs(baseDB, sugar))
 
 	// Load modules
 	telegram, err := modules.NewTelegramModule(fw)
@@ -57,4 +50,69 @@ func main() {
 	framework.ListenForSignal(cancel, sugar)
 
 	app.Run(ctx)
+}
+
+func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
+	assetDB, err := db.NewAssetDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Asset DB, %v", err)
+	}
+
+	averageExpenditureDB, err := db.NewAverageExpenditureDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Average Expenditure DB, %v", err)
+	}
+
+	exchangeRateDB, err := db.NewExchangeRateDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Exchange Rate DB, %v", err)
+	}
+
+	expenseDB, err := db.NewExpenseDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Expense DB, %v", err)
+	}
+
+	incomeDB, err := db.NewIncomeDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Income DB, %v", err)
+	}
+
+	mortgageDB, err := db.NewMortgageDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Mortgage DB, %v", err)
+	}
+
+	portfolioDB, err := db.NewPortfolioDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Portfolio DB, %v", err)
+	}
+
+	stockDB, err := db.NewStockDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Stock DB, %v", err)
+	}
+
+	tradeDB, err := db.NewTradeDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Trade DB, %v", err)
+	}
+
+	transactionDB, err := db.NewTransactionDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Transaction DB, %v", err)
+	}
+
+	return map[string]any{
+		db.AssetDatabaseName:              assetDB,
+		db.AverageExpenditureDatabaseName: averageExpenditureDB,
+		db.ExchangeRateDatabaseName:       exchangeRateDB,
+		db.ExpenseDatabaseName:            expenseDB,
+		db.IncomeDatabaseName:             incomeDB,
+		db.MortgageDatabaseName:           mortgageDB,
+		db.PortfolioDatabaseName:          portfolioDB,
+		db.StockDatabaseName:              stockDB,
+		db.TradeDatabaseName:              tradeDB,
+		db.TransactionDatabaseName:        transactionDB,
+	}
 }
