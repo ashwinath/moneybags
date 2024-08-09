@@ -25,4 +25,8 @@ message TelegramConfig {
 
 message FinancialsData {
     string assets_csv_filepath = 1;
+    string expenses_csv_filepath = 2;
+    string income_csv_filepath = 3;
+    string shared_expenses_csv_filepath = 4;
+    string trades_csv_filepath = 5;
 }

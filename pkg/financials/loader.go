@@ -9,15 +9,22 @@ import (
 )
 
 type Loader struct {
-	fw      framework.FW
-	assetDB db.AssetDB
+	fw              framework.FW
+	assetDB         db.ClearAndBulkAdder
+	expenseDB       db.ClearAndBulkAdder
+	incomeDB        db.ClearAndBulkAdder
+	sharedExpenseDB db.ClearAndBulkAdder
+	tradesDB        db.ClearAndBulkAdder
 }
 
 func NewLoader(fw framework.FW) *Loader {
-	assetDB := fw.GetDB(db.AssetDatabaseName).(db.AssetDB)
 	return &Loader{
-		fw:      fw,
-		assetDB: assetDB,
+		fw:              fw,
+		assetDB:         fw.GetDB(db.AssetDatabaseName).(db.ClearAndBulkAdder),
+		expenseDB:       fw.GetDB(db.ExpenseDatabaseName).(db.ClearAndBulkAdder),
+		incomeDB:        fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
+		sharedExpenseDB: fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
+		tradesDB:        fw.GetDB(db.TradeDatabaseName).(db.ClearAndBulkAdder),
 	}
 }
 
@@ -25,9 +32,37 @@ func (l *Loader) Start() error {
 	dataLoaders := []dataLoader{
 		{
 			name:     "assets",
-			db:       l.assetDB.(db.ClearAndBulkAdder),
+			db:       l.assetDB,
 			filePath: l.fw.GetConfig().FinancialsData.AssetsCsvFilepath,
 			model:    &[]*db.Asset{},
+			errChan:  make(chan error, 1),
+		},
+		{
+			name:     "expenses",
+			db:       l.expenseDB,
+			filePath: l.fw.GetConfig().FinancialsData.ExpensesCsvFilepath,
+			model:    &[]*db.Expense{},
+			errChan:  make(chan error, 1),
+		},
+		{
+			name:     "incomeDB",
+			db:       l.incomeDB,
+			filePath: l.fw.GetConfig().FinancialsData.IncomeCsvFilepath,
+			model:    &[]*db.Income{},
+			errChan:  make(chan error, 1),
+		},
+		{
+			name:     "sharedExpenseDB",
+			db:       l.sharedExpenseDB,
+			filePath: l.fw.GetConfig().FinancialsData.SharedExpensesCsvFilepath,
+			model:    &[]*db.SharedExpense{},
+			errChan:  make(chan error, 1),
+		},
+		{
+			name:     "trades",
+			db:       l.tradesDB,
+			filePath: l.fw.GetConfig().FinancialsData.TradesCsvFilepath,
+			model:    &[]*db.Trade{},
 			errChan:  make(chan error, 1),
 		},
 	}
@@ -70,24 +105,4 @@ func (a *dataLoader) load() {
 	}
 
 	a.errChan <- nil
-}
-
-func (l *Loader) loadAssets(errChan chan<- error) {
-	if err := l.assetDB.Clear(); err != nil {
-		errChan <- fmt.Errorf("failed to clear asset db: %s", err)
-		return
-	}
-
-	assets := []*db.Asset{}
-	if err := utils.UnmarshalCSV(l.fw.GetConfig().FinancialsData.AssetsCsvFilepath, &assets); err != nil {
-		errChan <- fmt.Errorf("failed to unmarshal csv for assets: %s", err)
-		return
-	}
-
-	if err := l.assetDB.BulkAdd(assets); err != nil {
-		errChan <- fmt.Errorf("failed to add assets: %s", err)
-		return
-	}
-
-	errChan <- nil
 }

@@ -34,3 +34,13 @@ func NewSharedExpenseDB(db *DB) (SharedExpenseDB, error) {
 		db: db.DB,
 	}, nil
 }
+
+// Clears the database
+func (db *sharedExpenseDB) Clear() error {
+	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&SharedExpense{}).Error
+}
+
+// Bulk add data
+func (db *sharedExpenseDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
+}

@@ -29,7 +29,11 @@ func TestNewConfig(t *testing.T) {
 			AllowedUser: "hello",
 		},
 		FinancialsData: &configpb.FinancialsData{
-			AssetsCsvFilepath: "sample/assets.csv",
+			AssetsCsvFilepath:         "sample/assets.csv",
+			ExpensesCsvFilepath:       "sample/expenses.csv",
+			IncomeCsvFilepath:         "sample/income.csv",
+			SharedExpensesCsvFilepath: "sample/shared_expenses.csv",
+			TradesCsvFilepath:         "sample/trades.csv",
 		},
 	}, c)
 }

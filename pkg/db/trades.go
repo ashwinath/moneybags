@@ -32,3 +32,13 @@ func NewTradeDB(db *DB) (TradeDB, error) {
 		db: db.DB,
 	}, nil
 }
+
+// Clears the database
+func (db *tradeDB) Clear() error {
+	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Trade{}).Error
+}
+
+// Bulk add data
+func (db *tradeDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
+}

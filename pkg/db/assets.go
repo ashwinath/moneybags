@@ -15,8 +15,6 @@ type Asset struct {
 }
 
 type AssetDB interface {
-	Clear() error
-	BulkAdd(objs interface{}) error
 }
 
 type assetDB struct {
@@ -38,6 +36,15 @@ func (db *assetDB) Clear() error {
 	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Asset{}).Error
 }
 
+// Bulk add data
 func (db *assetDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
+}
+
+func (db *assetDB) Count() (int64, error) {
+	r := db.db.Find(&Asset{})
+	if r.Error != nil {
+		return 0, r.Error
+	}
+	return r.RowsAffected, nil
 }

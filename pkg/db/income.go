@@ -30,3 +30,13 @@ func NewIncomeDB(db *DB) (IncomeDB, error) {
 		db: db.DB,
 	}, nil
 }
+
+// Clears the database
+func (db *incomeDB) Clear() error {
+	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Income{}).Error
+}
+
+// Bulk add data
+func (db *incomeDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
+}

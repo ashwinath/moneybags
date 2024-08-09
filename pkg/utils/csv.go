@@ -2,6 +2,7 @@ package utils
 
 import (
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -39,6 +40,15 @@ func (dt DateTime) Value() (driver.Value, error) {
 
 func (dt *DateTime) GetTime() time.Time {
 	return dt.Time
+}
+
+func (dt *DateTime) Scan(value interface{}) error {
+	scanned, ok := value.(time.Time)
+	if !ok {
+		return errors.New(fmt.Sprint("Failed to scan DateTime value:", value))
+	}
+	*dt = DateTime{scanned}
+	return nil
 }
 
 func UnmarshalCSV(filepath string, obj interface{}) error {

@@ -1,0 +1,41 @@
+date,type,amount
+2022-08-31,Electricity,35.00
+2022-08-31,Water,22.00
+2022-08-31,Gas,24.00
+2022-08-31,Grocery,230.00
+2022-08-31,Eating Out,250.00
+2022-09-30,Electricity,30.00
+2022-09-30,Water,20.00
+2022-09-30,Gas,20.00
+2022-09-30,Grocery,200.00
+2022-09-30,Eating Out,200.00
+2022-10-31,Special:Washing basin,300.00
+2022-10-31,Electricity,80.00
+2022-10-31,Water,70.00
+2022-10-31,Gas,40.00
+2022-10-31,Grocery,400.00
+2022-10-31,Eating Out,300.00
+2022-11-30,Special:Washing Machine,1000.00
+2022-11-30,Electricity,50.00
+2022-11-30,Water,30.00
+2022-11-30,Gas,50.00
+2022-11-30,Grocery,800.00
+2022-11-30,Eating Out,200.00
+2022-12-31,Special:Furniture,2000.00
+2022-12-31,Electricity,90.00
+2022-12-31,Water,40.00
+2022-12-31,Gas,40.00
+2022-12-31,Grocery,500.00
+2022-12-31,Eating Out,300.00
+2023-01-31,Special:Renovations,5000.00
+2023-01-31,Electricity,100.00
+2023-01-31,Water,50.00
+2023-01-31,Gas,30.00
+2023-01-31,Grocery,300.00
+2023-01-31,Eating Out,500.00
+2023-01-31,Special:Toilet Bowl,1000.00
+2023-02-28,Electricity,120.00
+2023-02-28,Water,57.00
+2023-02-28,Gas,35.00
+2023-02-28,Grocery,320.00
+2023-02-28,Eating Out,220.00

@@ -30,3 +30,13 @@ func NewExpenseDB(db *DB) (ExpenseDB, error) {
 		db: db.DB,
 	}, nil
 }
+
+// Clears the database
+func (db *expenseDB) Clear() error {
+	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Expense{}).Error
+}
+
+// Bulk add data
+func (db *expenseDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
+}

@@ -10,3 +10,7 @@ telegram_config:
   allowed_user: hello
 financials_data:
   assets_csv_filepath: sample/assets.csv
+  expenses_csv_filepath: sample/expenses.csv
+  income_csv_filepath: sample/income.csv
+  shared_expenses_csv_filepath: sample/shared_expenses.csv
+  trades_csv_filepath: sample/trades.csv
