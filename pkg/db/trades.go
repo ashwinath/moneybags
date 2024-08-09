@@ -1,16 +1,15 @@
 package db
 
 import (
-	"time"
-
+	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 )
 
 const TradeDatabaseName string = "trade"
 
 type Trade struct {
-	ID            uint      `gorm:"primaryKey"`
-	DatePurchased time.Time `gorm:"type:timestamp"`
+	ID            uint           `gorm:"primaryKey"`
+	DatePurchased utils.DateTime `gorm:"type:timestamp"`
 	Symbol        string
 	PriceEach     float64
 	Quantity      float64

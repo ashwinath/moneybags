@@ -56,7 +56,6 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 	assert.Nil(t, err)
 
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
 	sugar := logger.Sugar()
 
 	p := path.Join(utils.GetLocalRepoLocation(), "./pkg/config/testdata/config.yaml")
@@ -66,7 +65,6 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 	return framework.New(c, sugar, map[string]any{
 		database.TransactionDatabaseName: txDB,
 	})
-
 }
 
 func TestProcessChunk(t *testing.T) {

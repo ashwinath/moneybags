@@ -6,6 +6,7 @@ option go_package = "./pbgo/configpb";
 message Config {
     PostgresDB postgres_db = 1;
     TelegramConfig telegram_config = 2;
+    FinancialsData financials_data = 3;
 }
 
 message PostgresDB {
@@ -20,4 +21,8 @@ message TelegramConfig {
     string api_key = 1;
     bool debug = 2;
     string allowed_user = 3;
+}
+
+message FinancialsData {
+    string assets_csv_filepath = 1;
 }

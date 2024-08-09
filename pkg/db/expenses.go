@@ -1,17 +1,16 @@
 package db
 
 import (
-	"time"
-
+	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 )
 
 const ExpenseDatabaseName string = "expense"
 
 type Expense struct {
-	ID              uint      `gorm:"primaryKey"`
-	TransactionDate time.Time `gorm:"type:timestamp;uniqueIndex:ix_date_type_expenses"`
-	Type            string    `gorm:"uniqueIndex:ix_date_type_expenses"`
+	ID              uint           `gorm:"primaryKey"`
+	TransactionDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_date_type_expenses"`
+	Type            string         `gorm:"uniqueIndex:ix_date_type_expenses"`
 	Amount          float64
 }
 

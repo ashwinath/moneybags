@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -31,6 +32,26 @@ type Transaction struct {
 	Amount         float64
 	CreatedAt      time.Time `gorm:"type:timestamp"`
 	UpdatedAt      time.Time `gorm:"type:timestamp"`
+}
+
+func (t *Transaction) String() string {
+	if len(string(t.Classification)) == 0 {
+		return fmt.Sprintf(
+			"Date: %s\nType: %s\nAmount: %.2f",
+			t.Date,
+			t.Type,
+			t.Amount,
+		)
+	}
+
+	return fmt.Sprintf(
+		"ID: %d\nDate: %s\nType: %s\nClassification: %s\nAmount:%.2f",
+		t.ID,
+		t.Date,
+		t.Type,
+		t.Classification,
+		t.Amount,
+	)
 }
 
 type TransactionDB interface {

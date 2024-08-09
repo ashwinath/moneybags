@@ -1,10 +1,12 @@
 postgres_db:
-  host: "127.0.0.1"
-  user: "postgres"
-  password: "very_secure"
-  db_name: "postgres"
+  host: 127.0.0.1
+  user: postgres
+  password: very_secure
+  db_name: postgres
   port: 5432
 telegram_config:
-  api_key: "very secret"
+  api_key: very secret
   debug: true
-  allowed_user: "hello"
+  allowed_user: hello
+financials_data:
+  assets_csv_filepath: sample/assets.csv

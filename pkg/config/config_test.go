@@ -28,5 +28,8 @@ func TestNewConfig(t *testing.T) {
 			Debug:       true,
 			AllowedUser: "hello",
 		},
+		FinancialsData: &configpb.FinancialsData{
+			AssetsCsvFilepath: "sample/assets.csv",
+		},
 	}, c)
 }

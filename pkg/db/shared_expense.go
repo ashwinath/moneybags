@@ -1,17 +1,16 @@
 package db
 
 import (
-	"time"
-
+	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 )
 
 const SharedExpenseDatabaseName string = "shared-expense"
 
 type SharedExpense struct {
-	ID          uint      `gorm:"primaryKey"`
-	ExpenseDate time.Time `gorm:"type:timestamp;uniqueIndex:ix_shared_expense_type_expense_date"`
-	Type        string    `gorm:"uniqueIndex:ix_shared_expense_type_expense_date"`
+	ID          uint           `gorm:"primaryKey"`
+	ExpenseDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_shared_expense_type_expense_date"`
+	Type        string         `gorm:"uniqueIndex:ix_shared_expense_type_expense_date"`
 	Amount      float64
 }
 
