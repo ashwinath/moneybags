@@ -9,9 +9,9 @@ const IncomeDatabaseName string = "income"
 
 type Income struct {
 	ID              uint           `gorm:"primaryKey"`
-	TransactionDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_date_type_incomes"`
-	Type            string         `gorm:"uniqueIndex:ix_date_type_incomes"`
-	Amount          float64
+	TransactionDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_date_type_incomes" csv:"date"`
+	Type            string         `gorm:"uniqueIndex:ix_date_type_incomes" csv:"type"`
+	Amount          float64        `csv:"amount"`
 }
 
 type IncomeDB interface {

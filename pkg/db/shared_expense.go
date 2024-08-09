@@ -9,9 +9,9 @@ const SharedExpenseDatabaseName string = "shared-expense"
 
 type SharedExpense struct {
 	ID          uint           `gorm:"primaryKey"`
-	ExpenseDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_shared_expense_type_expense_date"`
-	Type        string         `gorm:"uniqueIndex:ix_shared_expense_type_expense_date"`
-	Amount      float64
+	ExpenseDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_shared_expense_type_expense_date" csv:"date"`
+	Type        string         `gorm:"uniqueIndex:ix_shared_expense_type_expense_date" csv:"type"`
+	Amount      float64        `csv:"amount"`
 }
 
 func (SharedExpense) TableName() string {
