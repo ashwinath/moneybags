@@ -24,7 +24,7 @@ type TelegramLoader struct {
 	expenseDB db.ExpenseDB
 }
 
-func NewTelegramLoader(fw framework.FW) *TelegramLoader {
+func NewTelegramLoader(fw framework.FW) Loader {
 	return &TelegramLoader{
 		fw:        fw,
 		txDB:      fw.GetDB(db.TransactionDatabaseName).(db.TransactionDB),
@@ -32,7 +32,7 @@ func NewTelegramLoader(fw framework.FW) *TelegramLoader {
 	}
 }
 
-func (l *TelegramLoader) Start() error {
+func (l *TelegramLoader) Load() error {
 	if err := l.genExpense(); err != nil {
 		return fmt.Errorf("error running genExpense: %s", err)
 	}

@@ -34,4 +34,5 @@ message FinancialsData {
 
 message FinancialsConfig {
     int32 run_interval_in_hours = 1;
+    string alphavantage_api_key = 2;
 }

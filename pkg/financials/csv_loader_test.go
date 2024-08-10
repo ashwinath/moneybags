@@ -10,8 +10,8 @@ import (
 func TestLoad(t *testing.T) {
 	err := database.RunTest(func(db *database.DB) {
 		fw := createFW(t, db)
-		loader := NewLoader(fw)
-		err := loader.Start()
+		loader := NewCSVLoader(fw)
+		err := loader.Load()
 		assert.Nil(t, err)
 
 		allCounters := []database.Counter{

@@ -4,16 +4,25 @@ import (
 	"context"
 	"time"
 
+	"github.com/ashwinath/moneybags/pkg/financials"
 	"github.com/ashwinath/moneybags/pkg/framework"
 )
 
 type FinancialsModule struct {
-	fw framework.FW
+	fw      framework.FW
+	loaders []financials.Loader
 }
 
 func NewFinancialsModule(fw framework.FW) (framework.Module, error) {
 	return &FinancialsModule{
 		fw: fw,
+		loaders: []financials.Loader{
+			financials.NewCSVLoader(fw),
+			financials.NewTelegramLoader(fw),
+			financials.NewStocksLoader(fw, financials.NewAlphavantage(
+				fw.GetConfig().FinancialsConfig.AlphavantageApiKey,
+			)),
+		},
 	}, nil
 }
 
@@ -29,4 +38,10 @@ func (m *FinancialsModule) Start(ctx context.Context) {
 	)
 }
 
-func (m *FinancialsModule) run() {}
+func (m *FinancialsModule) run() {
+	for _, loader := range m.loaders {
+		if err := loader.Load(); err != nil {
+			m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
+		}
+	}
+}

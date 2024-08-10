@@ -17,6 +17,7 @@ type Trade struct {
 }
 
 type TradeDB interface {
+	GetUniqueSymbols() ([]string, error)
 }
 
 type tradeDB struct {
@@ -50,4 +51,13 @@ func (db *tradeDB) Count() (int64, error) {
 		return 0, r.Error
 	}
 	return count, nil
+}
+
+func (db *tradeDB) GetUniqueSymbols() ([]string, error) {
+	symbols := []string{}
+	res := db.db.Distinct("symbol").Model(&Trade{}).Select("symbol").Find(&symbols)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return symbols, nil
 }

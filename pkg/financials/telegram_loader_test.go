@@ -14,7 +14,7 @@ func TestTelegramLoaderEmpty(t *testing.T) {
 
 		// Test
 		loader := NewTelegramLoader(fw)
-		err := loader.Start()
+		err := loader.Load()
 		assert.Nil(t, err)
 	})
 	assert.Nil(t, err)
@@ -57,7 +57,7 @@ func TestTelegramLoader(t *testing.T) {
 
 		// Test
 		loader := NewTelegramLoader(fw)
-		err = loader.Start()
+		err = loader.Load()
 		assert.Nil(t, err)
 
 		// Assert shared

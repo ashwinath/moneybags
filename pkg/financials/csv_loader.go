@@ -8,7 +8,7 @@ import (
 	"github.com/ashwinath/moneybags/pkg/utils"
 )
 
-type Loader struct {
+type CSVLoader struct {
 	fw      framework.FW
 	loaders []dataLoader
 }
@@ -21,8 +21,8 @@ type dataLoader struct {
 	errChan  chan error
 }
 
-func NewLoader(fw framework.FW) *Loader {
-	return &Loader{
+func NewCSVLoader(fw framework.FW) Loader {
+	return &CSVLoader{
 		fw: fw,
 		loaders: []dataLoader{
 			{
@@ -64,7 +64,7 @@ func NewLoader(fw framework.FW) *Loader {
 	}
 }
 
-func (l *Loader) Start() error {
+func (l *CSVLoader) Load() error {
 	for _, d := range l.loaders {
 		go d.load()
 	}
