@@ -48,6 +48,9 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 	exchangeRateDB, err := database.NewExchangeRateDB(db)
 	assert.Nil(t, err)
 
+	stockDB, err := database.NewStockDB(db)
+	assert.Nil(t, err)
+
 	return framework.New(c, sugar, map[string]any{
 		database.AssetDatabaseName:         assetDB,
 		database.ExpenseDatabaseName:       expenseDB,
@@ -57,6 +60,7 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 		database.TransactionDatabaseName:   txDB,
 		database.SymbolDatabaseName:        symbolsDB,
 		database.ExchangeRateDatabaseName:  exchangeRateDB,
+		database.StockDatabaseName:         stockDB,
 	})
 }
 

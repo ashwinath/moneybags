@@ -25,6 +25,7 @@ type SymbolDB interface {
 	Insert(symbol *Symbol) error
 	GetDistinctCurrencies() ([]string, error)
 	GetCurrencies() ([]Symbol, error)
+	GetStocks() ([]Symbol, error)
 	UpdateLastProcessedDate(symbol string, date time.Time) error
 }
 
@@ -72,16 +73,24 @@ func (db *symbolDB) GetDistinctCurrencies() ([]string, error) {
 }
 
 func (db *symbolDB) GetCurrencies() ([]Symbol, error) {
-	currencies := []Symbol{}
+	return db.getSymbolType(SymbolTypeCurrency)
+}
+
+func (db *symbolDB) GetStocks() ([]Symbol, error) {
+	return db.getSymbolType(SymbolTypeStock)
+}
+
+func (db *symbolDB) getSymbolType(symbolType string) ([]Symbol, error) {
+	items := []Symbol{}
 	res := db.db.Model(Symbol{}).
-		Where("symbol_type = ?", SymbolTypeCurrency).
-		Find(&currencies)
+		Where("symbol_type = ?", symbolType).
+		Find(&items)
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	return currencies, nil
+	return items, nil
 }
 
 func (db *symbolDB) UpdateLastProcessedDate(symbol string, date time.Time) error {

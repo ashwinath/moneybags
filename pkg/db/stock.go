@@ -16,6 +16,7 @@ type Stock struct {
 }
 
 type StockDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type stockDB struct {
@@ -30,4 +31,8 @@ func NewStockDB(db *DB) (StockDB, error) {
 	return &stockDB{
 		db: db.DB,
 	}, nil
+}
+
+func (db *stockDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
 }

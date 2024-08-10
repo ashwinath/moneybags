@@ -40,10 +40,19 @@ func TestStocksLoader(t *testing.T) {
 		assert.Nil(t, res.Error)
 		assert.Equal(t, int64(1), currencyCount)
 
-		symbol := database.Symbol{}
-		res = db.DB.Model(database.Symbol{}).Where("symbol_type = ?", database.SymbolTypeCurrency).First(&symbol)
+		currencySymbol := database.Symbol{}
+		res = db.DB.Model(database.Symbol{}).
+			Where("symbol_type = ?", database.SymbolTypeCurrency).
+			First(&currencySymbol)
 		assert.Nil(t, res.Error)
-		assert.NotNil(t, symbol.LastProcessedDate)
+		assert.NotNil(t, currencySymbol.LastProcessedDate)
+
+		stockSymbol := database.Symbol{}
+		res = db.DB.Model(database.Symbol{}).
+			Where("symbol_type = ?", database.SymbolTypeStock).
+			First(&stockSymbol)
+		assert.Nil(t, res.Error)
+		assert.NotNil(t, stockSymbol.LastProcessedDate)
 	})
 
 	assert.Nil(t, err)

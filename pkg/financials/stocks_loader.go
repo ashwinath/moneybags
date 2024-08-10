@@ -14,6 +14,7 @@ type stocksLoader struct {
 	tradeDB        db.TradeDB
 	symbolDB       db.SymbolDB
 	exchangeRateDB db.ExchangeRateDB
+	stockDB        db.StockDB
 	alphavantage   Alphavantage
 }
 
@@ -23,6 +24,7 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 		tradeDB:        fw.GetDB(db.TradeDatabaseName).(db.TradeDB),
 		symbolDB:       fw.GetDB(db.SymbolDatabaseName).(db.SymbolDB),
 		exchangeRateDB: fw.GetDB(db.ExchangeRateDatabaseName).(db.ExchangeRateDB),
+		stockDB:        fw.GetDB(db.StockDatabaseName).(db.StockDB),
 		alphavantage:   alphavantage,
 	}
 }
@@ -35,6 +37,12 @@ func (l *stocksLoader) Load() error {
 	if err := l.processCurrencies(); err != nil {
 		return fmt.Errorf("Failed to load process currencies: %s", err)
 	}
+
+	if err := l.processStocks(); err != nil {
+		return err
+	}
+
+	// TODO: Calculate portfolio
 
 	return nil
 }
@@ -152,6 +160,60 @@ func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
 	}
 
 	if err := l.exchangeRateDB.BulkAdd(currencyHistory); err != nil {
+		return err
+	}
+
+	if err := l.symbolDB.UpdateLastProcessedDate(symbol.Symbol, *lastProcessedDate); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (l *stocksLoader) processStocks() error {
+	stockSymbols, err := l.symbolDB.GetStocks()
+	if err != nil {
+		return err
+	}
+
+	for _, stock := range stockSymbols {
+		if err := l.processStock(stock); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (l *stocksLoader) processStock(symbol db.Symbol) error {
+	isCompact := symbol.LastProcessedDate != nil
+	history, err := l.alphavantage.GetStockHistory(symbol.Symbol, isCompact)
+	if err != nil {
+		return err
+	}
+
+	var lastProcessedDate *time.Time
+	stockHistory := []*db.Stock{}
+
+	for date, value := range history {
+		d, err := utils.SetDateFromString(date)
+		if err != nil {
+			return fmt.Errorf("could not parse date (%s): %s", date, err)
+		}
+
+		if lastProcessedDate == nil || lastProcessedDate.Before(d) {
+			lastProcessedDate = &d
+		}
+
+		stock := db.Stock{
+			TradeDate: d,
+			Symbol:    symbol.Symbol,
+			Price:     value.Close,
+		}
+		stockHistory = append(stockHistory, &stock)
+	}
+
+	if err := l.stockDB.BulkAdd(stockHistory); err != nil {
 		return err
 	}
 
