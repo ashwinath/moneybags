@@ -18,21 +18,21 @@ const (
 	startYear                int    = 2023
 )
 
-type telegramLoader struct {
+type transactionLoader struct {
 	fw        framework.FW
 	txDB      db.TransactionDB
 	expenseDB db.ExpenseDB
 }
 
-func NewTelegramLoader(fw framework.FW) Loader {
-	return &telegramLoader{
+func NewTransactionLoader(fw framework.FW) Loader {
+	return &transactionLoader{
 		fw:        fw,
 		txDB:      fw.GetDB(db.TransactionDatabaseName).(db.TransactionDB),
 		expenseDB: fw.GetDB(db.ExpenseDatabaseName).(db.ExpenseDB),
 	}
 }
 
-func (l *telegramLoader) Load() error {
+func (l *transactionLoader) Load() error {
 	if err := l.genExpense(); err != nil {
 		return fmt.Errorf("error running genExpense: %s", err)
 	}
@@ -40,7 +40,7 @@ func (l *telegramLoader) Load() error {
 	return nil
 }
 
-func (l *telegramLoader) genExpense() error {
+func (l *transactionLoader) genExpense() error {
 	loc, _ := time.LoadLocation("Asia/Singapore")
 	startMonth, _ := time.ParseInLocation(
 		time.DateTime,
@@ -61,7 +61,7 @@ func (l *telegramLoader) genExpense() error {
 	return nil
 }
 
-func (l *telegramLoader) genExpensePerMonth(startDate time.Time) error {
+func (l *transactionLoader) genExpensePerMonth(startDate time.Time) error {
 	endDate := startDate.AddDate(0, 1, 0)
 
 	// Generate TypeOwn (Others field)
@@ -121,7 +121,7 @@ func (l *telegramLoader) genExpensePerMonth(startDate time.Time) error {
 	return nil
 }
 
-func (l *telegramLoader) genSharedExpensePerMonth(startDate time.Time) error {
+func (l *transactionLoader) genSharedExpensePerMonth(startDate time.Time) error {
 	endDate := startDate.AddDate(0, 1, 0)
 
 	sharedResultChannel := make(chan db.AsyncTransactionResults)

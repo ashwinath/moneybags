@@ -118,6 +118,23 @@ func (fakeAlphavantage) GetCurrencyHistory(from string, to string, isCompact boo
 	}, nil
 }
 
+func (fakeAlphavantage) GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error) {
+	return map[string]OHLC{
+		"2021-08-19": {
+			Open:  2.00,
+			High:  2.00,
+			Low:   2.00,
+			Close: 2.00,
+		},
+		"2021-08-30": {
+			Open:  2.00,
+			High:  2.00,
+			Low:   2.00,
+			Close: 2.00,
+		},
+	}, nil
+}
+
 func NewFakeAlphavantage() Alphavantage {
 	return fakeAlphavantage{}
 }

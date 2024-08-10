@@ -10,6 +10,7 @@ import (
 type Alphavantage interface {
 	GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error)
 	GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error)
+	GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error)
 }
 
 type alphavantage struct {
@@ -59,6 +60,10 @@ type fxDailyResult struct {
 	Results map[string]alphavantageOHLC `json:"Time Series FX (Daily)"`
 }
 
+type timeSeriesDailyResult struct {
+	Results map[string]alphavantageOHLC `json:"Time Series (Daily)"`
+}
+
 type alphavantageOHLC struct {
 	Open  string `json:"1. open"`
 	High  string `json:"2. high"`
@@ -83,8 +88,6 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 		from, to, outputSize, a.apiKey,
 	)
 
-	fmt.Println(url)
-
 	res := fxDailyResult{}
 	err := framework.RetrySimple(func() error {
 		return framework.HTTPGet(url, &res)
@@ -93,37 +96,41 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 		return nil, fmt.Errorf("Could not get currency history (%s->%s) result from alphavantage: %s", from, to, err)
 	}
 
-	returnMap := map[string]OHLC{}
-	for key, value := range res.Results {
+	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"could not convert exchange rate (%s -> %s) to float64: %s",
+			from, to, err,
+		)
+	}
+
+	return ohlcs, nil
+}
+
+func convertAlphaOHLCToOHLC(alphaOHLC map[string]alphavantageOHLC) (map[string]OHLC, error) {
+	ohlcs := map[string]OHLC{}
+	for key, value := range alphaOHLC {
 		o, err := strconv.ParseFloat(value.Open, 64)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"could not convert exchange rate (%s -> %s) open to float64: %s",
-				from, to, err,
-			)
+			return nil, err
 		}
+
 		h, err := strconv.ParseFloat(value.High, 64)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"could not convert exchange rate (%s -> %s) high to float64: %s",
-				from, to, err,
-			)
+			return nil, err
 		}
+
 		l, err := strconv.ParseFloat(value.Low, 64)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"could not convert exchange rate (%s -> %s) low to float64: %s",
-				from, to, err,
-			)
+			return nil, err
 		}
+
 		c, err := strconv.ParseFloat(value.Close, 64)
 		if err != nil {
-			return nil, fmt.Errorf(
-				"could not convert exchange rate (%s -> %s) close to float64: %s",
-				from, to, err,
-			)
+			return nil, err
 		}
-		returnMap[key] = OHLC{
+
+		ohlcs[key] = OHLC{
 			Open:  o,
 			High:  h,
 			Low:   l,
@@ -131,5 +138,34 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 		}
 	}
 
-	return returnMap, nil
+	return ohlcs, nil
+}
+
+func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error) {
+	outputSize := "full"
+	if isCompact {
+		outputSize = "compact"
+	}
+	url := fmt.Sprintf(
+		"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=%s&apikey=%s",
+		symbol, outputSize, a.apiKey,
+	)
+
+	res := timeSeriesDailyResult{}
+	err := framework.RetrySimple(func() error {
+		return framework.HTTPGet(url, &res)
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Could not get stock history (%s) result from alphavantage: %s", symbol, err)
+	}
+
+	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"could not convert exchange rate (%s) to float64: %s",
+			symbol, err,
+		)
+	}
+
+	return ohlcs, nil
 }

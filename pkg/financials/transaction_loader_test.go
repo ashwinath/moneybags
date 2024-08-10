@@ -8,19 +8,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTelegramLoaderEmpty(t *testing.T) {
+func TestTransactionLoaderEmpty(t *testing.T) {
 	err := database.RunTest(func(db *database.DB) {
 		fw := createFW(t, db)
 
 		// Test
-		loader := NewTelegramLoader(fw)
+		loader := NewTransactionLoader(fw)
 		err := loader.Load()
 		assert.Nil(t, err)
 	})
 	assert.Nil(t, err)
 }
 
-func TestTelegramLoader(t *testing.T) {
+func TestTransactionLoader(t *testing.T) {
 	err := database.RunTest(func(db *database.DB) {
 		fw := createFW(t, db)
 
@@ -56,7 +56,7 @@ func TestTelegramLoader(t *testing.T) {
 		assert.Nil(t, err)
 
 		// Test
-		loader := NewTelegramLoader(fw)
+		loader := NewTransactionLoader(fw)
 		err = loader.Load()
 		assert.Nil(t, err)
 

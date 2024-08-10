@@ -18,7 +18,7 @@ func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) 
 		fw: fw,
 		loaders: []financials.Loader{
 			financials.NewCSVLoader(fw),
-			financials.NewTelegramLoader(fw),
+			financials.NewTransactionLoader(fw),
 			financials.NewStocksLoader(fw, alphavantage),
 		},
 	}, nil
