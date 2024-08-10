@@ -35,5 +35,8 @@ func TestNewConfig(t *testing.T) {
 			SharedExpensesCsvFilepath: "sample/shared_expenses.csv",
 			TradesCsvFilepath:         "sample/trades.csv",
 		},
+		FinancialsConfig: &configpb.FinancialsConfig{
+			RunIntervalInHours: 4,
+		},
 	}, c)
 }

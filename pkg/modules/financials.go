@@ -2,6 +2,7 @@ package modules
 
 import (
 	"context"
+	"time"
 
 	"github.com/ashwinath/moneybags/pkg/framework"
 )
@@ -21,4 +22,11 @@ func (m *FinancialsModule) Name() string {
 }
 
 func (m *FinancialsModule) Start(ctx context.Context) {
+	framework.RunInterval(
+		ctx,
+		time.Duration(m.fw.GetConfig().FinancialsConfig.RunIntervalInHours)*time.Hour,
+		m.run,
+	)
 }
+
+func (m *FinancialsModule) run() {}

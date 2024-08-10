@@ -7,6 +7,7 @@ message Config {
     PostgresDB postgres_db = 1;
     TelegramConfig telegram_config = 2;
     FinancialsData financials_data = 3;
+    FinancialsConfig financials_config = 4;
 }
 
 message PostgresDB {
@@ -29,4 +30,8 @@ message FinancialsData {
     string income_csv_filepath = 3;
     string shared_expenses_csv_filepath = 4;
     string trades_csv_filepath = 5;
+}
+
+message FinancialsConfig {
+    int32 run_interval_in_hours = 1;
 }

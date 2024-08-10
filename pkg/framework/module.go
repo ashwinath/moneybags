@@ -30,6 +30,7 @@ func NewApp(logger *zap.SugaredLogger, modules ...Module) *App {
 func (a *App) Run(ctx context.Context) {
 	a.logger.Info("Starting modules")
 	for _, m := range a.modules {
+		a.logger.Info("Starting module: %s", m.Name())
 		go m.Start(ctx)
 	}
 	<-ctx.Done()
