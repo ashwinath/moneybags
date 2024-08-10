@@ -13,15 +13,13 @@ type FinancialsModule struct {
 	loaders []financials.Loader
 }
 
-func NewFinancialsModule(fw framework.FW) (framework.Module, error) {
+func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) (framework.Module, error) {
 	return &FinancialsModule{
 		fw: fw,
 		loaders: []financials.Loader{
 			financials.NewCSVLoader(fw),
 			financials.NewTelegramLoader(fw),
-			financials.NewStocksLoader(fw, financials.NewAlphavantage(
-				fw.GetConfig().FinancialsConfig.AlphavantageApiKey,
-			)),
+			financials.NewStocksLoader(fw, alphavantage),
 		},
 	}, nil
 }

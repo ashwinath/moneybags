@@ -6,6 +6,7 @@ import (
 
 	"github.com/ashwinath/moneybags/pkg/config"
 	"github.com/ashwinath/moneybags/pkg/db"
+	"github.com/ashwinath/moneybags/pkg/financials"
 	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/modules"
 	"go.uber.org/zap"
@@ -43,7 +44,9 @@ func main() {
 		sugar.Fatalf("Failed to initialise telegram module, %v", err)
 	}
 
-	financials, err := modules.NewFinancialsModule(fw)
+	financials, err := modules.NewFinancialsModule(fw, financials.NewAlphavantage(
+		c.FinancialsConfig.AlphavantageApiKey,
+	))
 	if err != nil {
 		sugar.Fatalf("Failed to initialise financials module, %v", err)
 	}

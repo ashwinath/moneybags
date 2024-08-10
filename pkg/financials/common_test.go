@@ -42,6 +42,9 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 	txDB, err := database.NewTransactionDB(db)
 	assert.Nil(t, err)
 
+	symbolsDB, err := database.NewSymbolDB(db)
+	assert.Nil(t, err)
+
 	return framework.New(c, sugar, map[string]any{
 		database.AssetDatabaseName:         assetDB,
 		database.ExpenseDatabaseName:       expenseDB,
@@ -49,6 +52,7 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 		database.SharedExpenseDatabaseName: sharedExpenseDB,
 		database.TradeDatabaseName:         tradeDB,
 		database.TransactionDatabaseName:   txDB,
+		database.SymbolDatabaseName:        symbolsDB,
 	})
 }
 
@@ -82,4 +86,17 @@ func parseDateForced(t *testing.T, dateString string) time.Time {
 	assert.Nil(t, err)
 
 	return parsed
+}
+
+type fakeAlphavantage struct{}
+
+func (fakeAlphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error) {
+	return &AlphavantageSymbol{
+		Symbol:   symbol,
+		Currency: "USD",
+	}, nil
+}
+
+func NewFakeAlphavantage() Alphavantage {
+	return fakeAlphavantage{}
 }

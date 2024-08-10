@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLoad(t *testing.T) {
+func TestLoadCSV(t *testing.T) {
 	err := database.RunTest(func(db *database.DB) {
 		fw := createFW(t, db)
 		loader := NewCSVLoader(fw)
@@ -25,7 +25,7 @@ func TestLoad(t *testing.T) {
 		for _, counter := range allCounters {
 			count, err := counter.Count()
 			assert.Nil(t, err)
-			assert.Greater(t, count, int64(0))
+			assert.Greater(t, count, int64(1))
 		}
 	})
 	assert.Nil(t, err)
