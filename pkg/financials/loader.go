@@ -9,75 +9,8 @@ import (
 )
 
 type Loader struct {
-	fw              framework.FW
-	assetDB         db.ClearAndBulkAdder
-	expenseDB       db.ClearAndBulkAdder
-	incomeDB        db.ClearAndBulkAdder
-	sharedExpenseDB db.ClearAndBulkAdder
-	tradesDB        db.ClearAndBulkAdder
-}
-
-func NewLoader(fw framework.FW) *Loader {
-	return &Loader{
-		fw:              fw,
-		assetDB:         fw.GetDB(db.AssetDatabaseName).(db.ClearAndBulkAdder),
-		expenseDB:       fw.GetDB(db.ExpenseDatabaseName).(db.ClearAndBulkAdder),
-		incomeDB:        fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
-		sharedExpenseDB: fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
-		tradesDB:        fw.GetDB(db.TradeDatabaseName).(db.ClearAndBulkAdder),
-	}
-}
-
-func (l *Loader) Start() error {
-	dataLoaders := []dataLoader{
-		{
-			name:     "assets",
-			db:       l.assetDB,
-			filePath: l.fw.GetConfig().FinancialsData.AssetsCsvFilepath,
-			model:    &[]*db.Asset{},
-			errChan:  make(chan error, 1),
-		},
-		{
-			name:     "expenses",
-			db:       l.expenseDB,
-			filePath: l.fw.GetConfig().FinancialsData.ExpensesCsvFilepath,
-			model:    &[]*db.Expense{},
-			errChan:  make(chan error, 1),
-		},
-		{
-			name:     "incomeDB",
-			db:       l.incomeDB,
-			filePath: l.fw.GetConfig().FinancialsData.IncomeCsvFilepath,
-			model:    &[]*db.Income{},
-			errChan:  make(chan error, 1),
-		},
-		{
-			name:     "sharedExpenseDB",
-			db:       l.sharedExpenseDB,
-			filePath: l.fw.GetConfig().FinancialsData.SharedExpensesCsvFilepath,
-			model:    &[]*db.SharedExpense{},
-			errChan:  make(chan error, 1),
-		},
-		{
-			name:     "trades",
-			db:       l.tradesDB,
-			filePath: l.fw.GetConfig().FinancialsData.TradesCsvFilepath,
-			model:    &[]*db.Trade{},
-			errChan:  make(chan error, 1),
-		},
-	}
-
-	for _, d := range dataLoaders {
-		go d.load()
-	}
-
-	for _, d := range dataLoaders {
-		if err := <-d.errChan; err != nil {
-			return err
-		}
-	}
-
-	return nil
+	fw      framework.FW
+	loaders []dataLoader
 }
 
 type dataLoader struct {
@@ -86,6 +19,63 @@ type dataLoader struct {
 	filePath string
 	model    interface{}
 	errChan  chan error
+}
+
+func NewLoader(fw framework.FW) *Loader {
+	return &Loader{
+		fw: fw,
+		loaders: []dataLoader{
+			{
+				name:     "assets",
+				db:       fw.GetDB(db.AssetDatabaseName).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.AssetsCsvFilepath,
+				model:    &[]*db.Asset{},
+				errChan:  make(chan error, 1),
+			},
+			{
+				name:     "expenses",
+				db:       fw.GetDB(db.ExpenseDatabaseName).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.ExpensesCsvFilepath,
+				model:    &[]*db.Expense{},
+				errChan:  make(chan error, 1),
+			},
+			{
+				name:     "incomeDB",
+				db:       fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.IncomeCsvFilepath,
+				model:    &[]*db.Income{},
+				errChan:  make(chan error, 1),
+			},
+			{
+				name:     "sharedExpenseDB",
+				db:       fw.GetDB(db.SharedExpenseDatabaseName).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.SharedExpensesCsvFilepath,
+				model:    &[]*db.SharedExpense{},
+				errChan:  make(chan error, 1),
+			},
+			{
+				name:     "trades",
+				db:       fw.GetDB(db.TradeDatabaseName).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.TradesCsvFilepath,
+				model:    &[]*db.Trade{},
+				errChan:  make(chan error, 1),
+			},
+		},
+	}
+}
+
+func (l *Loader) Start() error {
+	for _, d := range l.loaders {
+		go d.load()
+	}
+
+	for _, d := range l.loaders {
+		if err := <-d.errChan; err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (a *dataLoader) load() {
