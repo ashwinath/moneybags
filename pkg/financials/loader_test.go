@@ -76,11 +76,19 @@ func TestLoad(t *testing.T) {
 		err := loader.Start()
 		assert.Nil(t, err)
 
-		// TODO: Test if more than 1 entry for other dbs
-		assetCounter := fw.GetDB(database.AssetDatabaseName).(database.Counter)
-		count, err := assetCounter.Count()
-		assert.Nil(t, err)
-		assert.Greater(t, count, int64(0))
+		allCounters := []database.Counter{
+			fw.GetDB(database.AssetDatabaseName).(database.Counter),
+			fw.GetDB(database.ExpenseDatabaseName).(database.Counter),
+			fw.GetDB(database.IncomeDatabaseName).(database.Counter),
+			fw.GetDB(database.SharedExpenseDatabaseName).(database.Counter),
+			fw.GetDB(database.TradeDatabaseName).(database.Counter),
+		}
+
+		for _, counter := range allCounters {
+			count, err := counter.Count()
+			assert.Nil(t, err)
+			assert.Greater(t, count, int64(0))
+		}
 	})
 	assert.Nil(t, err)
 }

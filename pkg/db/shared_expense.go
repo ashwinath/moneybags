@@ -44,3 +44,12 @@ func (db *sharedExpenseDB) Clear() error {
 func (db *sharedExpenseDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
 }
+
+func (db *sharedExpenseDB) Count() (int64, error) {
+	var count int64
+	r := db.db.Model(&SharedExpense{}).Count(&count)
+	if r.Error != nil {
+		return 0, r.Error
+	}
+	return count, nil
+}

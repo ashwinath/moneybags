@@ -42,9 +42,10 @@ func (db *assetDB) BulkAdd(objs interface{}) error {
 }
 
 func (db *assetDB) Count() (int64, error) {
-	r := db.db.Find(&Asset{})
+	var count int64
+	r := db.db.Model(&Asset{}).Count(&count)
 	if r.Error != nil {
 		return 0, r.Error
 	}
-	return r.RowsAffected, nil
+	return count, nil
 }

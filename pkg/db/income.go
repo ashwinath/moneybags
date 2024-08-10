@@ -40,3 +40,12 @@ func (db *incomeDB) Clear() error {
 func (db *incomeDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
 }
+
+func (db *incomeDB) Count() (int64, error) {
+	var count int64
+	r := db.db.Model(&Income{}).Count(&count)
+	if r.Error != nil {
+		return 0, r.Error
+	}
+	return count, nil
+}
