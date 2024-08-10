@@ -19,6 +19,7 @@ func (SharedExpense) TableName() string {
 }
 
 type SharedExpenseDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type sharedExpenseDB struct {

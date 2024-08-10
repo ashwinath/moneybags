@@ -25,6 +25,6 @@ func TestRunInterval(t *testing.T) {
 	cancel()
 
 	m.Lock()
-	assert.Greater(t, counter, 0)
+	assert.Greater(t, counter, 1)
 	m.Unlock()
 }

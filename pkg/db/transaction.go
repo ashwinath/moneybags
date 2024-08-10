@@ -64,6 +64,7 @@ type TransactionDB interface {
 	QuerySharedTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
 	QuerySharedReimCCTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
 	QueryMiscTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
+	BulkAdd(objs interface{}) error
 }
 
 type transactionDB struct {
@@ -248,4 +249,9 @@ func (d *transactionDB) QueryMiscTransactions(startDate, endDate time.Time, resu
 		Result: sharedTransactions,
 		Error:  err,
 	}
+}
+
+// Bulk add data
+func (db *transactionDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
 }

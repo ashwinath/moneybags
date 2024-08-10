@@ -15,6 +15,7 @@ type Expense struct {
 }
 
 type ExpenseDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type expenseDB struct {
