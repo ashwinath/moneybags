@@ -12,10 +12,11 @@ type ExchangeRate struct {
 	ID        uint      `gorm:"primaryKey"`
 	TradeDate time.Time `gorm:"type:timestamp;uniqueIndex:uidx_exchange_rates"`
 	Symbol    string    `gorm:"uniqueIndex:uidx_exchange_rates"`
-	Amount    float64
+	Price     float64
 }
 
 type ExchangeRateDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type exchangeRateDB struct {
@@ -30,4 +31,8 @@ func NewExchangeRateDB(db *DB) (ExchangeRateDB, error) {
 	return &exchangeRateDB{
 		db: db.DB,
 	}, nil
+}
+
+func (db *exchangeRateDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
 }

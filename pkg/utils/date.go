@@ -16,3 +16,9 @@ func SetDateToEndOfMonth(d time.Time) time.Time {
 	)
 	return ret.AddDate(0, 1, 0).AddDate(0, 0, -1)
 }
+
+// Accepts yyyy-mm-dd
+func SetDateFromString(date string) (time.Time, error) {
+	dateString := fmt.Sprintf("%s 08:00:00", date)
+	return time.Parse(time.DateTime, dateString)
+}

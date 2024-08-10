@@ -8,7 +8,7 @@ import (
 	"github.com/ashwinath/moneybags/pkg/utils"
 )
 
-type CSVLoader struct {
+type csvLoader struct {
 	fw      framework.FW
 	loaders []dataLoader
 }
@@ -22,7 +22,7 @@ type dataLoader struct {
 }
 
 func NewCSVLoader(fw framework.FW) Loader {
-	return &CSVLoader{
+	return &csvLoader{
 		fw: fw,
 		loaders: []dataLoader{
 			{
@@ -64,7 +64,7 @@ func NewCSVLoader(fw framework.FW) Loader {
 	}
 }
 
-func (l *CSVLoader) Load() error {
+func (l *csvLoader) Load() error {
 	for _, d := range l.loaders {
 		go d.load()
 	}

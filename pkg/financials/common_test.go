@@ -45,6 +45,9 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 	symbolsDB, err := database.NewSymbolDB(db)
 	assert.Nil(t, err)
 
+	exchangeRateDB, err := database.NewExchangeRateDB(db)
+	assert.Nil(t, err)
+
 	return framework.New(c, sugar, map[string]any{
 		database.AssetDatabaseName:         assetDB,
 		database.ExpenseDatabaseName:       expenseDB,
@@ -53,6 +56,7 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 		database.TradeDatabaseName:         tradeDB,
 		database.TransactionDatabaseName:   txDB,
 		database.SymbolDatabaseName:        symbolsDB,
+		database.ExchangeRateDatabaseName:  exchangeRateDB,
 	})
 }
 
@@ -94,6 +98,23 @@ func (fakeAlphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageS
 	return &AlphavantageSymbol{
 		Symbol:   symbol,
 		Currency: "USD",
+	}, nil
+}
+
+func (fakeAlphavantage) GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error) {
+	return map[string]OHLC{
+		"2021-08-19": {
+			Open:  1.00,
+			High:  1.00,
+			Low:   1.00,
+			Close: 1.00,
+		},
+		"2021-08-30": {
+			Open:  1.00,
+			High:  1.00,
+			Low:   1.00,
+			Close: 1.00,
+		},
 	}, nil
 }
 

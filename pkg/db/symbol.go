@@ -17,13 +17,15 @@ type Symbol struct {
 	SymbolType        string
 	Symbol            string
 	BaseCurrency      *string
-	LastProcessedDate *time.Time
+	LastProcessedDate *time.Time `gorm:"type:timestamp"`
 }
 
 type SymbolDB interface {
 	CheckIfSymbolExists(symbol string) (bool, error)
 	Insert(symbol *Symbol) error
 	GetDistinctCurrencies() ([]string, error)
+	GetCurrencies() ([]Symbol, error)
+	UpdateLastProcessedDate(symbol string, date time.Time) error
 }
 
 type symbolDB struct {
@@ -57,10 +59,34 @@ func (db *symbolDB) Insert(symbol *Symbol) error {
 
 func (db *symbolDB) GetDistinctCurrencies() ([]string, error) {
 	currencies := []string{}
-	res := db.db.Distinct("base_currency").Model(Symbol{}).Where("symbol_type = ?", SymbolTypeStock).Select("base_currency").Find(&currencies)
+	res := db.db.Distinct("base_currency").
+		Model(Symbol{}).
+		Where("symbol_type = ?", SymbolTypeStock).
+		Select("base_currency").
+		Find(&currencies)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
 	return currencies, nil
+}
+
+func (db *symbolDB) GetCurrencies() ([]Symbol, error) {
+	currencies := []Symbol{}
+	res := db.db.Model(Symbol{}).
+		Where("symbol_type = ?", SymbolTypeCurrency).
+		Find(&currencies)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return currencies, nil
+}
+
+func (db *symbolDB) UpdateLastProcessedDate(symbol string, date time.Time) error {
+	res := db.db.Model(Symbol{}).
+		Where("symbol = ?", symbol).
+		Update("last_processed_date", date)
+	return res.Error
 }

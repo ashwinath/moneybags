@@ -34,6 +34,16 @@ func TestStocksLoader(t *testing.T) {
 		).Count(&currencyCount)
 		assert.Nil(t, res.Error)
 		assert.Equal(t, int64(1), currencyCount)
+
+		var exchangeRateCount int64
+		res = db.DB.Model(database.ExchangeRate{}).Count(&exchangeRateCount)
+		assert.Nil(t, res.Error)
+		assert.Equal(t, int64(1), currencyCount)
+
+		symbol := database.Symbol{}
+		res = db.DB.Model(database.Symbol{}).Where("symbol_type = ?", database.SymbolTypeCurrency).First(&symbol)
+		assert.Nil(t, res.Error)
+		assert.NotNil(t, symbol.LastProcessedDate)
 	})
 
 	assert.Nil(t, err)
