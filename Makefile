@@ -12,7 +12,9 @@ vendor:
 .PHONY: test
 test:
 	@go clean -testcache
-	@go test -v -cover -race ./...
+	@go test -v -coverprofile cover.out -race ./...
+	@go tool cover -func cover.out
+	@rm cover.out
 
 .PHONY: db
 db:

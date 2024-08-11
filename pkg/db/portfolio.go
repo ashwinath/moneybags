@@ -19,6 +19,7 @@ type Portfolio struct {
 }
 
 type PortfolioDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type portfolioDB struct {
@@ -33,4 +34,9 @@ func NewPortfolioDB(db *DB) (PortfolioDB, error) {
 	return &portfolioDB{
 		db: db.DB,
 	}, nil
+}
+
+// Bulk add data
+func (db *portfolioDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
 }

@@ -53,6 +53,11 @@ func TestStocksLoader(t *testing.T) {
 			First(&stockSymbol)
 		assert.Nil(t, res.Error)
 		assert.NotNil(t, stockSymbol.LastProcessedDate)
+
+		var portfolioCount int64
+		res = db.DB.Model(database.Portfolio{}).Count(&portfolioCount)
+		assert.Nil(t, res.Error)
+		assert.Greater(t, portfolioCount, int64(1))
 	})
 
 	assert.Nil(t, err)

@@ -15,6 +15,7 @@ type stocksLoader struct {
 	symbolDB       db.SymbolDB
 	exchangeRateDB db.ExchangeRateDB
 	stockDB        db.StockDB
+	portfolioDB    db.PortfolioDB
 	alphavantage   Alphavantage
 }
 
@@ -25,6 +26,7 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 		symbolDB:       fw.GetDB(db.SymbolDatabaseName).(db.SymbolDB),
 		exchangeRateDB: fw.GetDB(db.ExchangeRateDatabaseName).(db.ExchangeRateDB),
 		stockDB:        fw.GetDB(db.StockDatabaseName).(db.StockDB),
+		portfolioDB:    fw.GetDB(db.PortfolioDatabaseName).(db.PortfolioDB),
 		alphavantage:   alphavantage,
 	}
 }
@@ -42,7 +44,9 @@ func (l *stocksLoader) Load() error {
 		return err
 	}
 
-	// TODO: Calculate portfolio
+	if err := l.calculatePortfolio(); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -222,4 +226,121 @@ func (l *stocksLoader) processStock(symbol db.Symbol) error {
 	}
 
 	return nil
+}
+
+func (l *stocksLoader) calculatePortfolio() error {
+	symbols, err := l.symbolDB.GetStocks()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve symbols from db.")
+	}
+
+	for _, symbol := range symbols {
+		trades, err := l.tradeDB.GetTradesSorted(symbol.Symbol)
+		if err != nil {
+			return fmt.Errorf("failed to retrieve trades with symbol (%s): %s", symbol.Symbol, err)
+		}
+
+		partialPortfolios := []db.Portfolio{}
+
+		// First pass to fill active trading parts
+		// NAV and SimpleReturns are filled later.
+		for _, trade := range trades {
+			exchangeRate, err := l.getCurrencyRate(trade.DatePurchased.Time, *symbol.BaseCurrency)
+			if err != nil {
+				return err
+			}
+
+			tradeMultiplier := 1.0
+			if trade.TradeType != "buy" {
+				tradeMultiplier = -1.0
+			}
+
+			portfolio := db.Portfolio{
+				TradeDate: trade.DatePurchased.Time,
+				Symbol:    symbol.Symbol,
+			}
+			if len(partialPortfolios) == 0 {
+				portfolio.Principal = trade.PriceEach * trade.Quantity * exchangeRate
+				portfolio.Quantity = trade.Quantity
+			} else {
+				lastPortfolio := partialPortfolios[len(partialPortfolios)-1]
+				portfolio.Principal = lastPortfolio.Principal + (trade.PriceEach * trade.Quantity * exchangeRate * tradeMultiplier)
+				portfolio.Quantity = lastPortfolio.Quantity + (trade.Quantity * tradeMultiplier)
+			}
+
+			partialPortfolios = append(partialPortfolios, portfolio)
+		}
+
+		// Second pass to update all gaps in non active trading days
+		portfolioMap := map[time.Time]db.Portfolio{}
+		for _, partial := range partialPortfolios {
+			// There might be multiple trades in a single day for each symbol, we need to combine them
+			if portfolio, ok := portfolioMap[partial.TradeDate]; ok {
+				// Override with latest value
+				partial.Quantity = portfolio.Quantity
+				partial.Principal = portfolio.Principal
+			}
+			portfolioMap[partial.TradeDate] = partial
+		}
+
+		allPortfolios := []db.Portfolio{}
+		currentDate := partialPortfolios[0].TradeDate
+		tomorrow := time.Now().AddDate(0, 0, 1)
+
+		for currentDate.Before(tomorrow) {
+			exchangeRate, err := l.getCurrencyRate(currentDate, *symbol.BaseCurrency)
+			if err != nil {
+				return err
+			}
+
+			price, err := l.getStockPrice(currentDate, symbol.Symbol)
+			if err != nil {
+				return err
+			}
+
+			var previousPortfolio db.Portfolio
+			if p, ok := portfolioMap[currentDate]; ok {
+				previousPortfolio = p
+			} else {
+				// guaranteed to have an element
+				previousPortfolio = allPortfolios[len(allPortfolios)-1]
+			}
+
+			newPortfolio := db.Portfolio{
+				TradeDate: currentDate,
+				Symbol:    symbol.Symbol,
+				Principal: previousPortfolio.Principal,
+				Quantity:  previousPortfolio.Quantity,
+				NAV:       previousPortfolio.Quantity * price * exchangeRate,
+			}
+			newPortfolio.SimpleReturns = (newPortfolio.NAV - newPortfolio.Principal) / newPortfolio.Principal
+			allPortfolios = append(allPortfolios, newPortfolio)
+			currentDate = currentDate.AddDate(0, 0, 1)
+		}
+
+		if err := l.portfolioDB.BulkAdd(allPortfolios); err != nil {
+			return fmt.Errorf("failed to bulk insert into porfolio: %s", err)
+		}
+	}
+
+	return nil
+}
+
+func (l *stocksLoader) getCurrencyRate(date time.Time, currency string) (float64, error) {
+	for {
+		if val, err := l.exchangeRateDB.GetExchangeRateByDate(date, currency); err == nil {
+			return val, nil
+		}
+		date = date.AddDate(0, 0, -1)
+	}
+}
+
+func (l *stocksLoader) getStockPrice(date time.Time, symbol string) (float64, error) {
+	for {
+		if val, err := l.stockDB.GetStockPrice(date, symbol); err == nil {
+			return val, nil
+		}
+
+		date = date.AddDate(0, 0, -1)
+	}
 }

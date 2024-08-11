@@ -18,6 +18,7 @@ type Trade struct {
 
 type TradeDB interface {
 	GetUniqueSymbols() ([]string, error)
+	GetTradesSorted(symbol string) ([]Trade, error)
 }
 
 type tradeDB struct {
@@ -60,4 +61,15 @@ func (db *tradeDB) GetUniqueSymbols() ([]string, error) {
 		return nil, res.Error
 	}
 	return symbols, nil
+}
+
+func (db *tradeDB) GetTradesSorted(symbol string) ([]Trade, error) {
+	trades := []Trade{}
+
+	res := db.db.Order("date_purchased asc").Where("symbol = ?", symbol).Find(&trades)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return trades, nil
 }

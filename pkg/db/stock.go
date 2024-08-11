@@ -17,6 +17,7 @@ type Stock struct {
 
 type StockDB interface {
 	BulkAdd(objs interface{}) error
+	GetStockPrice(date time.Time, symbol string) (float64, error)
 }
 
 type stockDB struct {
@@ -35,4 +36,16 @@ func NewStockDB(db *DB) (StockDB, error) {
 
 func (db *stockDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
+}
+
+func (db *stockDB) GetStockPrice(date time.Time, symbol string) (float64, error) {
+	var val float64
+
+	res := db.db.Model(Stock{}).
+		Select("price").
+		Where("trade_date = ?", date).
+		Where("symbol = ?", symbol).
+		First(&val)
+
+	return val, res.Error
 }

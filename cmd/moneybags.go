@@ -96,6 +96,11 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 		sugar.Fatalf("Failed to initialise Portfolio DB, %v", err)
 	}
 
+	sharedExpenseDB, err := db.NewSharedExpenseDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Expense DB, %v", err)
+	}
+
 	stockDB, err := db.NewStockDB(baseDB)
 	if err != nil {
 		sugar.Fatalf("Failed to initialise Stock DB, %v", err)
@@ -124,6 +129,7 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 		db.IncomeDatabaseName:             incomeDB,
 		db.MortgageDatabaseName:           mortgageDB,
 		db.PortfolioDatabaseName:          portfolioDB,
+		db.SharedExpenseDatabaseName:      sharedExpenseDB,
 		db.StockDatabaseName:              stockDB,
 		db.SymbolDatabaseName:             symbolDB,
 		db.TradeDatabaseName:              tradeDB,

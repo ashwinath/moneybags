@@ -17,6 +17,7 @@ type ExchangeRate struct {
 
 type ExchangeRateDB interface {
 	BulkAdd(objs interface{}) error
+	GetExchangeRateByDate(date time.Time, symbol string) (float64, error)
 }
 
 type exchangeRateDB struct {
@@ -35,4 +36,16 @@ func NewExchangeRateDB(db *DB) (ExchangeRateDB, error) {
 
 func (db *exchangeRateDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
+}
+
+func (db *exchangeRateDB) GetExchangeRateByDate(date time.Time, symbol string) (float64, error) {
+	var er float64
+
+	res := db.db.Model(ExchangeRate{}).
+		Select("price").
+		Where("trade_date = ?", date).
+		Where("symbol = ?", symbol).
+		First(&er)
+
+	return er, res.Error
 }

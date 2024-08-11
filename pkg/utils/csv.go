@@ -18,7 +18,7 @@ type DateTime struct {
 
 // Convert the CSV string as internal date
 func (date *DateTime) UnmarshalCSV(csv string) (err error) {
-	date.Time, err = time.Parse(time.DateOnly, csv)
+	date.Time, err = SetDateFromString(csv)
 	return err
 }
 
