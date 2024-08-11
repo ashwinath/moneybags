@@ -24,7 +24,7 @@ func NewTelegramModule(fw framework.FW) (framework.Module, error) {
 	}
 
 	bot.Debug = fw.GetConfig().TelegramConfig.Debug
-	fw.GetLogger().Infof("[telegram] Authorized on account %s", bot.Self.UserName)
+	fw.GetLogger().Infof("Authorized telegram bot on account %s", bot.Self.UserName)
 
 	pm, err := telegramprocessor.NewManager(fw)
 	if err != nil {
@@ -44,6 +44,7 @@ func (m *TelegramModule) Name() string {
 
 func (m *TelegramModule) Start(ctx context.Context) {
 	// Don't need to use context here
+	fw.GetLogger().Infof("starting telegram module")
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60

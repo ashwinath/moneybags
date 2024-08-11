@@ -37,6 +37,7 @@ func (m *FinancialsModule) Start(ctx context.Context) {
 }
 
 func (m *FinancialsModule) run() {
+	m.fw.GetLogger().Infof("running one round of financials module")
 	m.fw.TimeFunction("Financials Module", func() {
 		for _, loader := range m.loaders {
 			if err := loader.Load(); err != nil {
@@ -44,4 +45,5 @@ func (m *FinancialsModule) run() {
 			}
 		}
 	})
+	m.fw.GetLogger().Infof("finished running one round of financials module")
 }
