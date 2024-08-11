@@ -1,6 +1,8 @@
 package framework
 
 import (
+	"time"
+
 	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"go.uber.org/zap"
 )
@@ -9,6 +11,7 @@ type FW interface {
 	GetConfig() *configpb.Config
 	GetDB(name string) any
 	GetLogger() *zap.SugaredLogger
+	TimeFunction(functionName string, fn func())
 }
 
 type Framework struct {
@@ -36,4 +39,10 @@ func (fw *Framework) GetLogger() *zap.SugaredLogger {
 
 func (fw *Framework) GetDB(name string) any {
 	return fw.databases[name]
+}
+
+func (fw *Framework) TimeFunction(functionName string, fn func()) {
+	start := time.Now()
+	fn()
+	fw.logger.Infof("%s ran for %s", functionName, time.Since(start))
 }

@@ -37,9 +37,11 @@ func (m *FinancialsModule) Start(ctx context.Context) {
 }
 
 func (m *FinancialsModule) run() {
-	for _, loader := range m.loaders {
-		if err := loader.Load(); err != nil {
-			m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
+	m.fw.TimeFunction("Financials Module", func() {
+		for _, loader := range m.loaders {
+			if err := loader.Load(); err != nil {
+				m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
+			}
 		}
-	}
+	})
 }

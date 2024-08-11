@@ -41,11 +41,11 @@ func (l *stocksLoader) Load() error {
 	}
 
 	if err := l.processStocks(); err != nil {
-		return err
+		return fmt.Errorf("Failed to load process stocks: %s", err)
 	}
 
 	if err := l.calculatePortfolio(); err != nil {
-		return err
+		return fmt.Errorf("Failed to calculate portfolio: %s", err)
 	}
 
 	return nil
