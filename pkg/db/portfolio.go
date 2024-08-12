@@ -20,6 +20,8 @@ type Portfolio struct {
 
 type PortfolioDB interface {
 	BulkAdd(objs interface{}) error
+	GetFirstTradeDate() (time.Time, error)
+	GetPortfolioAmountByDate(date time.Time) (float64, error)
 }
 
 type portfolioDB struct {
@@ -39,4 +41,22 @@ func NewPortfolioDB(db *DB) (PortfolioDB, error) {
 // Bulk add data
 func (db *portfolioDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
+}
+
+func (db *portfolioDB) GetFirstTradeDate() (time.Time, error) {
+	var val time.Time
+	res := db.db.Model(Portfolio{}).
+		Select("trade_date").
+		Order("trade_date asc").
+		First(&val)
+	return val, res.Error
+}
+
+func (db *portfolioDB) GetPortfolioAmountByDate(date time.Time) (float64, error) {
+	var val float64
+	res := db.db.Model(Portfolio{}).
+		Select("sum(nav)").
+		Where("trade_date = ?", date).
+		Scan(&val)
+	return val, res.Error
 }

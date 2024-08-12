@@ -44,7 +44,7 @@ func (m *TelegramModule) Name() string {
 
 func (m *TelegramModule) Start(ctx context.Context) {
 	// Don't need to use context here
-	fw.GetLogger().Infof("starting telegram module")
+	m.fw.GetLogger().Infof("starting telegram module")
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60

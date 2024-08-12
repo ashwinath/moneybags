@@ -15,6 +15,7 @@ type Asset struct {
 }
 
 type AssetDB interface {
+	BulkAdd(objs interface{}) error
 }
 
 type assetDB struct {

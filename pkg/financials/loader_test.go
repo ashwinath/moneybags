@@ -16,6 +16,7 @@ func TestStocksLoader(t *testing.T) {
 		err := loader.Load()
 		assert.Nil(t, err)
 
+		// stock loader
 		av := NewFakeAlphavantage()
 		stocksLoader := NewStocksLoader(fw, av)
 		err = stocksLoader.Load()
@@ -58,6 +59,16 @@ func TestStocksLoader(t *testing.T) {
 		res = db.DB.Model(database.Portfolio{}).Count(&portfolioCount)
 		assert.Nil(t, res.Error)
 		assert.Greater(t, portfolioCount, int64(1))
+
+		// investment loader
+		investmentsLoader := NewInvestmentsLoader(fw)
+		err = investmentsLoader.Load()
+		assert.Nil(t, err)
+
+		assets := []database.Asset{}
+		res = db.DB.Where("type = ?", "Investments").Find(&assets)
+		assert.Nil(t, res.Error)
+		assert.Greater(t, len(assets), 1)
 	})
 
 	assert.Nil(t, err)
