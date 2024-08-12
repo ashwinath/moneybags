@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -16,6 +18,8 @@ type Expense struct {
 
 type ExpenseDB interface {
 	BulkAdd(objs interface{}) error
+	GetFirstDate() (time.Time, error)
+	GetYearlyExpense(exclusionTypes []string, currentDate time.Time, windowPeriod int) (float64, error)
 }
 
 type expenseDB struct {
@@ -49,4 +53,28 @@ func (db *expenseDB) Count() (int64, error) {
 		return 0, r.Error
 	}
 	return count, nil
+}
+
+func (db *expenseDB) GetFirstDate() (time.Time, error) {
+	var val time.Time
+	res := db.db.Model(Expense{}).
+		Select("transaction_date").
+		Order("transaction_date asc").
+		First(&val)
+	return val, res.Error
+}
+
+func (db *expenseDB) GetYearlyExpense(exclusionTypes []string, currentDate time.Time, windowPeriod int) (float64, error) {
+	query := db.db.Model(Expense{}).
+		Select("sum(amount)").
+		Where("transaction_date > ?", currentDate.AddDate(0, -windowPeriod, 0)).
+		Where("transaction_date <= ?", currentDate)
+
+	for _, et := range exclusionTypes {
+		query = query.Where("type not like ?", et)
+	}
+
+	var val float64
+	res := query.Scan(&val)
+	return val, res.Error
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const AverageExpenditureDatabaseName string = "average-expenditure"
@@ -15,6 +16,7 @@ type AverageExpenditure struct {
 }
 
 type AverageExpenditureDB interface {
+	BulkInsertOnConflictOverride(objs []AverageExpenditure) error
 }
 
 type averageExpenditureDB struct {
@@ -29,4 +31,8 @@ func NewAverageExpenditureDB(db *DB) (AverageExpenditureDB, error) {
 	return &averageExpenditureDB{
 		db: db.DB,
 	}, nil
+}
+
+func (db *averageExpenditureDB) BulkInsertOnConflictOverride(objs []AverageExpenditure) error {
+	return db.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(objs).Error
 }

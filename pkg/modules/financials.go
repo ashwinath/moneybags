@@ -22,6 +22,7 @@ func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) 
 			financials.NewStocksLoader(fw, alphavantage),
 			financials.NewInvestmentsLoader(fw),
 			financials.NewSharedExpenseLoader(fw),
+			financials.NewAverageExpenditureLoader(fw),
 		},
 	}, nil
 }

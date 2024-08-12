@@ -17,6 +17,14 @@ func SetDateToEndOfMonth(d time.Time) time.Time {
 	return ret.AddDate(0, 1, 0).AddDate(0, 0, -1)
 }
 
+func GetLastDateOfMonth(d time.Time) time.Time {
+	d = time.Date(d.Year(), d.Month(), 1, d.Hour(), 0, 0, 0, d.Location())
+	d = d.AddDate(0, 1, 0)
+	d = d.AddDate(0, 0, -1)
+
+	return d
+}
+
 // Accepts yyyy-mm-dd
 func SetDateFromString(date string) (time.Time, error) {
 	dateString := fmt.Sprintf("%s 08:00:00", date)
