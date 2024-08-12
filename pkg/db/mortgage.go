@@ -39,3 +39,13 @@ func NewMortgageDB(db *DB) (MortgageDB, error) {
 		db: db.DB,
 	}, nil
 }
+
+// Clears the database
+func (db *mortgageDB) Clear() error {
+	return db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Mortgage{}).Error
+}
+
+// Bulk add data
+func (db *mortgageDB) BulkAdd(objs interface{}) error {
+	return db.db.Create(objs).Error
+}

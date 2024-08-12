@@ -1,0 +1,22 @@
+syntax = "proto3";
+package mortgage;
+
+option go_package = "./pbgo/mortgagepb";
+
+message MortgageConfig {
+    repeated Mortgage mortgages = 1;
+}
+
+message Mortgage {
+    double total = 1;
+    string mortgage_first_payment = 2;
+    uint32 mortgage_duration_in_years = 3;
+    string mortgage_end_date = 4;
+    double interest_rate_percentage = 5;
+    repeated Downpayment downpayments = 6;
+}
+
+message Downpayment {
+    string date = 1;
+    double sum = 2;
+}

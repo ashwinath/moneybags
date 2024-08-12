@@ -97,6 +97,10 @@ func subsituteLocalRepoLocation(c *configpb.Config) {
 	p = c.FinancialsData.TradesCsvFilepath
 	newPath = path.Join(utils.GetLocalRepoLocation(), p)
 	c.FinancialsData.TradesCsvFilepath = newPath
+
+	p = c.FinancialsData.MortgageYamlFilepath
+	newPath = path.Join(utils.GetLocalRepoLocation(), p)
+	c.FinancialsData.MortgageYamlFilepath = newPath
 }
 
 func parseDateForced(t *testing.T, dateString string) time.Time {

@@ -14,5 +14,6 @@ financials_data:
   income_csv_filepath: sample/income.csv
   shared_expenses_csv_filepath: sample/shared_expenses.csv
   trades_csv_filepath: sample/trades.csv
+  mortgage_yaml_filepath: sample/mortgage.yaml
 financials_config:
   run_interval_in_hours: 4
