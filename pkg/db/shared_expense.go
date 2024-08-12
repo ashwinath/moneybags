@@ -1,6 +1,9 @@
 package db
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -20,6 +23,7 @@ func (SharedExpense) TableName() string {
 
 type SharedExpenseDB interface {
 	BulkAdd(objs interface{}) error
+	GetSharedExpensesGroupByExpenseDate(isSpecial bool) ([]GroupedSharedExpenseByDate, error)
 }
 
 type sharedExpenseDB struct {
@@ -53,4 +57,26 @@ func (db *sharedExpenseDB) Count() (int64, error) {
 		return 0, r.Error
 	}
 	return count, nil
+}
+
+type GroupedSharedExpenseByDate struct {
+	ExpenseDate time.Time `gorm:"type:timestamp"`
+	Total       float64
+}
+
+func (db *sharedExpenseDB) GetSharedExpensesGroupByExpenseDate(isSpecial bool) ([]GroupedSharedExpenseByDate, error) {
+	sharedExpenses := []GroupedSharedExpenseByDate{}
+
+	likeStatement := "not like"
+	if isSpecial {
+		likeStatement = "like"
+	}
+
+	res := db.db.Model(SharedExpense{}).
+		Where(fmt.Sprintf("type %s 'Special:%%'", likeStatement)).
+		Select("expense_date, sum(amount) as total").
+		Group("expense_date").
+		Scan(&sharedExpenses)
+
+	return sharedExpenses, res.Error
 }

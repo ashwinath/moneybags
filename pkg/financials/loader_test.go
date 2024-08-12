@@ -69,6 +69,21 @@ func TestStocksLoader(t *testing.T) {
 		res = db.DB.Where("type = ?", "Investments").Find(&assets)
 		assert.Nil(t, res.Error)
 		assert.Greater(t, len(assets), 1)
+
+		// shared expense loader
+		sharedExpenseLoader := NewSharedExpenseLoader(fw)
+		err = sharedExpenseLoader.Load()
+		assert.Nil(t, err)
+
+		nonSpecialExpenses := []database.Expense{}
+		res = db.DB.Where("type = ?", nonSpecialSharedExpensesType).Find(&nonSpecialExpenses)
+		assert.Nil(t, res.Error)
+		assert.Greater(t, len(nonSpecialExpenses), 1)
+
+		specialExpenses := []database.Expense{}
+		res = db.DB.Where("type = ?", specialSharedExpensesType).Find(&specialExpenses)
+		assert.Nil(t, res.Error)
+		assert.Greater(t, len(specialExpenses), 1)
 	})
 
 	assert.Nil(t, err)
