@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io/ashwinath
-      GO_VERSION: 1.22.5
+      GO_VERSION: 1.22.6
     services:
       postgres:
         image: postgres:16-alpine
@@ -41,7 +41,7 @@ jobs:
         go-version: ${{ env.GO_VERSION }}
     - name: Run tests
       run: make test
-    #- name: Setup GitHub Container Registry
-      #run: echo ${{ secrets.GHCR_TOKEN }} | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
-    #- name: Build and push
-      #run: make
+    - name: Setup GitHub Container Registry
+      run: echo ${{ secrets.GHCR_TOKEN }} | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+    - name: Build and push
+      run: make
