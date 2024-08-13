@@ -1,6 +1,6 @@
 # moneybags
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -39,6 +39,7 @@ A Helm chart for Kubernetes
 | postgresql.auth.postgresPassword | string | `"changeme"` | Password for postgresql database, highly recommended to change this value |
 | postgresql.primary.persistence.enabled | bool | `true` | Persist Postgresql data in a Persistent Volume Claim  |
 | postgresql.resources | object | `{}` | Resources requests and limits for the database |
+| replicaCount | int | `1` |  |
 | resources | object | `{}` | Resources requests and limits for the moneybags |
 | securityContext | object | `{}` | Security Context |
 | tolerations | list | `[]` | Pod Tolerations |

@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "moneybags.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "moneybags.selectorLabels" . | nindent 6 }}
@@ -32,6 +32,10 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args:
+          - ./moneybags
+          - --config
+          - /etc/config/config.yaml
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           #livenessProbe:
             #httpGet:
@@ -44,6 +48,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+          - name: moneybags-config
+            mountPath: /etc/config
           - name: trades-csv
             mountPath: /etc/trades
           - name: expenses-csv

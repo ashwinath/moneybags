@@ -1,4 +1,6 @@
-# Default values for moneybags.
+# replicaCount, should not exceed 1
+replicaCount: 1
+
 image:
   # -- Repository
   repository: ghcr.io/ashwinath/moneybags
