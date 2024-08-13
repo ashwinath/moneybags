@@ -61,7 +61,7 @@ func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
 	}
 
 	monthlyPayment := CalculateMortgageMonthlyPayment(principal, m.InterestRatePercentage, int(m.MortgageDurationInYears))
-	interestPaidSchedule := calculateInterestPaidSchedule(principal, monthlyPayment, m.InterestRatePercentage)
+	interestPaidSchedule := CalculateInterestPaidSchedule(principal, monthlyPayment, m.InterestRatePercentage)
 
 	totalInterestToBePaid := 0.0
 	for _, i := range interestPaidSchedule {
@@ -137,7 +137,8 @@ func CalculateMortgageMonthlyPayment(principal, interestRate float64, duration i
 	return principal * (ir * (math.Pow(1.0+ir, float64(numberOfMonths)))) / (math.Pow(1.0+ir, float64(numberOfMonths)) - 1.0)
 }
 
-func calculateInterestPaidSchedule(principal, monthlyPayment, interestRatePercentage float64) []float64 {
+// Public only because used in test
+func CalculateInterestPaidSchedule(principal, monthlyPayment, interestRatePercentage float64) []float64 {
 	ir := interestRatePercentage / 100.0 / numberOfMonthsInYear
 	sumLeft := principal
 
