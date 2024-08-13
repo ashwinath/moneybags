@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-assets-csv
+data:
+  assets.csv: |-
+{{ .Values.moneybags.assets | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-expenses-csv
+data:
+  expenses.csv: |-
+{{ .Values.moneybags.expenses | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-income-csv
+data:
+  income.csv: |-
+{{ .Values.moneybags.income | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-mortgage-yaml
+data:
+  mortgage.yaml: |-
+{{ .Values.moneybags.mortgage | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-shared-expenses-csv
+data:
+  shared_expenses.csv: |-
+{{ .Values.moneybags.shared_expenses | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-trades-csv
+data:
+  trades.csv: |-
+{{ .Values.moneybags.trades | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "moneybags.fullname" . }}-config
+data:
+  config.yaml: |-
+    postgres_db:
+      host: {{ include "moneybags.fullname" . }}-postgres
+      user: postgres
+      password: {{ .Values.postgresql.auth.postgresPassword }}
+      db_name: postgres
+      port: 5432
+    telegram_config:
+      api_key: {{ .Values.moneybags.telegram.apiKey }}
+      debug: {{ .Values.moneybags.telegram.debug | default false }}
+      allowed_user: {{ .Values.moneybags.telegram.allowedUser }}
+    financials_data:
+      assets_csv_filepath: /etc/sample/assets.csv
+      expenses_csv_filepath: /etc/sample/expenses.csv
+      income_csv_filepath: /etc/sample/income.csv
+      shared_expenses_csv_filepath: /etc/sample/shared_expenses.csv
+      trades_csv_filepath: /etc/sample/trades.csv
+      mortgage_yaml_filepath: /etc/sample/mortgage.yaml
+    financials_config:
+      run_interval_in_hours: {{ .Values.moneybags.financials.runIntervalInHours | default 4 }}
+      alphavantage_api_key: {{ .Values.moneybags.financials.alphavantageAPIKey }}

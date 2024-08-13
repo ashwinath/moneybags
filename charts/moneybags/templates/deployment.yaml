@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "moneybags.fullname" . }}
+  labels:
+    {{- include "moneybags.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "moneybags.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "moneybags.labels" . | nindent 8 }}
+	{{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          #livenessProbe:
+            #httpGet:
+              #path: /
+              #port: http
+          #readinessProbe:
+            #httpGet:
+              #path: /
+              #port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: trades-csv
+            mountPath: /etc/trades
+          - name: expenses-csv
+            mountPath: /etc/expenses
+          - name: assets-csv
+            mountPath: /etc/assets
+          - name: income-csv
+            mountPath: /etc/income
+          - name: mortgage-yaml
+            mountPath: /etc/mortgage
+          - name: shared-expenses-csv
+            mountPath: /etc/shared-expenses
+      volumes:
+      - name: moneybags-config
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-config
+      - name: trades-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-trades-csv
+      - name: expenses-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-expenses-csv
+      - name: assets-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-assets-csv
+      - name: income-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-income-csv
+      - name: mortgage-yaml
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-mortgage-yaml
+      - name: shared-expenses-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-shared-expenses-csv
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

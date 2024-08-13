@@ -1,0 +1,25 @@
+name: helm-chart
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Release Chart
+      uses: stefanprodan/helm-gh-pages@v1.7.0
+      with:
+        token: "${{ secrets.GHCR_TOKEN }}"
+        charts_url: https://ashwinath.github.io/helm-charts/
+        charts_dir: charts
+        owner: ashwinath
+        repository: helm-charts
+        commit_username: "ashwinath"
+        commit_email: "ashwinath@hotmail.com"

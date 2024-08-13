@@ -15,6 +15,9 @@ type FinancialsModule struct {
 }
 
 func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) (framework.Module, error) {
+	if fw.GetConfig().FinancialsConfig.AlphavantageApiKey == "" {
+		return nil, fmt.Errorf("alphavantageApiKey not set")
+	}
 	return &FinancialsModule{
 		fw: fw,
 		loaders: []financials.Loader{

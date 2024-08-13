@@ -1,0 +1,143 @@
+# Default values for moneybags.
+image:
+  # -- Repository
+  repository: ghcr.io/ashwinath/moneybags
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: latest
+
+# -- Image pull secrets
+imagePullSecrets: []
+
+# -- Name override
+nameOverride: ""
+
+# -- Full name override
+fullnameOverride: ""
+
+# -- Pod Annotations
+podAnnotations: {}
+
+# -- Pod Labels
+podLabels: {}
+
+# -- Pod Security Context
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Security Context
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- Resources requests and limits for the moneybags
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Node Selectors
+nodeSelector: {}
+
+# -- Pod Tolerations
+tolerations: []
+
+# -- Pod Affinity
+affinity: {}
+
+moneybags:
+  telegram:
+    # -- Telegram bot API Key. Get by talking to Bot Godfather: https://core.telegram.org/bots/tutorial#obtain-your-bot-token
+    apiKey: changeme
+    # -- Enable debugging. Warning: non standard logger used in telegram library
+    debug: false
+    # -- Telegram user that will be allowed to send commands
+    allowedUser: changeme
+  financials:
+    # -- Run financials job data population every x hours
+    runIntervalInHours: 4
+    # -- Alphavantage API key, get from https://www.alphavantage.co/support/#api-key
+    alphavantageAPIKey: changeme
+
+  # -- CSV values for the trades
+  trades: |-
+    date_purchased,symbol,trade_type,price_each,quantity
+    2021-03-11,IWDA.LON,buy,76.34,10
+
+  # -- CSV values for the expenses
+  expenses: |-
+    date,type,amount
+    2020-03-31,Credit Card,500
+    2020-03-31,Reimbursement,-200
+    2020-03-31,Tithe,800
+
+  # -- CSV values for the assets
+  assets: |-
+    date,type,amount
+    2020-03-31,CPF,1000
+    2020-03-31,Bank,20000
+    2020-03-31,Mortgage,-40000
+    2020-03-31,Investments,20000
+
+  # -- CSV values for the income
+  income: |-
+    date,type,amount
+    2021-03-11,Base,500
+    2021-03-11,Bonus,200
+
+  # -- YAML values for mortgage
+  mortgage: |-
+    mortgages:
+    - total: 50000.0
+      mortgage_first_payment: 2022-10-10
+      mortgage_duration_in_years: 25
+      mortgage_end_date: 2047-10-10
+      interest_rate_percentage: 2.6
+      downpayments:
+      - date: 2021-10-10
+        sum: 1000.0
+      - date: 2021-12-12
+        sum: 20000.0
+
+  # -- CSV values for shared expenses
+  shared_expenses: |-
+    date,type,amount
+    2023-01-01,Special:Renovations,5000.00
+    2023-01-01,Electricity,100.00
+    2023-01-01,Water,50.00
+    2023-01-01,Gas,30.00
+    2023-01-01,Grocery,300.00
+    2023-01-01,Eating Out,500.00
+
+postgresql:
+  # -- Resources requests and limits for the database
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  primary:
+    persistence:
+      # -- Persist Postgresql data in a Persistent Volume Claim 
+      enabled: true
+  auth:
+    # -- Password for postgresql database, highly recommended to change this value
+    postgresPassword: changeme

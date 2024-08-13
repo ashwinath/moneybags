@@ -1,3 +1,5 @@
+commit=$(shell git rev-parse HEAD)
+
 .PHONY: proto
 proto:
 	@rm -rf ./pbgo
@@ -42,3 +44,18 @@ db-shell:
 run:
 	go run cmd/moneybags.go --config local_config.yaml
 
+.PHONY: build
+build:
+	docker build -t $(REGISTRY)/moneybags:$(commit) -t $(REGISTRY)/moneybags:latest .
+
+.PHONY: push
+push:
+	docker push $(REGISTRY)/moneybags:$(commit)
+	docker push $(REGISTRY)/moneybags:latest
+
+.PHONY: container
+container: build push
+
+.PHONY: helm-docs
+helm-docs:
+	@docker run --rm --volume "$$(pwd)/charts/moneybags:/helm-docs" -u $$(id -u) jnorwood/helm-docs:latest
