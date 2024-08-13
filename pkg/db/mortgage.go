@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const MortgageDatabaseName string = "mortgage"
@@ -48,7 +49,7 @@ func (db *mortgageDB) Clear() error {
 
 // Bulk add data
 func (db *mortgageDB) BulkAdd(objs interface{}) error {
-	return db.db.Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *mortgageDB) GetMortgage() ([]Mortgage, error) {

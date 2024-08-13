@@ -5,6 +5,7 @@ import (
 
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const ExpenseDatabaseName string = "expense"
@@ -43,7 +44,7 @@ func (db *expenseDB) Clear() error {
 
 // Bulk add data
 func (db *expenseDB) BulkAdd(objs interface{}) error {
-	return db.db.Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *expenseDB) Count() (int64, error) {

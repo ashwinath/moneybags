@@ -6,6 +6,7 @@ import (
 
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const SharedExpenseDatabaseName string = "shared-expense"
@@ -47,7 +48,7 @@ func (db *sharedExpenseDB) Clear() error {
 
 // Bulk add data
 func (db *sharedExpenseDB) BulkAdd(objs interface{}) error {
-	return db.db.Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *sharedExpenseDB) Count() (int64, error) {
