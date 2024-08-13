@@ -21,6 +21,8 @@ type stocksLoader struct {
 	stockDB        db.StockDB
 	portfolioDB    db.PortfolioDB
 	alphavantage   Alphavantage
+	stockCache     map[string]float64
+	currencyCache  map[string]float64
 }
 
 func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
@@ -32,6 +34,8 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 		stockDB:        fw.GetDB(db.StockDatabaseName).(db.StockDB),
 		portfolioDB:    fw.GetDB(db.PortfolioDatabaseName).(db.PortfolioDB),
 		alphavantage:   alphavantage,
+		stockCache:     map[string]float64{},
+		currencyCache:  map[string]float64{},
 	}
 }
 
@@ -339,8 +343,14 @@ func (l *stocksLoader) calculatePortfolio() error {
 }
 
 func (l *stocksLoader) getCurrencyRate(date time.Time, currency string) (float64, error) {
+	cacheKey := fmt.Sprintf("%s/%s", date, currency)
+	if val, ok := l.currencyCache[cacheKey]; ok {
+		return val, nil
+	}
+
 	for date.Year() > minYearToBreak {
 		if val, err := l.exchangeRateDB.GetExchangeRateByDate(date, currency); err == nil {
+			l.currencyCache[cacheKey] = val
 			return val, nil
 		}
 		date = date.AddDate(0, 0, -1)
@@ -350,8 +360,14 @@ func (l *stocksLoader) getCurrencyRate(date time.Time, currency string) (float64
 }
 
 func (l *stocksLoader) getStockPrice(date time.Time, symbol string) (float64, error) {
+	cacheKey := fmt.Sprintf("%s/%s", date, symbol)
+	if val, ok := l.stockCache[cacheKey]; ok {
+		return val, nil
+	}
+
 	for date.Year() > minYearToBreak {
 		if val, err := l.stockDB.GetStockPrice(date, symbol); err == nil {
+			l.stockCache[cacheKey] = val
 			return val, nil
 		}
 

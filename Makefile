@@ -41,3 +41,4 @@ db-shell:
 .PHONY: run
 run:
 	go run cmd/moneybags.go --config local_config.yaml
+

@@ -36,7 +36,7 @@ func NewExchangeRateDB(db *DB) (ExchangeRateDB, error) {
 }
 
 func (db *exchangeRateDB) BulkAdd(objs interface{}) error {
-	return db.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *exchangeRateDB) GetExchangeRateByDate(date time.Time, symbol string) (float64, error) {
