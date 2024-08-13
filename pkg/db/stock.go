@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const StockDatabaseName string = "stock"
@@ -35,7 +36,7 @@ func NewStockDB(db *DB) (StockDB, error) {
 }
 
 func (db *stockDB) BulkAdd(objs interface{}) error {
-	return db.db.Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *stockDB) GetStockPrice(date time.Time, symbol string) (float64, error) {

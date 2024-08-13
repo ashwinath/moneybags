@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const PortfolioDatabaseName string = "portfolio"
@@ -40,7 +41,7 @@ func NewPortfolioDB(db *DB) (PortfolioDB, error) {
 
 // Bulk add data
 func (db *portfolioDB) BulkAdd(objs interface{}) error {
-	return db.db.Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
 func (db *portfolioDB) GetFirstTradeDate() (time.Time, error) {

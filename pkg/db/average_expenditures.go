@@ -34,5 +34,5 @@ func NewAverageExpenditureDB(db *DB) (AverageExpenditureDB, error) {
 }
 
 func (db *averageExpenditureDB) BulkInsertOnConflictOverride(objs []AverageExpenditure) error {
-	return db.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
