@@ -32,6 +32,10 @@ func NewTransactionLoader(fw framework.FW) Loader {
 	}
 }
 
+func (transactionLoader) Name() string {
+	return "transaction"
+}
+
 func (l *transactionLoader) Load() error {
 	if err := l.genExpense(); err != nil {
 		return fmt.Errorf("error running genExpense: %s", err)

@@ -31,6 +31,10 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 	}
 }
 
+func (stocksLoader) Name() string {
+	return "stocks"
+}
+
 func (l *stocksLoader) Load() error {
 	if err := l.processSymbols(); err != nil {
 		return fmt.Errorf("Failed to load process symbols: %s", err)

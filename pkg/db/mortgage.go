@@ -24,6 +24,7 @@ func (Mortgage) TableName() string {
 }
 
 type MortgageDB interface {
+	GetMortgage() ([]Mortgage, error)
 }
 
 type mortgageDB struct {
@@ -48,4 +49,10 @@ func (db *mortgageDB) Clear() error {
 // Bulk add data
 func (db *mortgageDB) BulkAdd(objs interface{}) error {
 	return db.db.Create(objs).Error
+}
+
+func (db *mortgageDB) GetMortgage() ([]Mortgage, error) {
+	mortgages := []Mortgage{}
+	res := db.db.Order("date asc").Find(&mortgages)
+	return mortgages, res.Error
 }

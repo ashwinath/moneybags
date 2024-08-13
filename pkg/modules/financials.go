@@ -2,6 +2,7 @@ package modules
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/ashwinath/moneybags/pkg/financials"
@@ -24,6 +25,7 @@ func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) 
 			financials.NewSharedExpenseLoader(fw),
 			financials.NewAverageExpenditureLoader(fw),
 			financials.NewMortgageLoader(fw),
+			financials.NewHouseAssetLoader(fw),
 		},
 	}, nil
 }
@@ -44,9 +46,11 @@ func (m *FinancialsModule) run() {
 	m.fw.GetLogger().Infof("running one round of financials module")
 	m.fw.TimeFunction("Financials Module", func() {
 		for _, loader := range m.loaders {
-			if err := loader.Load(); err != nil {
-				m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
-			}
+			m.fw.TimeFunction(fmt.Sprintf("[%s] loader", loader.Name()), func() {
+				if err := loader.Load(); err != nil {
+					m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
+				}
+			})
 		}
 	})
 	m.fw.GetLogger().Infof("finished running one round of financials module")

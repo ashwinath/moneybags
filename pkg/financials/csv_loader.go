@@ -64,6 +64,10 @@ func NewCSVLoader(fw framework.FW) Loader {
 	}
 }
 
+func (csvLoader) Name() string {
+	return "csv"
+}
+
 func (l *csvLoader) Load() error {
 	for _, d := range l.loaders {
 		go d.load()

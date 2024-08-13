@@ -28,6 +28,10 @@ func NewSharedExpenseLoader(fw framework.FW) Loader {
 	}
 }
 
+func (sharedExpenseLoader) Name() string {
+	return "shared expense"
+}
+
 func (l *sharedExpenseLoader) Load() error {
 	nonSpecialSharedExpenses, err := l.sharedExpenseDB.GetSharedExpensesGroupByExpenseDate(false)
 	if err != nil {

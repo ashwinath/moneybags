@@ -44,6 +44,18 @@ func TestMortgageSchedule(t *testing.T) {
 		assert.True(t, almostEqual(21068.73, firstPayment.TotalPrincipalPaid))
 		assert.True(t, almostEqual(28931.27, firstPayment.TotalPrincipalLeft))
 		assert.True(t, almostEqual(10406.41, firstPayment.TotalInterestLeft))
+
+		// Test house asset loader also
+		hal := NewHouseAssetLoader(fw)
+		err = hal.Load()
+		assert.Nil(t, err)
+
+		var count int64
+		res = db.DB.Model(database.Asset{}).
+			Where("type = ?", "House").
+			Count(&count)
+		assert.Nil(t, res.Error)
+		assert.Greater(t, count, int64(1))
 	})
 
 	assert.Nil(t, err)

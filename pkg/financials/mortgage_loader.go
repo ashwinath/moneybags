@@ -27,6 +27,10 @@ func NewMortgageLoader(fw framework.FW) Loader {
 	}
 }
 
+func (mortgageLoader) Name() string {
+	return "mortgage"
+}
+
 func (l *mortgageLoader) Load() error {
 	if err := l.loadMortgageConfig(); err != nil {
 		return err

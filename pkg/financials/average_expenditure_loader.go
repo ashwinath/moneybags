@@ -27,6 +27,10 @@ func NewAverageExpenditureLoader(fw framework.FW) Loader {
 	}
 }
 
+func (averageExpenditureLoader) Name() string {
+	return "average expenditure"
+}
+
 func (l *averageExpenditureLoader) Load() error {
 	firstDate, err := l.expenseDB.GetFirstDate()
 	if err != nil {

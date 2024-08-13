@@ -23,6 +23,10 @@ func NewInvestmentsLoader(fw framework.FW) Loader {
 	}
 }
 
+func (investmentsLoader) Name() string {
+	return "investments"
+}
+
 func (l *investmentsLoader) Load() error {
 	firstDate, err := l.portfolioDB.GetFirstTradeDate()
 	if err != nil {
