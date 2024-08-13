@@ -63,12 +63,12 @@ data:
       debug: {{ .Values.moneybags.telegram.debug | default false }}
       allowed_user: {{ .Values.moneybags.telegram.allowedUser }}
     financials_data:
-      assets_csv_filepath: /etc/sample/assets.csv
-      expenses_csv_filepath: /etc/sample/expenses.csv
-      income_csv_filepath: /etc/sample/income.csv
-      shared_expenses_csv_filepath: /etc/sample/shared_expenses.csv
-      trades_csv_filepath: /etc/sample/trades.csv
-      mortgage_yaml_filepath: /etc/sample/mortgage.yaml
+      assets_csv_filepath: /etc/assets/assets.csv
+      expenses_csv_filepath: /etc/expenses/expenses.csv
+      income_csv_filepath: /etc/income/income.csv
+      shared_expenses_csv_filepath: /etc/shared-expenses/shared_expenses.csv
+      trades_csv_filepath: /etc/trades/trades.csv
+      mortgage_yaml_filepath: /etc/mortgage/mortgage.yaml
     financials_config:
       run_interval_in_hours: {{ .Values.moneybags.financials.runIntervalInHours | default 4 }}
       alphavantage_api_key: {{ .Values.moneybags.financials.alphavantageAPIKey }}
