@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"github.com/ashwinath/moneybags/pbgo/configpb"
-	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"moul.io/zapgorm2"
+	"gorm.io/gorm/logger"
 )
 
 type DB struct {
@@ -16,7 +15,7 @@ type DB struct {
 }
 
 // New initialises a new base database object.
-func NewBaseDB(dbConfig *configpb.PostgresDB, zlogger *zap.Logger) (*DB, error) {
+func NewBaseDB(dbConfig *configpb.PostgresDB) (*DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Singapore",
 		dbConfig.Host,
@@ -26,11 +25,8 @@ func NewBaseDB(dbConfig *configpb.PostgresDB, zlogger *zap.Logger) (*DB, error) 
 		dbConfig.Port,
 	)
 
-	logger := zapgorm2.New(zlogger)
-	logger.SetAsDefault()
-
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger,
+		Logger: logger.Default.LogMode(logger.Silent),
 		NowFunc: func() time.Time {
 			ti, _ := time.LoadLocation("Asia/Singapore")
 			return time.Now().In(ti)

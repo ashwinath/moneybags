@@ -42,13 +42,13 @@ func (a *alphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSy
 		return framework.HTTPGet(url, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage: %s", symbol, err)
+		return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage (%s): %s", symbol, url, err)
 	}
 
 	// For testing we use demo key
 	if symbol != "tesco" {
-		if len(res.BestMatches) != 1 {
-			return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage, there was not equal to 1 results, length = %d", symbol, len(res.BestMatches))
+		if len(res.BestMatches) == 0 {
+			return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage (%s), length = %d", symbol, url, len(res.BestMatches))
 		}
 	}
 
@@ -93,7 +93,7 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 		return framework.HTTPGet(url, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get currency history (%s->%s) result from alphavantage: %s", from, to, err)
+		return nil, fmt.Errorf("Could not get currency history (%s->%s) result from alphavantage (%s): %s", from, to, url, err)
 	}
 
 	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
@@ -102,6 +102,10 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 			"could not convert exchange rate (%s -> %s) to float64: %s",
 			from, to, err,
 		)
+	}
+
+	if len(ohlcs) == 0 {
+		return nil, fmt.Errorf("currency history (%s->%s) result was empty from alphavantage: %s", from, to, url)
 	}
 
 	return ohlcs, nil
@@ -156,7 +160,7 @@ func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[strin
 		return framework.HTTPGet(url, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get stock history (%s) result from alphavantage: %s", symbol, err)
+		return nil, fmt.Errorf("Could not get stock history (%s) result from alphavantage (%s): %s", url, symbol, err)
 	}
 
 	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
@@ -165,6 +169,10 @@ func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[strin
 			"could not convert exchange rate (%s) to float64: %s",
 			symbol, err,
 		)
+	}
+
+	if len(ohlcs) == 0 {
+		return nil, fmt.Errorf("stock history (%s) result was empty from alphavantage (%s)", symbol, url)
 	}
 
 	return ohlcs, nil

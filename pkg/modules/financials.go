@@ -43,14 +43,20 @@ func (m *FinancialsModule) Start(ctx context.Context) {
 }
 
 func (m *FinancialsModule) run() {
+	hasError := false
 	m.fw.GetLogger().Infof("running one round of financials module")
 	m.fw.TimeFunction("Financials Module", func() {
 		for _, loader := range m.loaders {
 			m.fw.TimeFunction(fmt.Sprintf("[%s] loader", loader.Name()), func() {
 				if err := loader.Load(); err != nil {
 					m.fw.GetLogger().Errorf("Failed to run loader: %s", err)
+					hasError = true
+					return
 				}
 			})
+			if hasError {
+				break
+			}
 		}
 	})
 	m.fw.GetLogger().Infof("finished running one round of financials module")

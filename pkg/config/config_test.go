@@ -38,6 +38,7 @@ func TestNewConfig(t *testing.T) {
 		},
 		FinancialsConfig: &configpb.FinancialsConfig{
 			RunIntervalInHours: 4,
+			AlphavantageApiKey: "very_secret",
 		},
 	}, c)
 }

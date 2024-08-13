@@ -11,7 +11,6 @@ require (
 	google.golang.org/protobuf v1.34.2
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.11
-	moul.io/zapgorm2 v1.3.0
 	sigs.k8s.io/yaml v1.4.0
 )
 

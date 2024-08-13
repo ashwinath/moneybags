@@ -35,7 +35,7 @@ func (l *houseAssetLoader) Load() error {
 	assets := []db.Asset{}
 	for _, m := range mortgages {
 		asset := db.Asset{
-			TransactionDate: utils.DateTime{Time: m.Date},
+			TransactionDate: utils.DateTime{Time: utils.GetFirstDateOfMonth(m.Date)},
 			Type:            "House",
 			Amount:          m.TotalInterestPaid / numberOfPeopleSharing,
 		}

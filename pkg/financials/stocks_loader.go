@@ -9,6 +9,10 @@ import (
 	"github.com/ashwinath/moneybags/pkg/utils"
 )
 
+const (
+	minYearToBreak = 2000
+)
+
 type stocksLoader struct {
 	fw             framework.FW
 	tradeDB        db.TradeDB
@@ -167,12 +171,14 @@ func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
 		currencyHistory = append(currencyHistory, &er)
 	}
 
-	if err := l.exchangeRateDB.BulkAdd(currencyHistory); err != nil {
-		return err
-	}
+	if len(currencyHistory) != 0 {
+		if err := l.exchangeRateDB.BulkAdd(currencyHistory); err != nil {
+			return err
+		}
 
-	if err := l.symbolDB.UpdateLastProcessedDate(symbol.Symbol, *lastProcessedDate); err != nil {
-		return err
+		if err := l.symbolDB.UpdateLastProcessedDate(symbol.Symbol, *lastProcessedDate); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -221,12 +227,14 @@ func (l *stocksLoader) processStock(symbol db.Symbol) error {
 		stockHistory = append(stockHistory, &stock)
 	}
 
-	if err := l.stockDB.BulkAdd(stockHistory); err != nil {
-		return err
-	}
+	if len(stockHistory) != 0 {
+		if err := l.stockDB.BulkAdd(stockHistory); err != nil {
+			return err
+		}
 
-	if err := l.symbolDB.UpdateLastProcessedDate(symbol.Symbol, *lastProcessedDate); err != nil {
-		return err
+		if err := l.symbolDB.UpdateLastProcessedDate(symbol.Symbol, *lastProcessedDate); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -331,20 +339,24 @@ func (l *stocksLoader) calculatePortfolio() error {
 }
 
 func (l *stocksLoader) getCurrencyRate(date time.Time, currency string) (float64, error) {
-	for {
+	for date.Year() > minYearToBreak {
 		if val, err := l.exchangeRateDB.GetExchangeRateByDate(date, currency); err == nil {
 			return val, nil
 		}
 		date = date.AddDate(0, 0, -1)
 	}
+
+	return 0, fmt.Errorf("could not find currency: %s", currency)
 }
 
 func (l *stocksLoader) getStockPrice(date time.Time, symbol string) (float64, error) {
-	for {
+	for date.Year() > minYearToBreak {
 		if val, err := l.stockDB.GetStockPrice(date, symbol); err == nil {
 			return val, nil
 		}
 
 		date = date.AddDate(0, 0, -1)
 	}
+
+	return 0, fmt.Errorf("could not find stock: %s", symbol)
 }

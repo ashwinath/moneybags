@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// load databases
-	baseDB, err := db.NewBaseDB(c.PostgresDb, logger)
+	baseDB, err := db.NewBaseDB(c.PostgresDb)
 	if err != nil {
 		sugar.Fatalf("Failed to initialise Base DB, %v", err)
 	}

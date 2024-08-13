@@ -31,10 +31,7 @@ func createTestDatabase() (*string, error) {
 		return nil, err
 	}
 
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-
-	db, err := NewBaseDB(c.PostgresDb, logger)
+	db, err := NewBaseDB(c.PostgresDb)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +72,7 @@ func dropDatabase(name string) error {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
-	db, err := NewBaseDB(c.PostgresDb, logger)
+	db, err := NewBaseDB(c.PostgresDb)
 	if err != nil {
 		return err
 	}
@@ -101,12 +98,9 @@ func RunTest(function func(db *DB)) error {
 		return err
 	}
 
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-
 	c.PostgresDb.DbName = *dbName
 
-	db, err := NewBaseDB(c.PostgresDb, logger)
+	db, err := NewBaseDB(c.PostgresDb)
 	if err != nil {
 		return err
 	}

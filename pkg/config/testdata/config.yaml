@@ -17,3 +17,4 @@ financials_data:
   mortgage_yaml_filepath: sample/mortgage.yaml
 financials_config:
   run_interval_in_hours: 4
+  alphavantage_api_key: very_secret

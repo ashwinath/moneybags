@@ -25,6 +25,10 @@ func GetLastDateOfMonth(d time.Time) time.Time {
 	return d
 }
 
+func GetFirstDateOfMonth(d time.Time) time.Time {
+	return time.Date(d.Year(), d.Month(), 1, d.Hour(), 0, 0, 0, d.Location())
+}
+
 // Accepts yyyy-mm-dd
 func SetDateFromString(date string) (time.Time, error) {
 	dateString := fmt.Sprintf("%s 08:00:00", date)
