@@ -53,7 +53,7 @@ metadata:
 data:
   config.yaml: |-
     postgres_db:
-      host: {{ include "moneybags.fullname" . }}-postgres
+      host: {{ include "moneybags.fullname" . }}-postgresql
       user: postgres
       password: {{ .Values.postgresql.auth.postgresPassword }}
       db_name: postgres
