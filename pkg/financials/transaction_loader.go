@@ -96,7 +96,7 @@ func (l *transactionLoader) genExpensePerMonth(startDate time.Time) error {
 	}
 
 	expenses := []*db.Expense{}
-	endOfMonth := utils.DateTime{Time: utils.SetDateToEndOfMonth(startDate)}
+	endOfMonth := utils.DateTime{Time: utils.SetDateToEndOfMonthFinancials(startDate)}
 	if !utils.AlmostEqual(*othersResult.Result, 0) {
 		expenses = append(expenses, &db.Expense{
 			TransactionDate: endOfMonth,
@@ -151,7 +151,7 @@ func (l *transactionLoader) genSharedExpensePerMonth(startDate time.Time) error 
 	for _, tx := range sharedResult.Result {
 		if strings.Contains(string(tx.Type), "SPECIAL") {
 			type_ := fmt.Sprintf("Special:%s", string(tx.Classification))
-			endOfMonth := utils.DateTime{Time: utils.SetDateToEndOfMonth(tx.Date)}
+			endOfMonth := utils.DateTime{Time: utils.SetDateToEndOfMonthFinancials(tx.Date)}
 			sharedExpenses = append(sharedExpenses, &db.SharedExpense{
 				ExpenseDate: endOfMonth,
 				Type:        type_,
@@ -162,7 +162,7 @@ func (l *transactionLoader) genSharedExpensePerMonth(startDate time.Time) error 
 
 		// Combine all non special spends
 		nonSpecialSpend += tx.Amount
-		otherSpendingDate = utils.DateTime{Time: utils.SetDateToEndOfMonth(tx.Date)}
+		otherSpendingDate = utils.DateTime{Time: utils.SetDateToEndOfMonthFinancials(tx.Date)}
 	}
 
 	// subtract shared reim cc result
