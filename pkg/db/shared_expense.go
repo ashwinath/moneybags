@@ -13,7 +13,7 @@ const SharedExpenseDatabaseName string = "shared-expense"
 
 type SharedExpense struct {
 	ID          uint           `gorm:"primaryKey"`
-	ExpenseDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_shared_expense_type_expense_date" csv:"date"`
+	ExpenseDate utils.DateTime `gorm:"type:timestamptz;uniqueIndex:ix_shared_expense_type_expense_date" csv:"date"`
 	Type        string         `gorm:"uniqueIndex:ix_shared_expense_type_expense_date" csv:"type"`
 	Amount      float64        `csv:"amount"`
 }

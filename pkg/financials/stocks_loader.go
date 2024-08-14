@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	minYearToBreak = 2000
+	minYearToBreak = 2015
 )
 
 type stocksLoader struct {
@@ -158,7 +158,7 @@ func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
 	currencyHistory := []*db.ExchangeRate{}
 
 	for date, value := range history {
-		d, err := utils.SetDateFromStringCurrencyStocks(date)
+		d, err := utils.SetDateFromString(date)
 		if err != nil {
 			return fmt.Errorf("could not parse date (%s): %s", date, err)
 		}
@@ -214,7 +214,7 @@ func (l *stocksLoader) processStock(symbol db.Symbol) error {
 	stockHistory := []*db.Stock{}
 
 	for date, value := range history {
-		d, err := utils.SetDateFromStringCurrencyStocks(date)
+		d, err := utils.SetDateFromString(date)
 		if err != nil {
 			return fmt.Errorf("could not parse date (%s): %s", date, err)
 		}
@@ -304,7 +304,7 @@ func (l *stocksLoader) calculatePortfolio() error {
 
 		allPortfolios := []db.Portfolio{}
 		currentDate := partialPortfolios[0].TradeDate
-		tomorrow := time.Now().AddDate(0, 0, 1)
+		tomorrow := time.Now()
 
 		for currentDate.Before(tomorrow) {
 			exchangeRate, err := l.getCurrencyRate(currentDate, *symbol.BaseCurrency)
@@ -346,36 +346,38 @@ func (l *stocksLoader) calculatePortfolio() error {
 }
 
 func (l *stocksLoader) getCurrencyRate(date time.Time, currency string) (float64, error) {
+	d := utils.CopyTime(date)
 	cacheKey := fmt.Sprintf("%s/%s", date, currency)
 	if val, ok := l.currencyCache[cacheKey]; ok {
 		return val, nil
 	}
 
-	for date.Year() > minYearToBreak {
-		if val, err := l.exchangeRateDB.GetExchangeRateByDate(date, currency); err == nil {
+	for d.Year() > minYearToBreak {
+		if val, err := l.exchangeRateDB.GetExchangeRateByDate(d, currency); err == nil {
 			l.currencyCache[cacheKey] = val
 			return val, nil
 		}
-		date = date.AddDate(0, 0, -1)
+		d = d.AddDate(0, 0, -1)
 	}
 
-	return 0, fmt.Errorf("could not find currency: %s", currency)
+	return 0, fmt.Errorf("could not find currency: %s, %s", currency, date)
 }
 
 func (l *stocksLoader) getStockPrice(date time.Time, symbol string) (float64, error) {
+	d := utils.CopyTime(date)
 	cacheKey := fmt.Sprintf("%s/%s", date, symbol)
 	if val, ok := l.stockCache[cacheKey]; ok {
 		return val, nil
 	}
 
-	for date.Year() > minYearToBreak {
-		if val, err := l.stockDB.GetStockPrice(date, symbol); err == nil {
+	for d.Year() > minYearToBreak {
+		if val, err := l.stockDB.GetStockPrice(d, symbol); err == nil {
 			l.stockCache[cacheKey] = val
 			return val, nil
 		}
 
-		date = date.AddDate(0, 0, -1)
+		d = d.AddDate(0, 0, -1)
 	}
 
-	return 0, fmt.Errorf("could not find stock: %s", symbol)
+	return 0, fmt.Errorf("could not find stock: %s, %s", symbol, date)
 }

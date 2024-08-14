@@ -59,3 +59,12 @@ container: build push
 .PHONY: helm-docs
 helm-docs:
 	@docker run --rm --volume "$$(pwd)/charts/moneybags:/helm-docs" -u $$(id -u) jnorwood/helm-docs:latest
+
+.PHONY: run-prod-data
+run-prod-data: reset-prod-data
+	go run cmd/moneybags.go --config /home/ashwin/financials-transfer/config.yaml
+
+.PHONY: reset-prod-data
+reset-prod-data: remake-db
+	PGPASSWORD=very_secure psql -U postgres -d postgres -h 127.0.0.1 -p 5432 -f /home/ashwin/financials-transfer/telegram.dump
+	PGPASSWORD=very_secure psql -U postgres -d postgres -h 127.0.0.1 -p 5432 -f /home/ashwin/financials-transfer/financials.dump

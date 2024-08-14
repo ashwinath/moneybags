@@ -11,7 +11,7 @@ const ExchangeRateDatabaseName string = "exchange-rate"
 
 type ExchangeRate struct {
 	ID        uint      `gorm:"primaryKey"`
-	TradeDate time.Time `gorm:"type:timestamp;uniqueIndex:uidx_exchange_rates"`
+	TradeDate time.Time `gorm:"type:timestamptz;uniqueIndex:uidx_exchange_rates"`
 	Symbol    string    `gorm:"uniqueIndex:uidx_exchange_rates"`
 	Price     float64
 }

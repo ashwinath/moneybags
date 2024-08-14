@@ -11,7 +11,7 @@ const MortgageDatabaseName string = "mortgage"
 
 type Mortgage struct {
 	ID                 uint      `gorm:"primaryKey"`
-	Date               time.Time `gorm:"type:timestamp;unique"`
+	Date               time.Time `gorm:"type:timestamptz;unique"`
 	InterestPaid       float64
 	PrincipalPaid      float64
 	TotalInterestPaid  float64

@@ -10,7 +10,7 @@ const AssetDatabaseName string = "asset"
 
 type Asset struct {
 	ID              uint           `gorm:"primaryKey"`
-	TransactionDate utils.DateTime `gorm:"type:timestamp;uniqueIndex:ix_date_type_assets" csv:"date"`
+	TransactionDate utils.DateTime `gorm:"type:timestamptz;uniqueIndex:ix_date_type_assets" csv:"date"`
 	Type            string         `gorm:"uniqueIndex:ix_date_type_assets" csv:"type"`
 	Amount          float64        `csv:"amount"`
 }

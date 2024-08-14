@@ -10,7 +10,7 @@ const TradeDatabaseName string = "trade"
 
 type Trade struct {
 	ID            uint           `gorm:"primaryKey"`
-	DatePurchased utils.DateTime `gorm:"type:timestamp" csv:"date_purchased"`
+	DatePurchased utils.DateTime `gorm:"type:timestamptz" csv:"date_purchased"`
 	Symbol        string         `csv:"symbol"`
 	PriceEach     float64        `csv:"price_each"`
 	Quantity      float64        `csv:"quantity"`

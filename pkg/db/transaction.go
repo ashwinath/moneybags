@@ -26,7 +26,7 @@ const TypeSharedCCReimburse TransactionType = "SHARED_CC_REIMBURSE"
 
 type Transaction struct {
 	ID             uint            `gorm:"primaryKey"`
-	Date           time.Time       `gorm:"type:timestamp;index"`
+	Date           time.Time       `gorm:"type:timestamp;index"` // timestamp and not timestamptz because legacy
 	Type           TransactionType `gorm:"column:type"`
 	Classification string
 	Amount         float64

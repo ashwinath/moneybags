@@ -11,7 +11,7 @@ const AverageExpenditureDatabaseName string = "average-expenditure"
 
 type AverageExpenditure struct {
 	ID          uint      `gorm:"primaryKey"`
-	ExpenseDate time.Time `gorm:"type:timestamp;unique"`
+	ExpenseDate time.Time `gorm:"type:timestamptz;unique"`
 	Amount      float64
 }
 
