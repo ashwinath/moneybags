@@ -158,7 +158,7 @@ func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
 	currencyHistory := []*db.ExchangeRate{}
 
 	for date, value := range history {
-		d, err := utils.SetDateFromString(date)
+		d, err := utils.SetDateFromStringCurrencyStocks(date)
 		if err != nil {
 			return fmt.Errorf("could not parse date (%s): %s", date, err)
 		}
@@ -214,7 +214,7 @@ func (l *stocksLoader) processStock(symbol db.Symbol) error {
 	stockHistory := []*db.Stock{}
 
 	for date, value := range history {
-		d, err := utils.SetDateFromString(date)
+		d, err := utils.SetDateFromStringCurrencyStocks(date)
 		if err != nil {
 			return fmt.Errorf("could not parse date (%s): %s", date, err)
 		}
@@ -261,7 +261,10 @@ func (l *stocksLoader) calculatePortfolio() error {
 		// First pass to fill active trading parts
 		// NAV and SimpleReturns are filled later.
 		for _, trade := range trades {
-			exchangeRate, err := l.getCurrencyRate(trade.DatePurchased.Time, *symbol.BaseCurrency)
+			exchangeRate, err := l.getCurrencyRate(
+				utils.SetDateTo0000Hours(trade.DatePurchased.Time),
+				*symbol.BaseCurrency,
+			)
 			if err != nil {
 				return err
 			}
@@ -272,7 +275,7 @@ func (l *stocksLoader) calculatePortfolio() error {
 			}
 
 			portfolio := db.Portfolio{
-				TradeDate: trade.DatePurchased.Time,
+				TradeDate: utils.SetDateTo0000Hours(trade.DatePurchased.Time),
 				Symbol:    symbol.Symbol,
 			}
 			if len(partialPortfolios) == 0 {
