@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"math"
 	"testing"
+	"time"
 
 	database "github.com/ashwinath/moneybags/pkg/db"
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
+
+var singaporeLocation, _ = time.LoadLocation("Asia/Singapore")
 
 func TestMortgageSchedule(t *testing.T) {
 	err := database.RunTest(func(db *database.DB) {
@@ -26,7 +29,7 @@ func TestMortgageSchedule(t *testing.T) {
 		first := mortgages[0]
 		d, err := utils.SetDateFromString("2021-10-10")
 		assert.Nil(t, err)
-		assert.Equal(t, d, first.Date)
+		assert.Equal(t, d.In(singaporeLocation), first.Date.In(singaporeLocation))
 		assert.Equal(t, 0.0, first.InterestPaid)
 		assert.Equal(t, 0.0, first.TotalInterestPaid)
 		assert.Equal(t, 1000.0, first.PrincipalPaid)
@@ -37,7 +40,7 @@ func TestMortgageSchedule(t *testing.T) {
 		firstPayment := mortgages[2]
 		d, err = utils.SetDateFromString("2022-10-10")
 		assert.Nil(t, err)
-		assert.Equal(t, d, firstPayment.Date)
+		assert.Equal(t, d.In(singaporeLocation), firstPayment.Date.In(singaporeLocation))
 		assert.True(t, almostEqual(62.83, firstPayment.InterestPaid))
 		assert.True(t, almostEqual(62.83, firstPayment.TotalInterestPaid))
 		assert.True(t, almostEqual(68.73, firstPayment.PrincipalPaid))
