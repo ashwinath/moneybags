@@ -105,7 +105,7 @@ func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
 
 	for _, interestPaid := range interestPaidSchedule {
 		// Interest
-		totalInterestPaid += math.Min(totalInterestPaid+interestPaid, totalInterestToBePaid)
+		totalInterestPaid = math.Min(totalInterestPaid+interestPaid, totalInterestToBePaid)
 		totalInterestLeft = math.Max(totalInterestLeft-interestPaid, 0.0)
 
 		// principal

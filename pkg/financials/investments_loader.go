@@ -37,6 +37,7 @@ func (l *investmentsLoader) Load() error {
 	if currentDate.Day() != 1 {
 		currentDate = time.Date(currentDate.Year(), currentDate.Month(), 1, currentDate.Hour(), 0, 0, 0, currentDate.Location())
 		currentDate = currentDate.AddDate(0, 1, 0)
+		currentDate = utils.SetDateTo0000Hours(currentDate)
 	}
 
 	allInvestments := []db.Asset{}

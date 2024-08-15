@@ -48,7 +48,7 @@ func (l *transactionLoader) genExpense() error {
 	loc, _ := time.LoadLocation("Asia/Singapore")
 	startMonth, _ := time.ParseInLocation(
 		time.DateTime,
-		fmt.Sprintf("%d-%02d-01 16:00:00", startYear, startMonth),
+		fmt.Sprintf("%d-%02d-01 00:00:00", startYear, startMonth),
 		loc,
 	)
 	today := time.Now()

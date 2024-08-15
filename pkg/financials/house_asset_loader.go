@@ -37,7 +37,7 @@ func (l *houseAssetLoader) Load() error {
 		asset := db.Asset{
 			TransactionDate: utils.DateTime{Time: utils.GetFirstDateOfMonth(m.Date)},
 			Type:            "House",
-			Amount:          m.TotalInterestPaid / numberOfPeopleSharing,
+			Amount:          m.TotalPrincipalPaid / numberOfPeopleSharing,
 		}
 		assets = append(assets, asset)
 	}
