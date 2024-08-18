@@ -1,0 +1,17 @@
+syntax = "proto3";
+package car;
+
+option go_package = "./pbgo/carpb";
+
+message CarConfig {
+    repeated Car cars = 1;
+}
+
+message Car {
+    string name = 1; // should be unique
+    double total = 2;
+    double min_parf_value = 3;
+    int32 lifespan = 4;
+    string car_start_date = 5;
+    string car_sold_date = 6;
+}

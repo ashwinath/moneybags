@@ -1,0 +1,7 @@
+cars:
+  - name: Toy car
+    total: 140000
+    min_parf_value: 20000
+    lifespan: 10
+    car_start_date: 2020-01-01
+    car_sold_date: 2025-01-02 # optional

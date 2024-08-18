@@ -10,10 +10,6 @@ import (
 	"github.com/ashwinath/moneybags/pkg/utils"
 )
 
-const (
-	numberOfMonthsInYear = 12
-)
-
 type mortgageLoader struct {
 	fw                 framework.FW
 	mortgageBulkLoader db.ClearAndBulkAdder
@@ -135,15 +131,15 @@ func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
 
 // Public only because used in test
 func CalculateMortgageMonthlyPayment(principal, interestRate float64, duration int) float64 {
-	numberOfMonths := duration * numberOfMonthsInYear
-	ir := interestRate / 100.0 / numberOfMonthsInYear
+	numberOfMonths := duration * utils.NumberOfMonthsInAYear
+	ir := interestRate / 100.0 / utils.NumberOfMonthsInAYear
 	// M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1].
 	return principal * (ir * (math.Pow(1.0+ir, float64(numberOfMonths)))) / (math.Pow(1.0+ir, float64(numberOfMonths)) - 1.0)
 }
 
 // Public only because used in test
 func CalculateInterestPaidSchedule(principal, monthlyPayment, interestRatePercentage float64) []float64 {
-	ir := interestRatePercentage / 100.0 / numberOfMonthsInYear
+	ir := interestRatePercentage / 100.0 / utils.NumberOfMonthsInAYear
 	sumLeft := principal
 
 	interestPaidSchedule := []float64{}

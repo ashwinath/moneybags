@@ -15,6 +15,7 @@ financials_data:
   shared_expenses_csv_filepath: sample/shared_expenses.csv
   trades_csv_filepath: sample/trades.csv
   mortgage_yaml_filepath: sample/mortgage.yaml
+  car_yaml_filepath: sample/car.yaml
 financials_config:
   run_interval_in_hours: 4
   alphavantage_api_key: very_secret

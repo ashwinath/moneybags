@@ -31,6 +31,7 @@ message FinancialsData {
     string shared_expenses_csv_filepath = 4;
     string trades_csv_filepath = 5;
     string mortgage_yaml_filepath = 6;
+    string car_yaml_filepath = 7;
 }
 
 message FinancialsConfig {

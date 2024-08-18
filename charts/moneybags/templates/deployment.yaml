@@ -60,6 +60,8 @@ spec:
             mountPath: /etc/income
           - name: mortgage-yaml
             mountPath: /etc/mortgage
+          - name: car-yaml
+            mountPath: /etc/car
           - name: shared-expenses-csv
             mountPath: /etc/shared-expenses
       volumes:
@@ -81,6 +83,9 @@ spec:
       - name: mortgage-yaml
         configMap:
           name: {{ include "moneybags.fullname" . }}-mortgage-yaml
+      - name: car-yaml
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-car-yaml
       - name: shared-expenses-csv
         configMap:
           name: {{ include "moneybags.fullname" . }}-shared-expenses-csv

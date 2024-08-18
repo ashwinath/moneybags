@@ -123,6 +123,16 @@ moneybags:
     2023-01-01,Grocery,300.00
     2023-01-01,Eating Out,500.00
 
+  # -- YAML values for car
+  car: |-
+    cars:
+      - name: Toy car
+        total: 140000
+        min_parf_value: 20000
+        lifespan: 10
+        car_start_date: 2020-01-01
+        car_sold_date: 2025-01-02 # optional
+
 postgresql:
   # -- Resources requests and limits for the database
   resources: {}

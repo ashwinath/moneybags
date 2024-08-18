@@ -35,6 +35,7 @@ func TestNewConfig(t *testing.T) {
 			SharedExpensesCsvFilepath: "sample/shared_expenses.csv",
 			TradesCsvFilepath:         "sample/trades.csv",
 			MortgageYamlFilepath:      "sample/mortgage.yaml",
+			CarYamlFilepath:           "sample/car.yaml",
 		},
 		FinancialsConfig: &configpb.FinancialsConfig{
 			RunIntervalInHours: 4,

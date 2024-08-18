@@ -49,6 +49,14 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: {{ include "moneybags.fullname" . }}-car-yaml
+data:
+  car.yaml: |-
+{{ .Values.moneybags.car | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: {{ include "moneybags.fullname" . }}-config
 data:
   config.yaml: |-
@@ -69,6 +77,7 @@ data:
       shared_expenses_csv_filepath: /etc/shared-expenses/shared_expenses.csv
       trades_csv_filepath: /etc/trades/trades.csv
       mortgage_yaml_filepath: /etc/mortgage/mortgage.yaml
+      car_yaml_filepath: /etc/car/car.yaml
     financials_config:
       run_interval_in_hours: {{ .Values.moneybags.financials.runIntervalInHours | default 4 }}
       alphavantage_api_key: {{ .Values.moneybags.financials.alphavantageAPIKey }}
