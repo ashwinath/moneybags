@@ -1,6 +1,6 @@
 # moneybags
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -21,6 +21,7 @@ A Helm chart for Kubernetes
 | image.tag | string | `"latest"` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | Image pull secrets |
 | moneybags.assets | string | `"date,type,amount\n2020-03-31,CPF,1000\n2020-03-31,Bank,20000\n2020-03-31,Mortgage,-40000\n2020-03-31,Investments,20000"` | CSV values for the assets |
+| moneybags.car | string | `"cars:\n  - name: Toy car\n    total: 140000\n    min_parf_value: 20000\n    lifespan: 10\n    car_start_date: 2020-01-01\n    car_sold_date: 2025-01-02 # optional\n    loan:\n      amount: 10000.0\n      duration: 10\n      interest_rate: 10.0\n      last_month_amount: 8.0\n      start_date: 2024-01-01"` | YAML values for car |
 | moneybags.expenses | string | `"date,type,amount\n2020-03-31,Credit Card,500\n2020-03-31,Reimbursement,-200\n2020-03-31,Tithe,800"` | CSV values for the expenses |
 | moneybags.financials.alphavantageAPIKey | string | `"changeme"` | Alphavantage API key, get from https://www.alphavantage.co/support/#api-key |
 | moneybags.financials.runIntervalInHours | int | `4` | Run financials job data population every x hours |
