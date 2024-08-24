@@ -2,12 +2,54 @@ package financials
 
 import (
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/ashwinath/moneybags/pbgo/carpb"
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestGetLiabilitiesPerCar(t *testing.T) {
+	var tests = []struct {
+		name           string
+		car            *carpb.Car
+		totalAmount    float64
+		amountPerMonth float64
+	}{
+		// Calculate some amounts
+		{
+			name: "10k",
+			car: &carpb.Car{
+				Name: "Toy Car",
+				Loan: &carpb.Loan{
+					Amount:          10_000.0,
+					Duration:        10,
+					InterestRate:    10.0,
+					LastMonthAmount: 8,
+					StartDate:       "2024-01-01",
+				},
+			},
+			totalAmount:    20_000,
+			amountPerMonth: 168.0,
+		},
+	}
+	for _, tt := range tests {
+		l := carLoader{}
+		loans, err := l.GetLiabilitiesPerCar(tt.car)
+		assert.Nil(t, err)
+		assert.NotNil(t, loans)
+
+		paid := 0.0
+		left := tt.totalAmount
+		for _, loan := range loans {
+			paid = math.Min(tt.totalAmount, paid+tt.amountPerMonth)
+			left = math.Max(0, left-tt.amountPerMonth)
+			assert.Equal(t, left, loan.AmountLeft)
+			assert.Equal(t, paid, loan.AmountPaid)
+		}
+	}
+}
 
 func TestGetAssetsPerCar(t *testing.T) {
 	var tests = []struct {

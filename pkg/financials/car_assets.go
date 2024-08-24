@@ -41,9 +41,22 @@ func (l *carLoader) Load() error {
 	for _, car := range l.carConfig.Cars {
 		a, err := l.GetAssetsPerCar(car)
 		if err != nil {
-			return fmt.Errorf("could not process car (%s): %s", car.Name, err)
+			return fmt.Errorf("could not get assets for car (%s): %s", car.Name, err)
 		}
-		carAssets = append(carAssets, a...)
+
+		cl, err := l.GetLiabilitiesPerCar(car)
+		if err != nil {
+			return fmt.Errorf("could not get liabilities for car (%s): %s", car.Name, err)
+		}
+
+		// TODO: Add into car loan table
+
+		assetsMerged, err := l.mergeAssetWithLiabilitiesPerCar(a, cl)
+		if err != nil {
+			return fmt.Errorf("could merge assets with liability for car (%s): %s", car.Name, err)
+		}
+
+		carAssets = append(carAssets, assetsMerged...)
 	}
 
 	if err := l.assetsDB.BulkAdd(carAssets); err != nil {
@@ -61,6 +74,54 @@ func (l *carLoader) loadCarConfig() error {
 
 	l.carConfig = &carConfig
 	return nil
+}
+
+func (l *carLoader) mergeAssetWithLiabilitiesPerCar(assets []db.Asset, carLoans []db.CarLoan) ([]db.Asset, error) {
+	// TODO
+	return nil, nil
+}
+
+// public for unit test
+func (l *carLoader) GetLiabilitiesPerCar(car *carpb.Car) ([]db.CarLoan, error) {
+	// Simple interest
+	loan := car.Loan
+
+	interest := loan.Amount * loan.InterestRate / 100.0 * float64(loan.Duration)
+	totalPayable := loan.Amount + interest
+
+	amountPaid := 0.0
+	amountLeft := totalPayable
+
+	paymentPerMonth := (totalPayable - loan.LastMonthAmount) / float64(int(loan.Duration)*12-1)
+
+	date, err := utils.SetDateFromString(loan.StartDate)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse car loan start date (%s): %s", loan.StartDate, err)
+	}
+
+	loanSchedule := []db.CarLoan{}
+	for i := 0; i < int(loan.Duration)*12-1; i++ {
+		// Get start date
+		amountPaid += paymentPerMonth
+		amountLeft -= paymentPerMonth
+		loan := db.CarLoan{
+			Date:       date,
+			Name:       car.Name,
+			AmountPaid: amountPaid,
+			AmountLeft: amountLeft,
+		}
+		loanSchedule = append(loanSchedule, loan)
+		date = date.AddDate(0, 1, 0)
+	}
+
+	loanSchedule = append(loanSchedule, db.CarLoan{
+		Date:       date,
+		Name:       car.Name,
+		AmountPaid: totalPayable,
+		AmountLeft: 0.0,
+	})
+
+	return loanSchedule, nil
 }
 
 // public for unit test

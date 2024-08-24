@@ -14,4 +14,14 @@ message Car {
     int32 lifespan = 4;
     string car_start_date = 5;
     string car_sold_date = 6;
+    Loan loan = 7;
+}
+
+message Loan {
+    // interest rate is always simple interest
+    double amount = 1;
+    int32 duration = 2;
+    double interest_rate = 3;
+    double last_month_amount = 4; // for some reason, last month's amount is usually different.
+    string start_date = 5;
 }
