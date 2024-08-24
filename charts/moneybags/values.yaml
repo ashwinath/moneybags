@@ -132,6 +132,12 @@ moneybags:
         lifespan: 10
         car_start_date: 2020-01-01
         car_sold_date: 2025-01-02 # optional
+        loan:
+          amount: 10000.0
+          duration: 10
+          interest_rate: 10.0
+          last_month_amount: 8.0
+          start_date: 2024-01-01
 
 postgresql:
   # -- Resources requests and limits for the database

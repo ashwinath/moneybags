@@ -71,6 +71,11 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 		sugar.Fatalf("Failed to initialise Average Expenditure DB, %v", err)
 	}
 
+	carLoanDB, err := db.NewCarLoanDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise Car Loan DB, %v", err)
+	}
+
 	exchangeRateDB, err := db.NewExchangeRateDB(baseDB)
 	if err != nil {
 		sugar.Fatalf("Failed to initialise Exchange Rate DB, %v", err)
@@ -124,6 +129,7 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 	return map[string]any{
 		db.AssetDatabaseName:              assetDB,
 		db.AverageExpenditureDatabaseName: averageExpenditureDB,
+		db.CarLoansDatabaseName:           carLoanDB,
 		db.ExchangeRateDatabaseName:       exchangeRateDB,
 		db.ExpenseDatabaseName:            expenseDB,
 		db.IncomeDatabaseName:             incomeDB,

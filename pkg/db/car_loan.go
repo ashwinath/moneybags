@@ -17,7 +17,10 @@ type CarLoan struct {
 	AmountLeft float64
 }
 
-type CarLoanDB interface{} // Not really used
+type CarLoanDB interface {
+	Clear() error
+	BulkAdd(objs interface{}) error
+}
 
 type carLoanDB struct {
 	db *gorm.DB

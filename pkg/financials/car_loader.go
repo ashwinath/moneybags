@@ -18,13 +18,15 @@ const (
 type carLoader struct {
 	fw        framework.FW
 	assetsDB  db.AssetDB
+	carLoanDB db.CarLoanDB
 	carConfig *carpb.CarConfig
 }
 
 func NewCarLoader(fw framework.FW) Loader {
 	return &carLoader{
-		fw:       fw,
-		assetsDB: fw.GetDB(db.AssetDatabaseName).(db.AssetDB),
+		fw:        fw,
+		carLoanDB: fw.GetDB(db.CarLoansDatabaseName).(db.CarLoanDB),
+		assetsDB:  fw.GetDB(db.AssetDatabaseName).(db.AssetDB),
 	}
 }
 
@@ -38,6 +40,7 @@ func (l *carLoader) Load() error {
 	}
 
 	carAssets := []db.Asset{}
+	carLoans := []db.CarLoan{}
 	for _, car := range l.carConfig.Cars {
 		a, err := l.GetAssetsPerCar(car)
 		if err != nil {
@@ -49,7 +52,7 @@ func (l *carLoader) Load() error {
 			return fmt.Errorf("could not get liabilities for car (%s): %s", car.Name, err)
 		}
 
-		// TODO: Add into car loan table
+		carLoans = append(carLoans, cl...)
 
 		assetsMerged, err := l.mergeAssetWithLiabilitiesPerCar(a, cl)
 		if err != nil {
@@ -61,6 +64,14 @@ func (l *carLoader) Load() error {
 
 	if err := l.assetsDB.BulkAdd(carAssets); err != nil {
 		return fmt.Errorf("failed to bulk insert car assets into assets db: %s", err)
+	}
+
+	if err := l.carLoanDB.Clear(); err != nil {
+		return fmt.Errorf("failed to clear car loan db: %s", err)
+	}
+
+	if err := l.carLoanDB.BulkAdd(carLoans); err != nil {
+		return fmt.Errorf("failed to bulk insert car loans into car loan db: %s", err)
 	}
 
 	return nil
@@ -77,8 +88,31 @@ func (l *carLoader) loadCarConfig() error {
 }
 
 func (l *carLoader) mergeAssetWithLiabilitiesPerCar(assets []db.Asset, carLoans []db.CarLoan) ([]db.Asset, error) {
-	// TODO
-	return nil, nil
+	carLoanPointer := 0
+	mergedAssets := []db.Asset{}
+	for _, a := range assets {
+		if carLoanPointer == len(carLoans) {
+			mergedAssets = append(mergedAssets, a)
+			break
+		}
+
+		carLoan := carLoans[carLoanPointer]
+		if carLoanMonthSameAsAsset(a, carLoan) {
+			// merge
+			a.Amount -= carLoan.AmountLeft
+			carLoanPointer += 1
+		} else {
+			// Starting amount has the full loan amount unpaid
+			a.Amount -= carLoans[0].AmountLeft + carLoans[0].AmountPaid
+		}
+
+		mergedAssets = append(mergedAssets, a)
+	}
+	return mergedAssets, nil
+}
+
+func carLoanMonthSameAsAsset(a db.Asset, carLoan db.CarLoan) bool {
+	return carLoan.Date.Year() == a.TransactionDate.Year() && carLoan.Date.Month() == a.TransactionDate.Month()
 }
 
 // public for unit test
