@@ -182,6 +182,9 @@ func (l *carLoader) GetAssetsPerCar(car *carpb.Car) ([]db.Asset, error) {
 		carEndDate = carStartDate.AddDate(0, int(duration), 0)
 	}
 
+	// If car is bought after asset date, 1st of every month, skip
+	first := carStartDate.Day() != 1
+
 	assets := []db.Asset{}
 	pv := car.Total
 	for carStartDate.Before(carEndDate) {
@@ -193,10 +196,14 @@ func (l *carLoader) GetAssetsPerCar(car *carpb.Car) ([]db.Asset, error) {
 			Amount:          pv,
 		}
 
-		assets = append(assets, a)
 		carStartDate = carStartDate.AddDate(0, 1, 0)
 		pv -= deprePerMonth
 		pv = math.Max(pv, car.MinParfValue)
+		if first {
+			first = false
+			continue
+		}
+		assets = append(assets, a)
 	}
 
 	return assets, nil
