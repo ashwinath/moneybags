@@ -18,15 +18,15 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": "1",
-  "id": 2,
+  "id": 22,
   "links": [],
   "panels": [
     {
       "collapse": false,
       "collapsed": false,
       "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
       },
       "gridPos": {
         "h": 1,
@@ -40,8 +40,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
           },
           "refId": "A"
         }
@@ -53,7 +53,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -134,7 +134,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    transaction_date as \"time\",\n    SUM(amount) as \"Amount\"\n  FROM assets\n  WHERE\n    $__timeFilter(transaction_date)\n  group by transaction_date\n  order by transaction_date",
@@ -147,7 +147,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -228,7 +228,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "editorMode": "code",
           "format": "time_series",
@@ -260,7 +260,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -341,7 +341,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    transaction_date as \"time\",\n    type,\n    amount AS \"Amount\"\n  FROM assets\n  WHERE\n    $__timeFilter(transaction_date)\n    AND type IN ('OA', 'SA', 'Medisave', 'SRS', 'House')\n  group by transaction_date, type, amount\n  order by transaction_date",
@@ -383,7 +383,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -464,7 +464,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    transaction_date as \"time\",\n    type,\n    amount AS \"Amount\"\n  FROM incomes\n  WHERE\n    $__timeFilter(transaction_date)\n  group by transaction_date, type, amount\n  order by transaction_date",
@@ -477,7 +477,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -558,7 +558,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "WITH cc as (\n    SELECT\n      transaction_date as \"transaction_date\",\n      sum(amount) as \"amount\"\n    FROM\n      expenses\n    WHERE\n      $__timeFilter(transaction_date)\n      AND type in ('Credit Card', 'Reimbursement')\n    group by transaction_date\n    order by transaction_date\n  )\n  SELECT\n      transaction_date as \"time\",\n      type,\n      amount AS \"Amount\"\n  FROM expenses\n  WHERE\n      $__timeFilter(transaction_date)\n      AND type not in ('Credit Card', 'Reimbursement')\n      AND type not like 'Special:%'\n  UNION select transaction_date as \"time\", 'Credit Card' as type, amount from cc\n  group by transaction_date, type, amount\n  order by time",
@@ -571,7 +571,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -652,7 +652,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "WITH expenditure AS (\n  select date_trunc('month', transaction_date) as time, sum(amount) as Amount from expenses where $__timeFilter(transaction_date) and type not like 'Special:%' group by time\n),\nincome as (\n  select date_trunc('month', transaction_date) as time, sum(amount) as Amount from incomes where $__timeFilter(transaction_date) and type in ('Base', 'Base Bonus') group by time\n)\nSELECT\n  expenditure.time + interval '1 month' - interval '1 day' AS \"time\",\n  CASE \n    WHEN income.amount != 0 then (1 - (expenditure.amount / income.amount)) \n    ELSE 0\n  END as \"Savings Rate\"\nFROM expenditure inner join income on income.time = expenditure.time\nWHERE $__timeFilter(expenditure.time)\nORDER BY expenditure.time;",
@@ -665,7 +665,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -746,7 +746,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n      transaction_date as \"time\",\n      type,\n      amount AS \"Amount\"\n  FROM expenses\n  WHERE\n      $__timeFilter(transaction_date)\n      AND type like 'Special:%'\n  group by transaction_date, type, amount\n  order by time",
@@ -759,7 +759,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -840,7 +840,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n      expense_date as \"time\",\n      sum(amount) AS \"Amount\"\n  FROM shared_expense\n  WHERE\n      $__timeFilter(expense_date)\n      AND type not like 'Special:%'\n  group by expense_date\n  order by time",
@@ -853,7 +853,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -934,7 +934,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n      expense_date as \"time\",\n      sum(amount) AS \"Amount\"\n  FROM shared_expense\n  WHERE\n      $__timeFilter(expense_date)\n      AND type like 'Special:%'\n  group by expense_date\n  order by time",
@@ -945,38 +945,22 @@
       "type": "timeseries"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 26
       },
-      "id": 13,
+      "id": 33,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-          },
-          "refId": "A"
-        }
-      ],
-      "title": "Mortgage",
-      "titleSize": "h6",
+      "title": "Car",
       "type": "row"
     },
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1057,7 +1041,262 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    transaction_date as \"time\",\n    type,\n    amount AS \"Amount\"\n  FROM assets\n  WHERE\n    $__timeFilter(transaction_date)\n    AND type like 'Car:%'\n  group by transaction_date, type, amount\n  order by transaction_date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Car NAV",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 27
+      },
+      "id": 35,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    date as \"time\",\n    name as \"name\",\n    amount_paid as \"Amount Paid\",\n    amount_left+amount_paid as \"Total\"\nFROM car_loans\nWHERE\n    $__timeFilter(date)\ngroup by date, name, amount_paid, amount_left+amount_paid\norder by time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Car Payment",
+      "type": "timeseries"
+    },
+    {
+      "collapse": false,
+      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 13,
+      "panels": [],
+      "showTitle": true,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "Mortgage",
+      "titleSize": "h6",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 36
+      },
+      "id": 34,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    date as \"time\",\n    interest_paid as \"Interest Paid\",\n    principal_paid AS \"Principal Paid\"\nFROM mortgage\nWHERE\n    $__timeFilter(date)\ngroup by date, interest_paid, principal_paid\norder by time",
@@ -1070,7 +1309,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1131,7 +1370,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 27
+        "y": 36
       },
       "id": 14,
       "options": {
@@ -1151,7 +1390,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    date as \"time\",\n    total_interest_left as \"Interest Left\",\n    total_principal_left AS \"Principal Left\"\nFROM mortgage\nWHERE\n    $__timeFilter(date)\ngroup by date, total_interest_left, total_principal_left\norder by time",
@@ -1164,7 +1403,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1225,7 +1464,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 27
+        "y": 36
       },
       "id": 15,
       "options": {
@@ -1245,7 +1484,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    date as \"time\",\n    total_interest_paid as \"Total Interest Paid\",\n    total_principal_paid AS \"Total Principal Paid\"\nFROM mortgage\nWHERE\n    $__timeFilter(date)\ngroup by date, total_interest_paid, total_principal_paid\norder by time",
@@ -1266,7 +1505,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 44
       },
       "id": 17,
       "panels": [],
@@ -1287,7 +1526,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1331,7 +1570,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1347,7 +1587,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 36
+        "y": 45
       },
       "id": 18,
       "options": {
@@ -1367,7 +1607,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "WITH avg_exp AS (\n    select expense_date + INTERVAL '1 day' as \"expense_date\", amount from average_expenditures\n),\nbank AS (\n    select transaction_date, sum(amount) as amount from assets where type in ('Bank', 'Bonds') group by transaction_date\n)\nselect\n    a.expense_date as \"time\",\n    b.amount / a.amount as \"months\"\nfrom\n    avg_exp a inner join bank b on a.expense_date = b.transaction_date\nWHERE $__timeFilter(a.expense_date)\nORDER BY a.expense_date;",
@@ -1380,7 +1620,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1424,7 +1664,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1440,7 +1681,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 36
+        "y": 45
       },
       "id": 19,
       "options": {
@@ -1460,7 +1701,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "WITH avg_exp AS (\n    select expense_date + INTERVAL '1 day' as \"expense_date\", amount from average_expenditures\n),\nbank AS (\n    select transaction_date, sum(amount) as amount from assets where type in ('Bank', 'Bonds') group by transaction_date\n),\nequity AS (\n    select transaction_date, amount from assets where type = 'Investments'\n)\nselect\n    a.expense_date as \"time\",\n    (b.amount + (c.amount * 0.7)) / a.amount as \"months\"\nfrom\n    avg_exp a inner join bank b on a.expense_date = b.transaction_date\n    inner join equity c on a.expense_date = c.transaction_date\nWHERE $__timeFilter(a.expense_date)\nORDER BY a.expense_date;",
@@ -1473,7 +1714,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1517,7 +1758,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1533,7 +1775,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 36
+        "y": 45
       },
       "id": 20,
       "options": {
@@ -1553,7 +1795,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "WITH avg_exp AS (\n    select expense_date + INTERVAL '1 day' as \"expense_date\", amount from average_expenditures\n),\nequity AS (\n    select transaction_date, sum(amount) as amount from assets where type in ('Investments', 'Bonds') group by transaction_date\n)\nselect\n    a.expense_date as \"time\",\n    (0.03 * c.amount) / (a.amount * 12) as \"quotient\"\nfrom\n    avg_exp a inner join equity c on a.expense_date = c.transaction_date\nWHERE $__timeFilter(a.expense_date)\nORDER BY a.expense_date;",
@@ -1574,7 +1816,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 53
       },
       "id": 21,
       "panels": [],
@@ -1595,7 +1837,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1611,7 +1853,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1787,7 +2030,7 @@
         "h": 8,
         "w": 16,
         "x": 0,
-        "y": 45
+        "y": 54
       },
       "id": 22,
       "options": {
@@ -1802,12 +2045,12 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.3",
+      "pluginVersion": "11.1.1",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "table",
           "rawSql": "\n    WITH total AS (\n      SELECT\n        sum(nav) AS total\n      FROM portfolios\n      WHERE\n        trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n    ),\n    stock as (\n      SELECT\n        symbol,\n        price\n      FROM stocks\n      WHERE\n        trade_date = (\n          SELECT\n            trade_date\n          FROM stocks\n          ORDER BY trade_date desc\n          LIMIT 1\n        )\n    )\n    SELECT\n      trade_date as time,\n      stock.symbol as symbol,\n      stock.price as current_price,\n      quantity as quantity,\n      sum(nav) as nav,\n      sum(principal) as principal,\n      (sum(nav) - sum(principal)) / sum(principal) as returns,\n      sum(nav)/total.total as percentage\n    FROM portfolios inner join stock on portfolios.symbol = stock.symbol, total\n    WHERE\n      trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n    group by trade_date, stock.symbol, total.total, quantity, stock.price\n    order by trade_date",
@@ -1820,7 +2063,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1839,7 +2082,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1855,7 +2099,7 @@
         "h": 5,
         "w": 2,
         "x": 16,
-        "y": 45
+        "y": 54
       },
       "id": 25,
       "maxDataPoints": 100,
@@ -1876,12 +2120,12 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.3",
+      "pluginVersion": "11.1.1",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    sum(principal) as \"principal\"\n  FROM portfolios\n  WHERE\n    trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n  group by trade_date\n  order by trade_date",
@@ -1894,7 +2138,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1913,7 +2157,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1929,7 +2174,7 @@
         "h": 5,
         "w": 2,
         "x": 18,
-        "y": 45
+        "y": 54
       },
       "id": 24,
       "maxDataPoints": 100,
@@ -1950,12 +2195,12 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.3",
+      "pluginVersion": "11.1.1",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    sum(nav) as \"nav\"\n  FROM portfolios\n  WHERE\n    trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n  group by trade_date\n  order by trade_date",
@@ -1968,7 +2213,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -1989,7 +2234,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2005,7 +2251,7 @@
         "h": 5,
         "w": 2,
         "x": 20,
-        "y": 45
+        "y": 54
       },
       "id": 26,
       "maxDataPoints": 100,
@@ -2026,12 +2272,12 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.3",
+      "pluginVersion": "11.1.1",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    (sum(nav) - sum(principal)) / sum(principal) as \"returns\"\n  FROM portfolios\n  WHERE\n    trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n  group by trade_date\n  order by trade_date",
@@ -2045,7 +2291,7 @@
       "aliasColors": {},
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "description": "",
       "fieldConfig": {
@@ -2069,7 +2315,7 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 50
+        "y": 59
       },
       "id": 23,
       "legend": {
@@ -2106,7 +2352,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n      trade_date as \"time\",\n      symbol,\n      sum(nav) as \"nav\"\n    FROM portfolios\n    WHERE\n      trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n    group by trade_date, symbol\n    order by trade_date",
@@ -2120,7 +2366,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -2139,7 +2385,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           }
@@ -2239,7 +2486,7 @@
         "h": 8,
         "w": 16,
         "x": 0,
-        "y": 53
+        "y": 62
       },
       "id": 32,
       "options": {
@@ -2254,12 +2501,12 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.3",
+      "pluginVersion": "11.1.1",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "editorMode": "code",
           "format": "table",
@@ -2299,7 +2546,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 70
       },
       "id": 27,
       "panels": [],
@@ -2320,7 +2567,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -2364,7 +2611,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2380,7 +2628,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 62
+        "y": 71
       },
       "id": 28,
       "options": {
@@ -2400,7 +2648,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    (sum(nav) - sum(principal)) / sum(principal) as \"returns\"\n  FROM portfolios\n  WHERE\n    $__timeFilter(trade_date)\n  group by trade_date\n  order by trade_date",
@@ -2413,7 +2661,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -2457,7 +2705,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2473,7 +2722,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 62
+        "y": 71
       },
       "id": 29,
       "options": {
@@ -2493,7 +2742,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    sum(nav) as \"nav\",\n    sum(principal) as \"principal\"\n  FROM portfolios\n  WHERE\n    $__timeFilter(trade_date)\n  group by trade_date\n  order by trade_date",
@@ -2506,7 +2755,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -2550,7 +2799,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2566,7 +2816,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 70
+        "y": 79
       },
       "id": 30,
       "options": {
@@ -2586,7 +2836,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    symbol,\n    (sum(nav) - sum(principal))/ sum(principal) as \"returns\"\n  FROM portfolios\n  WHERE\n    $__timeFilter(trade_date)\n  group by trade_date, symbol\n  order by trade_date",
@@ -2599,7 +2849,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "ddupgv0yogf0gf"
+        "uid": "bdusnwo3mw4cgc"
       },
       "fieldConfig": {
         "defaults": {
@@ -2643,7 +2893,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2659,7 +2910,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 70
+        "y": 79
       },
       "id": 31,
       "options": {
@@ -2679,7 +2930,7 @@
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "ddupgv0yogf0gf"
+            "uid": "bdusnwo3mw4cgc"
           },
           "format": "time_series",
           "rawSql": "SELECT\n    trade_date as \"time\",\n    symbol,\n    sum(nav) as \"nav\"\n  FROM portfolios\n  WHERE\n    $__timeFilter(trade_date)\n  group by trade_date, symbol\n  order by trade_date",
@@ -2728,8 +2979,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "Financials",
-  "uid": "ba062ec8-be7d-467f-b295-7b66d5494574",
+  "title": "Moneybags",
+  "uid": "e1b81c3f-5a24-40a0-b4a8-d9eb93207ec1",
   "version": 4,
   "weekStart": ""
 }
