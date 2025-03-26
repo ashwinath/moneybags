@@ -57,6 +57,14 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: {{ include "moneybags.fullname" . }}-tax-exclusions-csv
+data:
+  tax_exclusions.csv: |-
+{{ .Values.moneybags.tax_exclusions | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: {{ include "moneybags.fullname" . }}-config
 data:
   config.yaml: |-
@@ -78,6 +86,7 @@ data:
       trades_csv_filepath: /etc/trades/trades.csv
       mortgage_yaml_filepath: /etc/mortgage/mortgage.yaml
       car_yaml_filepath: /etc/car/car.yaml
+      tax_exclusions_csv_filepath: /etc/tax_exclusions/tax_exclusions.csv
     financials_config:
       run_interval_in_hours: {{ .Values.moneybags.financials.runIntervalInHours | default 4 }}
       alphavantage_api_key: {{ .Values.moneybags.financials.alphavantageAPIKey }}

@@ -139,6 +139,12 @@ moneybags:
           last_month_amount: 8.0
           start_date: 2024-01-01
 
+  # -- CSV values for tax_exclusions
+  tax_exclusions: |-
+    year,type,amount
+    2024,CPF Cash Top Up,8000.00
+    2024,NS Man Relief - Self/Wife/Parent,1500.00
+
 postgresql:
   # -- Resources requests and limits for the database
   resources: {}

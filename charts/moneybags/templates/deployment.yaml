@@ -64,6 +64,8 @@ spec:
             mountPath: /etc/car
           - name: shared-expenses-csv
             mountPath: /etc/shared-expenses
+          - name: tax-exclusions-csv
+            mountPath: /etc/tax_exclusions
       volumes:
       - name: moneybags-config
         configMap:
@@ -89,6 +91,9 @@ spec:
       - name: shared-expenses-csv
         configMap:
           name: {{ include "moneybags.fullname" . }}-shared-expenses-csv
+      - name: tax-exclusions-csv
+        configMap:
+          name: {{ include "moneybags.fullname" . }}-tax-exclusions-csv
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -1,6 +1,6 @@
 # moneybags
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.0](https://img.shields.io/badge/AppVersion-0.3.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -28,6 +28,7 @@ A Helm chart for Kubernetes
 | moneybags.income | string | `"date,type,amount\n2021-03-11,Base,500\n2021-03-11,Bonus,200"` | CSV values for the income |
 | moneybags.mortgage | string | `"mortgages:\n- total: 50000.0\n  mortgage_first_payment: 2022-10-10\n  mortgage_duration_in_years: 25\n  mortgage_end_date: 2047-10-10\n  interest_rate_percentage: 2.6\n  downpayments:\n  - date: 2021-10-10\n    sum: 1000.0\n  - date: 2021-12-12\n    sum: 20000.0"` | YAML values for mortgage |
 | moneybags.shared_expenses | string | `"date,type,amount\n2023-01-01,Special:Renovations,5000.00\n2023-01-01,Electricity,100.00\n2023-01-01,Water,50.00\n2023-01-01,Gas,30.00\n2023-01-01,Grocery,300.00\n2023-01-01,Eating Out,500.00"` | CSV values for shared expenses |
+| moneybags.tax_exclusions | string | `"year,type,amount\n2024,CPF Cash Top Up,8000.00\n2024,NS Man Relief - Self/Wife/Parent,1500.00"` | CSV values for tax_exclusions |
 | moneybags.telegram.allowedUser | string | `"changeme"` | Telegram user that will be allowed to send commands |
 | moneybags.telegram.apiKey | string | `"changeme"` | Telegram bot API Key. Get by talking to Bot Godfather: https://core.telegram.org/bots/tutorial#obtain-your-bot-token |
 | moneybags.telegram.debug | bool | `false` | Enable debugging. Warning: non standard logger used in telegram library |
