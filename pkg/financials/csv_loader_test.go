@@ -20,6 +20,7 @@ func TestLoadCSV(t *testing.T) {
 			fw.GetDB(database.IncomeDatabaseName).(database.Counter),
 			fw.GetDB(database.SharedExpenseDatabaseName).(database.Counter),
 			fw.GetDB(database.TradeDatabaseName).(database.Counter),
+			fw.GetDB(database.TaxExclusions).(database.Counter),
 		}
 
 		for _, counter := range allCounters {

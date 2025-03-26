@@ -16,7 +16,7 @@ type Asset struct {
 }
 
 type AssetDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 }
 
 type assetDB struct {
@@ -39,7 +39,7 @@ func (db *assetDB) Clear() error {
 }
 
 // Bulk add data
-func (db *assetDB) BulkAdd(objs interface{}) error {
+func (db *assetDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

@@ -17,7 +17,7 @@ type ExchangeRate struct {
 }
 
 type ExchangeRateDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 	GetExchangeRateByDate(date time.Time, symbol string) (float64, error)
 }
 
@@ -35,7 +35,7 @@ func NewExchangeRateDB(db *DB) (ExchangeRateDB, error) {
 	}, nil
 }
 
-func (db *exchangeRateDB) BulkAdd(objs interface{}) error {
+func (db *exchangeRateDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

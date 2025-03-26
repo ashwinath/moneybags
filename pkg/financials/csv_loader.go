@@ -17,7 +17,7 @@ type dataLoader struct {
 	name     string
 	db       db.ClearAndBulkAdder
 	filePath string
-	model    interface{}
+	model    any
 	errChan  chan error
 }
 
@@ -58,6 +58,13 @@ func NewCSVLoader(fw framework.FW) Loader {
 				db:       fw.GetDB(db.TradeDatabaseName).(db.ClearAndBulkAdder),
 				filePath: fw.GetConfig().FinancialsData.TradesCsvFilepath,
 				model:    &[]*db.Trade{},
+				errChan:  make(chan error, 1),
+			},
+			{
+				name:     "taxExclusions",
+				db:       fw.GetDB(db.TaxExclusions).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.TaxExclusionsCsvFilepath,
+				model:    &[]*db.TaxExclusion{},
 				errChan:  make(chan error, 1),
 			},
 		},

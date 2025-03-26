@@ -42,7 +42,7 @@ func (db *tradeDB) Clear() error {
 }
 
 // Bulk add data
-func (db *tradeDB) BulkAdd(objs interface{}) error {
+func (db *tradeDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

@@ -23,7 +23,7 @@ func (SharedExpense) TableName() string {
 }
 
 type SharedExpenseDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 	GetSharedExpensesGroupByExpenseDate(isSpecial bool) ([]GroupedSharedExpenseByDate, error)
 }
 
@@ -47,7 +47,7 @@ func (db *sharedExpenseDB) Clear() error {
 }
 
 // Bulk add data
-func (db *sharedExpenseDB) BulkAdd(objs interface{}) error {
+func (db *sharedExpenseDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

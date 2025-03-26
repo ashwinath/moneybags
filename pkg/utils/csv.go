@@ -42,7 +42,7 @@ func (dt *DateTime) GetTime() time.Time {
 	return dt.Time
 }
 
-func (dt *DateTime) Scan(value interface{}) error {
+func (dt *DateTime) Scan(value any) error {
 	scanned, ok := value.(time.Time)
 	if !ok {
 		return errors.New(fmt.Sprint("Failed to scan DateTime value:", value))
@@ -51,7 +51,7 @@ func (dt *DateTime) Scan(value interface{}) error {
 	return nil
 }
 
-func UnmarshalCSV(filepath string, obj interface{}) error {
+func UnmarshalCSV(filepath string, obj any) error {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return fmt.Errorf("failed to open file (%s) during csv unmarshalling: %s", filepath, err)
