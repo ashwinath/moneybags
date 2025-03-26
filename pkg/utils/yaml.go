@@ -7,7 +7,7 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func UnmarshalYAML(path string, obj interface{}) error {
+func UnmarshalYAML(path string, obj any) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return err

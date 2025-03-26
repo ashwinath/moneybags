@@ -17,7 +17,7 @@ type dataLoader struct {
 	name     string
 	db       db.ClearAndBulkAdder
 	filePath string
-	model    interface{}
+	model    any
 	errChan  chan error
 }
 

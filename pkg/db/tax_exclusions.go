@@ -34,7 +34,7 @@ func (db *taxExlusionDB) Clear() error {
 }
 
 // Bulk add data
-func (db *taxExlusionDB) BulkAdd(objs interface{}) error {
+func (db *taxExlusionDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

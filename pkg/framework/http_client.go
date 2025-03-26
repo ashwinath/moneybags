@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func HTTPGet(url string, data interface{}) error {
+func HTTPGet(url string, data any) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

@@ -17,7 +17,7 @@ type Stock struct {
 }
 
 type StockDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 	GetStockPrice(date time.Time, symbol string) (float64, error)
 }
 
@@ -35,7 +35,7 @@ func NewStockDB(db *DB) (StockDB, error) {
 	}, nil
 }
 
-func (db *stockDB) BulkAdd(objs interface{}) error {
+func (db *stockDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

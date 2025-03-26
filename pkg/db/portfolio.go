@@ -20,7 +20,7 @@ type Portfolio struct {
 }
 
 type PortfolioDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 	GetFirstTradeDate() (time.Time, error)
 	GetPortfolioAmountByDate(date time.Time) (float64, error)
 }
@@ -40,7 +40,7 @@ func NewPortfolioDB(db *DB) (PortfolioDB, error) {
 }
 
 // Bulk add data
-func (db *portfolioDB) BulkAdd(objs interface{}) error {
+func (db *portfolioDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

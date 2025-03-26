@@ -19,7 +19,7 @@ type CarLoan struct {
 
 type CarLoanDB interface {
 	Clear() error
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 }
 
 type carLoanDB struct {
@@ -42,6 +42,6 @@ func (db *carLoanDB) Clear() error {
 }
 
 // Bulk add data
-func (db *carLoanDB) BulkAdd(objs interface{}) error {
+func (db *carLoanDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }

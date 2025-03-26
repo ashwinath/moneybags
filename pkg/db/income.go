@@ -38,7 +38,7 @@ func (db *incomeDB) Clear() error {
 }
 
 // Bulk add data
-func (db *incomeDB) BulkAdd(objs interface{}) error {
+func (db *incomeDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

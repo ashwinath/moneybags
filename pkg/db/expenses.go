@@ -18,7 +18,7 @@ type Expense struct {
 }
 
 type ExpenseDB interface {
-	BulkAdd(objs interface{}) error
+	BulkAdd(objs any) error
 	GetFirstDate() (time.Time, error)
 	GetYearlyExpense(exclusionTypes []string, currentDate time.Time, windowPeriod int) (float64, error)
 }
@@ -43,7 +43,7 @@ func (db *expenseDB) Clear() error {
 }
 
 // Bulk add data
-func (db *expenseDB) BulkAdd(objs interface{}) error {
+func (db *expenseDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 

@@ -48,7 +48,7 @@ func (db *mortgageDB) Clear() error {
 }
 
 // Bulk add data
-func (db *mortgageDB) BulkAdd(objs interface{}) error {
+func (db *mortgageDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
 }
 
