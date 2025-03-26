@@ -60,6 +60,13 @@ func NewCSVLoader(fw framework.FW) Loader {
 				model:    &[]*db.Trade{},
 				errChan:  make(chan error, 1),
 			},
+			{
+				name:     "taxExclusions",
+				db:       fw.GetDB(db.TaxExclusions).(db.ClearAndBulkAdder),
+				filePath: fw.GetConfig().FinancialsData.TaxExclusionsCsvFilepath,
+				model:    &[]*db.TaxExclusion{},
+				errChan:  make(chan error, 1),
+			},
 		},
 	}
 }

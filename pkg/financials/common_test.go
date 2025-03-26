@@ -61,6 +61,9 @@ func createFW(t *testing.T, baseDB *database.DB) framework.FW {
 	transactionDB, err := db.NewTransactionDB(baseDB)
 	assert.Nil(t, err)
 
+	taxExclusionDB, err := db.NewTaxExclusionDB(baseDB)
+	assert.Nil(t, err)
+
 	return framework.New(c, sugar, map[string]any{
 		database.AssetDatabaseName:              assetDB,
 		database.AverageExpenditureDatabaseName: averageExpenditureDB,
@@ -74,6 +77,7 @@ func createFW(t *testing.T, baseDB *database.DB) framework.FW {
 		database.SymbolDatabaseName:             symbolDB,
 		database.TradeDatabaseName:              tradeDB,
 		database.TransactionDatabaseName:        transactionDB,
+		database.TaxExclusions:                  taxExclusionDB,
 	})
 }
 
@@ -101,6 +105,10 @@ func subsituteLocalRepoLocation(c *configpb.Config) {
 	p = c.FinancialsData.MortgageYamlFilepath
 	newPath = path.Join(utils.GetLocalRepoLocation(), p)
 	c.FinancialsData.MortgageYamlFilepath = newPath
+
+	p = c.FinancialsData.TaxExclusionsCsvFilepath
+	newPath = path.Join(utils.GetLocalRepoLocation(), p)
+	c.FinancialsData.TaxExclusionsCsvFilepath = newPath
 }
 
 func parseDateForced(t *testing.T, dateString string) time.Time {

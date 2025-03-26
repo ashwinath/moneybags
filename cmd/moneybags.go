@@ -126,6 +126,11 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 		sugar.Fatalf("Failed to initialise Transaction DB, %v", err)
 	}
 
+	taxExclusionDB, err := db.NewTaxExclusionDB(baseDB)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise taxExclusionDB DB, %v", err)
+	}
+
 	return map[string]any{
 		db.AssetDatabaseName:              assetDB,
 		db.AverageExpenditureDatabaseName: averageExpenditureDB,
@@ -140,5 +145,6 @@ func createDBs(baseDB *db.DB, sugar *zap.SugaredLogger) map[string]any {
 		db.SymbolDatabaseName:             symbolDB,
 		db.TradeDatabaseName:              tradeDB,
 		db.TransactionDatabaseName:        transactionDB,
+		db.TaxExclusions:                  taxExclusionDB,
 	}
 }
