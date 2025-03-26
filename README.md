@@ -20,7 +20,8 @@ This list is not exhaustive but a wishlist that I would work on when I'm free. M
 - [x] Financial Independence Quotient
 - [x] Mortgage
 - [x] Telegram bot to record expenses
-- [ ] Other depreciating assets like car
+- [x] Other depreciating assets like car
+- [x] Tax Calculation
 - [ ] Recurring transactions
 
 ## Technical Roadmap
