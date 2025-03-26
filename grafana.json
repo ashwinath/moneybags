@@ -22,12 +22,7 @@
   "links": [],
   "panels": [
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "bdusnwo3mw4cgc"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -36,18 +31,7 @@
       },
       "id": 2,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "bdusnwo3mw4cgc"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "Financials Summary",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -67,6 +51,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -125,11 +110,13 @@
           "showLegend": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -161,6 +148,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -219,11 +207,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -274,6 +264,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -332,52 +323,539 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "bdusnwo3mw4cgc"
           },
+          "editorMode": "code",
           "format": "time_series",
-          "rawSql": "SELECT\n    transaction_date as \"time\",\n    type,\n    amount AS \"Amount\"\n  FROM assets\n  WHERE\n    $__timeFilter(transaction_date)\n    AND type IN ('OA', 'SA', 'Medisave', 'SRS', 'House')\n  group by transaction_date, type, amount\n  order by transaction_date",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n    transaction_date as \"time\",\n    type,\n    amount AS \"Amount\"\n  FROM assets\n  WHERE\n    $__timeFilter(transaction_date)\n    AND type IN ('OA', 'SA', 'Medisave', 'SRS', 'House', 'OA CPFIA')\n  group by transaction_date, type, amount\n  order by transaction_date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Net Illiquid Assets",
       "type": "timeseries"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 9
       },
-      "id": 6,
+      "id": 42,
       "panels": [],
-      "showTitle": true,
+      "title": "YTD Income/Tax",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 10
+      },
+      "id": 38,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
           },
-          "refId": "A"
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select sum(amount) from incomes where date_part('year', transaction_date) = date_part('year', current_timestamp)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
+      "title": "Income YTD",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 3,
+        "y": 10
+      },
+      "id": 39,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select sum(amount) from\n\n((\n  select\n    date_part('year', current_timestamp) as year,\n    'Employer/Employee CPF contribution' as type,\n    (select sum(amount) from incomes where date_part('year', transaction_date) = date_part('year', current_timestamp) and type like 'CPF%') as amount\n)\nunion\n(\n  select \n    year, type, amount\n  from tax_exclusions\n  where \n    year = date_part('year', current_timestamp)\n))",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Total Tax Exclusions",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 6,
+        "y": 10
+      },
+      "id": 40,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select\n  (\n    select\n      sum(amount)\n    from\n      incomes\n    where\n      date_part('year', transaction_date) = date_part('year', current_timestamp)\n  ) - sum(amount)\nfrom\n  (\n    (\n      select\n        date_part('year', current_timestamp) as year,\n        'Employer/Employee CPF contribution' as type,\n        (\n          select\n            sum(amount)\n          from\n            incomes\n          where\n            date_part('year', transaction_date) = date_part('year', current_timestamp)\n            and type like 'CPF%'\n        ) as amount\n    )\n    union\n    (\n      select\n        year,\n        type,\n        amount\n      from\n        tax_exclusions\n      where\n        year = date_part('year', current_timestamp)\n    )\n  )",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Taxable Income",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 9,
+        "y": 10
+      },
+      "id": 41,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with taxable_income as (\n  select\n    (\n      select\n        sum(amount)\n      from\n        incomes\n      where\n        date_part('year', transaction_date) = date_part('year', current_timestamp)\n    ) - sum(amount) as amount\n  from\n    (\n      (\n        select\n          date_part('year', current_timestamp) as year,\n          'Employer/Employee CPF contribution' as type,\n          (\n            select\n              sum(amount)\n            from\n              incomes\n            where\n              date_part('year', transaction_date) = date_part('year', current_timestamp)\n              and type like 'CPF%'\n          ) as amount\n      )\n      union\n      (\n        select\n          year,\n          type,\n          amount\n        from\n          tax_exclusions\n        where\n          year = date_part('year', current_timestamp)\n      )\n    ) as amount\n)\nselect\n  case\n    when amount >= 1000000 then (amount - 1000000) * 0.24 + 199150\n    when amount >= 500000 then (amount - 500000) * 0.23 + 84150\n    when amount >= 320000 then (amount - 320000) * 0.22 + 44550\n    when amount >= 280000 then (amount - 280000) * 0.20 + 36550\n    when amount >= 240000 then (amount - 240000) * 0.195 + 28750\n    when amount >= 200000 then (amount - 200000) * 0.19 + 21150\n    when amount >= 160000 then (amount - 160000) * 0.18 + 13950\n    when amount >= 120000 then (amount - 120000) * 0.15 + 7950\n    when amount >= 80000 then (amount - 80000) * 0.115 + 3350\n    when amount >= 40000 then (amount - 40000) * 0.07 + 550\n    when amount >= 30000 then (amount - 30000) * 0.035 + 200\n    when amount >= 20000 then (amount - 20000) * 0.02\n    else 0\n  end\nfrom\n  taxable_income\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Tax",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "year"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 58
+              },
+              {
+                "id": "displayName",
+                "value": "Year"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 315
+              },
+              {
+                "id": "displayName",
+                "value": "Type"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "amount"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 143
+              },
+              {
+                "id": "displayName",
+                "value": "Amount"
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 10
+      },
+      "id": 37,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "(\n  select\n    date_part('year', current_timestamp) as year,\n    'Employer/Employee CPF contribution' as type,\n    (select sum(amount) from incomes where date_part('year', transaction_date) = date_part('year', current_timestamp) and type like 'CPF%') as amount\n)\nunion\n(\n  select \n    year, type, amount\n  from tax_exclusions\n  where \n    year = date_part('year', current_timestamp)\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Tax Exclusions",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 6,
+      "panels": [],
       "title": "Inflow/Outflow",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -397,6 +875,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -444,7 +923,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 10
+        "y": 18
       },
       "id": 7,
       "options": {
@@ -455,11 +934,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -491,6 +972,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -538,7 +1020,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 10
+        "y": 18
       },
       "id": 8,
       "options": {
@@ -549,11 +1031,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -585,6 +1069,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -632,7 +1117,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 10
+        "y": 18
       },
       "id": 9,
       "options": {
@@ -643,20 +1128,41 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "bdusnwo3mw4cgc"
           },
+          "editorMode": "code",
           "format": "time_series",
+          "rawQuery": true,
           "rawSql": "WITH expenditure AS (\n  select date_trunc('month', transaction_date) as time, sum(amount) as Amount from expenses where $__timeFilter(transaction_date) and type not like 'Special:%' group by time\n),\nincome as (\n  select date_trunc('month', transaction_date) as time, sum(amount) as Amount from incomes where $__timeFilter(transaction_date) and type in ('Base', 'Base Bonus') group by time\n)\nSELECT\n  expenditure.time + interval '1 month' - interval '1 day' AS \"time\",\n  CASE \n    WHEN income.amount != 0 then (1 - (expenditure.amount / income.amount)) \n    ELSE 0\n  END as \"Savings Rate\"\nFROM expenditure inner join income on income.time = expenditure.time\nWHERE $__timeFilter(expenditure.time)\nORDER BY expenditure.time;",
-          "refId": "A"
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Savings Rate",
@@ -679,6 +1185,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -726,7 +1233,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 18
+        "y": 26
       },
       "id": 10,
       "options": {
@@ -737,11 +1244,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -773,6 +1282,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -820,7 +1330,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 18
+        "y": 26
       },
       "id": 11,
       "options": {
@@ -831,11 +1341,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -867,6 +1379,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -914,7 +1427,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 18
+        "y": 26
       },
       "id": 12,
       "options": {
@@ -925,11 +1438,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -950,7 +1465,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 34
       },
       "id": 33,
       "panels": [],
@@ -974,6 +1489,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1021,7 +1537,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 27
+        "y": 35
       },
       "id": 16,
       "options": {
@@ -1032,11 +1548,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1087,6 +1605,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1134,7 +1653,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 27
+        "y": 35
       },
       "id": 35,
       "options": {
@@ -1145,11 +1664,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1184,32 +1705,16 @@
       "type": "timeseries"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 43
       },
       "id": 13,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "Mortgage",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -1229,6 +1734,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1276,7 +1782,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 36
+        "y": 44
       },
       "id": 34,
       "options": {
@@ -1287,11 +1793,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1323,6 +1831,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1370,7 +1879,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 36
+        "y": 44
       },
       "id": 14,
       "options": {
@@ -1381,11 +1890,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1417,6 +1928,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1464,7 +1976,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 36
+        "y": 44
       },
       "id": 15,
       "options": {
@@ -1475,11 +1987,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1495,32 +2009,16 @@
       "type": "timeseries"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 52
       },
       "id": 17,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "Financial Health",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -1540,6 +2038,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1587,7 +2086,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 45
+        "y": 53
       },
       "id": 18,
       "options": {
@@ -1598,11 +2097,13 @@
           "showLegend": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1634,6 +2135,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1681,7 +2183,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 45
+        "y": 53
       },
       "id": 19,
       "options": {
@@ -1692,11 +2194,13 @@
           "showLegend": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1728,6 +2232,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -1775,7 +2280,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 45
+        "y": 53
       },
       "id": 20,
       "options": {
@@ -1786,52 +2291,57 @@
           "showLegend": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "bdusnwo3mw4cgc"
           },
+          "editorMode": "code",
           "format": "time_series",
-          "rawSql": "WITH avg_exp AS (\n    select expense_date + INTERVAL '1 day' as \"expense_date\", amount from average_expenditures\n),\nequity AS (\n    select transaction_date, sum(amount) as amount from assets where type in ('Investments', 'Bonds') group by transaction_date\n)\nselect\n    a.expense_date as \"time\",\n    (0.03 * c.amount) / (a.amount * 12) as \"quotient\"\nfrom\n    avg_exp a inner join equity c on a.expense_date = c.transaction_date\nWHERE $__timeFilter(a.expense_date)\nORDER BY a.expense_date;",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "WITH avg_exp AS (\n    select expense_date + INTERVAL '1 day' as \"expense_date\", amount from average_expenditures\n),\nequity AS (\n    select transaction_date, sum(amount) as amount from assets where type in ('Investments', 'Bonds') group by transaction_date\n)\nselect\n    a.expense_date as \"time\",\n    (0.04 * c.amount) / (a.amount * 12) as \"quotient\"\nfrom\n    avg_exp a inner join equity c on a.expense_date = c.transaction_date\nWHERE $__timeFilter(a.expense_date)\nORDER BY a.expense_date;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "Financial Independence Quotient (3% Withdrawal)",
+      "title": "Financial Independence Quotient (4% Withdrawal)",
       "type": "timeseries"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 61
       },
       "id": 21,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "Current Investments",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -2030,7 +2540,7 @@
         "h": 8,
         "w": 16,
         "x": 0,
-        "y": 54
+        "y": 62
       },
       "id": 22,
       "options": {
@@ -2045,7 +2555,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.1",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2099,7 +2609,7 @@
         "h": 5,
         "w": 2,
         "x": 16,
-        "y": 54
+        "y": 62
       },
       "id": 25,
       "maxDataPoints": 100,
@@ -2120,7 +2630,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.1",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2174,7 +2684,7 @@
         "h": 5,
         "w": 2,
         "x": 18,
-        "y": 54
+        "y": 62
       },
       "id": 24,
       "maxDataPoints": 100,
@@ -2195,7 +2705,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.1",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2208,6 +2718,102 @@
         }
       ],
       "title": "NAV",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "bdusnwo3mw4cgc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 0,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 2,
+        "x": 20,
+        "y": 62
+      },
+      "id": 26,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "bdusnwo3mw4cgc"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\n    trade_date as \"time\",\n    (sum(nav) - sum(principal)) as \"unrlz\"\n  FROM portfolios\n  WHERE\n    trade_date=DATE_TRUNC('day', CURRENT_TIMESTAMP - INTERVAL '1 day') + INTERVAL '8 hours'\n  group by trade_date\n  order by trade_date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Unrlz",
       "type": "stat"
     },
     {
@@ -2250,10 +2856,10 @@
       "gridPos": {
         "h": 5,
         "w": 2,
-        "x": 20,
-        "y": 54
+        "x": 22,
+        "y": 62
       },
-      "id": 26,
+      "id": 36,
       "maxDataPoints": 100,
       "options": {
         "colorMode": "none",
@@ -2272,7 +2878,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.1.1",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2288,7 +2894,6 @@
       "type": "stat"
     },
     {
-      "aliasColors": {},
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "bdusnwo3mw4cgc"
@@ -2315,15 +2920,9 @@
         "h": 11,
         "w": 8,
         "x": 16,
-        "y": 59
+        "y": 67
       },
       "id": 23,
-      "legend": {
-        "percentage": true,
-        "show": true,
-        "values": true
-      },
-      "legendType": "Right side",
       "options": {
         "legend": {
           "displayMode": "list",
@@ -2342,12 +2941,13 @@
           "values": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pieType": "pie",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2360,11 +2960,11 @@
         }
       ],
       "title": "Portfolio",
-      "type": "piechart",
-      "valueName": "current"
+      "type": "piechart"
     },
     {
       "datasource": {
+        "default": false,
         "type": "grafana-postgresql-datasource",
         "uid": "bdusnwo3mw4cgc"
       },
@@ -2479,6 +3079,22 @@
                 "value": 2
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "gain"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Gain"
+              },
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
           }
         ]
       },
@@ -2486,7 +3102,7 @@
         "h": 8,
         "w": 16,
         "x": 0,
-        "y": 62
+        "y": 70
       },
       "id": 32,
       "options": {
@@ -2501,7 +3117,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.1.1",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2511,7 +3127,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "select TO_CHAR(date_purchased, 'YYYY/MM/DD') as Date, trade_type as Type, symbol as Symbol, price_each As Price, quantity as Quantity, price_each * quantity as Cost from trades order by date_purchased desc;",
+          "rawSql": "with latest_price as (\r\n  select trade_date, symbol, price from stocks where trade_date = (select max(trade_date) from stocks)\r\n)\r\nselect \r\n  TO_CHAR(trades.date_purchased, 'YYYY/MM/DD') as Date, \r\n  trades.trade_type as Type, trades.symbol as Symbol, \r\n  trades.price_each As Price, \r\n  trades.quantity as Quantity, \r\n  trades.price_each * trades.quantity as Cost,\r\n  (latest_price.price - trades.price_each) / trades.price_each * 100 as Gain\r\nfrom trades INNER JOIN latest_price on latest_price.symbol = trades.symbol order by trades.date_purchased desc;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2536,32 +3152,16 @@
       "type": "table"
     },
     {
-      "collapse": false,
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 78
       },
       "id": 27,
       "panels": [],
-      "showTitle": true,
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ac6002cd-bc0c-4dcd-a675-5728f16105cf"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "Investment Historical Performance",
-      "titleSize": "h6",
       "type": "row"
     },
     {
@@ -2581,6 +3181,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -2628,7 +3229,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 79
       },
       "id": 28,
       "options": {
@@ -2639,11 +3240,13 @@
           "showLegend": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2675,6 +3278,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -2722,7 +3326,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 71
+        "y": 79
       },
       "id": 29,
       "options": {
@@ -2733,11 +3337,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2769,6 +3375,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -2816,7 +3423,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 87
       },
       "id": 30,
       "options": {
@@ -2827,11 +3434,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2863,6 +3472,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 40,
             "gradientMode": "opacity",
@@ -2910,7 +3520,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 87
       },
       "id": 31,
       "options": {
@@ -2921,11 +3531,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2941,8 +3553,9 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "",
-  "schemaVersion": 39,
+  "schemaVersion": 40,
   "tags": [
     "financials"
   ],
@@ -2950,37 +3563,13 @@
     "list": []
   },
   "time": {
-    "from": "now-1y",
+    "from": "now-2y",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
-  },
+  "timepicker": {},
   "timezone": "browser",
   "title": "Moneybags",
   "uid": "e1b81c3f-5a24-40a0-b4a8-d9eb93207ec1",
-  "version": 4,
+  "version": 16,
   "weekStart": ""
 }
