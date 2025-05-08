@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pbgo/mortgagepb"
 	"github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 )
 
 type mortgageLoader struct {
@@ -46,7 +47,7 @@ func (l *mortgageLoader) Load() error {
 
 func (l *mortgageLoader) loadMortgageConfig() error {
 	mortgageConfig := mortgagepb.MortgageConfig{}
-	if err := utils.UnmarshalYAML(l.fw.GetConfig().FinancialsData.MortgageYamlFilepath, &mortgageConfig); err != nil {
+	if err := utils.UnmarshalYAML(l.fw.GetConfig().(*configpb.Config).FinancialsData.MortgageYamlFilepath, &mortgageConfig); err != nil {
 		return fmt.Errorf("failed to unmarshal mortgage config: %s", err)
 	}
 

@@ -6,9 +6,10 @@ import (
 	"time"
 
 	"github.com/ashwinath/moneybags/pbgo/carpb"
+	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 )
 
 const (
@@ -79,7 +80,7 @@ func (l *carLoader) Load() error {
 
 func (l *carLoader) loadCarConfig() error {
 	carConfig := carpb.CarConfig{}
-	if err := utils.UnmarshalYAML(l.fw.GetConfig().FinancialsData.CarYamlFilepath, &carConfig); err != nil {
+	if err := utils.UnmarshalYAML(l.fw.GetConfig().(*configpb.Config).FinancialsData.CarYamlFilepath, &carConfig); err != nil {
 		return fmt.Errorf("failed to unmarshal car config: %s", err)
 	}
 

@@ -3,18 +3,26 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+
+	"github.com/ashwinath/simple/framework"
+	"github.com/ashwinath/simple/signal"
 
 	"github.com/ashwinath/moneybags/pkg/config"
 	"github.com/ashwinath/moneybags/pkg/db"
 	"github.com/ashwinath/moneybags/pkg/financials"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/modules"
 	"go.uber.org/zap"
 )
 
 func main() {
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			fmt.Printf("Unable to sync logger: %v", err)
+		}
+	}()
+
 	sugar := logger.Sugar()
 	sugar.Info("Starting moneybags")
 
@@ -36,7 +44,7 @@ func main() {
 	defer baseDB.Close()
 
 	// Load framework
-	fw := framework.New(c, sugar, createDBs(baseDB, sugar))
+	fw := framework.New(c, sugar, createDBs(baseDB, sugar), map[string]any{})
 
 	// Load modules
 	telegram, err := modules.NewTelegramModule(fw)
@@ -55,7 +63,7 @@ func main() {
 	app := framework.NewApp(sugar, telegram, financials)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	framework.ListenForSignal(cancel, sugar)
+	signal.ListenForSignal(cancel, sugar)
 
 	app.Run(ctx)
 }

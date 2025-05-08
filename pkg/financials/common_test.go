@@ -9,8 +9,8 @@ import (
 	"github.com/ashwinath/moneybags/pkg/config"
 	"github.com/ashwinath/moneybags/pkg/db"
 	database "github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -78,7 +78,7 @@ func createFW(t *testing.T, baseDB *database.DB) framework.FW {
 		database.TradeDatabaseName:              tradeDB,
 		database.TransactionDatabaseName:        transactionDB,
 		database.TaxExclusions:                  taxExclusionDB,
-	})
+	}, map[string]any{})
 }
 
 func subsituteLocalRepoLocation(c *configpb.Config) {

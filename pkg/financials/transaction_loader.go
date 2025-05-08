@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

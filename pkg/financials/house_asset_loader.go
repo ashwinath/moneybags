@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 )
 
 type houseAssetLoader struct {

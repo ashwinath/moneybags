@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pkg/financials"
-	"github.com/ashwinath/moneybags/pkg/framework"
+	"github.com/ashwinath/simple/framework"
+	"github.com/ashwinath/simple/schedule"
 )
 
 type FinancialsModule struct {
@@ -15,7 +17,7 @@ type FinancialsModule struct {
 }
 
 func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) (framework.Module, error) {
-	if fw.GetConfig().FinancialsConfig.AlphavantageApiKey == "" {
+	if fw.GetConfig().(*configpb.Config).FinancialsConfig.AlphavantageApiKey == "" {
 		return nil, fmt.Errorf("alphavantageApiKey not set")
 	}
 	return &FinancialsModule{
@@ -39,9 +41,9 @@ func (m *FinancialsModule) Name() string {
 }
 
 func (m *FinancialsModule) Start(ctx context.Context) {
-	framework.RunInterval(
+	schedule.RunInterval(
 		ctx,
-		time.Duration(m.fw.GetConfig().FinancialsConfig.RunIntervalInHours)*time.Hour,
+		time.Duration(m.fw.GetConfig().(*configpb.Config).FinancialsConfig.RunIntervalInHours)*time.Hour,
 		m.run,
 	)
 }

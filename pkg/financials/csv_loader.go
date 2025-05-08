@@ -3,9 +3,10 @@ package financials
 import (
 	"fmt"
 
+	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 )
 
 type csvLoader struct {
@@ -22,48 +23,49 @@ type dataLoader struct {
 }
 
 func NewCSVLoader(fw framework.FW) Loader {
+	financialsDataConfig := fw.GetConfig().(*configpb.Config).FinancialsData
 	return &csvLoader{
 		fw: fw,
 		loaders: []dataLoader{
 			{
 				name:     "assets",
 				db:       fw.GetDB(db.AssetDatabaseName).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.AssetsCsvFilepath,
+				filePath: financialsDataConfig.AssetsCsvFilepath,
 				model:    &[]*db.Asset{},
 				errChan:  make(chan error, 1),
 			},
 			{
 				name:     "expenses",
 				db:       fw.GetDB(db.ExpenseDatabaseName).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.ExpensesCsvFilepath,
+				filePath: financialsDataConfig.ExpensesCsvFilepath,
 				model:    &[]*db.Expense{},
 				errChan:  make(chan error, 1),
 			},
 			{
 				name:     "incomeDB",
 				db:       fw.GetDB(db.IncomeDatabaseName).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.IncomeCsvFilepath,
+				filePath: financialsDataConfig.IncomeCsvFilepath,
 				model:    &[]*db.Income{},
 				errChan:  make(chan error, 1),
 			},
 			{
 				name:     "sharedExpenseDB",
 				db:       fw.GetDB(db.SharedExpenseDatabaseName).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.SharedExpensesCsvFilepath,
+				filePath: financialsDataConfig.SharedExpensesCsvFilepath,
 				model:    &[]*db.SharedExpense{},
 				errChan:  make(chan error, 1),
 			},
 			{
 				name:     "trades",
 				db:       fw.GetDB(db.TradeDatabaseName).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.TradesCsvFilepath,
+				filePath: financialsDataConfig.TradesCsvFilepath,
 				model:    &[]*db.Trade{},
 				errChan:  make(chan error, 1),
 			},
 			{
 				name:     "taxExclusions",
 				db:       fw.GetDB(db.TaxExclusions).(db.ClearAndBulkAdder),
-				filePath: fw.GetConfig().FinancialsData.TaxExclusionsCsvFilepath,
+				filePath: financialsDataConfig.TaxExclusionsCsvFilepath,
 				model:    &[]*db.TaxExclusion{},
 				errChan:  make(chan error, 1),
 			},

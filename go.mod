@@ -1,13 +1,11 @@
 module github.com/ashwinath/moneybags
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.24.1
 
 require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/text v0.23.0
 	google.golang.org/protobuf v1.36.6
@@ -17,6 +15,7 @@ require (
 )
 
 require (
+	github.com/ashwinath/simple v0.0.0-20250508132456-b73a7e4cb95d // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect

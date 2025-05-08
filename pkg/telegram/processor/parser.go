@@ -291,7 +291,7 @@ func (p *parser) amount() (*float64, error) {
 	if err != nil {
 		// This cannot happen, or I can't imagine it.
 		// parser.classification() should consume all non floats
-		return nil, fmt.Errorf(fmt.Sprintf(errorFormatAmountToken, *token))
+		return nil, fmt.Errorf(errorFormatAmountToken, *token)
 	}
 
 	return &amount, nil

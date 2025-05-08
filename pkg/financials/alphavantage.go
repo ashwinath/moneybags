@@ -1,10 +1,12 @@
 package financials
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
-	"github.com/ashwinath/moneybags/pkg/framework"
+	"github.com/ashwinath/simple/client"
+	"github.com/ashwinath/simple/retry"
 )
 
 type Alphavantage interface {
@@ -38,8 +40,8 @@ func (a *alphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSy
 		symbol, a.apiKey,
 	)
 	res := symbolResult{}
-	err := framework.RetrySimple(func() error {
-		return framework.HTTPGet(url, &res)
+	err := retry.RetrySimple(func() error {
+		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage (%s): %s", symbol, url, err)
@@ -89,8 +91,8 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 	)
 
 	res := fxDailyResult{}
-	err := framework.RetrySimple(func() error {
-		return framework.HTTPGet(url, &res)
+	err := retry.RetrySimple(func() error {
+		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Could not get currency history (%s->%s) result from alphavantage (%s): %s", from, to, url, err)
@@ -156,8 +158,8 @@ func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[strin
 	)
 
 	res := timeSeriesDailyResult{}
-	err := framework.RetrySimple(func() error {
-		return framework.HTTPGet(url, &res)
+	err := retry.RetrySimple(func() error {
+		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("Could not get stock history (%s) result from alphavantage (%s): %s", url, symbol, err)

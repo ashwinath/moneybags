@@ -11,8 +11,8 @@ import (
 
 	"github.com/ashwinath/moneybags/pkg/config"
 	database "github.com/ashwinath/moneybags/pkg/db"
-	"github.com/ashwinath/moneybags/pkg/framework"
 	"github.com/ashwinath/moneybags/pkg/utils"
+	"github.com/ashwinath/simple/framework"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
@@ -64,7 +64,7 @@ func createFW(t *testing.T, db *database.DB) framework.FW {
 
 	return framework.New(c, sugar, map[string]any{
 		database.TransactionDatabaseName: txDB,
-	})
+	}, map[string]any{})
 }
 
 func TestProcessChunk(t *testing.T) {

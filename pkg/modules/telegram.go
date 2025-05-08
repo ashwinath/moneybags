@@ -5,8 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/ashwinath/moneybags/pkg/framework"
+	"github.com/ashwinath/moneybags/pbgo/configpb"
 	telegramprocessor "github.com/ashwinath/moneybags/pkg/telegram/processor"
+	"github.com/ashwinath/simple/framework"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -17,13 +18,13 @@ type TelegramModule struct {
 }
 
 func NewTelegramModule(fw framework.FW) (framework.Module, error) {
-	bot, err := tgbotapi.NewBotAPI(fw.GetConfig().TelegramConfig.ApiKey)
+	bot, err := tgbotapi.NewBotAPI(fw.GetConfig().(*configpb.Config).TelegramConfig.ApiKey)
 
 	if err != nil {
 		return nil, err
 	}
 
-	bot.Debug = fw.GetConfig().TelegramConfig.Debug
+	bot.Debug = fw.GetConfig().(*configpb.Config).TelegramConfig.Debug
 	fw.GetLogger().Infof("Authorized telegram bot on account %s", bot.Self.UserName)
 
 	pm, err := telegramprocessor.NewManager(fw)
@@ -52,7 +53,7 @@ func (m *TelegramModule) Start(ctx context.Context) {
 	updates := m.bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		if update.Message.From.UserName == m.fw.GetConfig().TelegramConfig.AllowedUser && update.Message != nil { // If we got a message
+		if update.Message.From.UserName == m.fw.GetConfig().(*configpb.Config).TelegramConfig.AllowedUser && update.Message != nil { // If we got a message
 			m.fw.GetLogger().Infof("[telegram] [%s to bot] %s", update.Message.From.UserName, update.Message.Text)
 
 			reply := m.processorManager.ProcessMessage(update.Message.Text, time.Unix(int64(update.Message.Date), 0))

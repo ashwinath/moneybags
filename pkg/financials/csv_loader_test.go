@@ -2,6 +2,7 @@ package financials
 
 import (
 	"testing"
+	"time"
 
 	database "github.com/ashwinath/moneybags/pkg/db"
 	"github.com/stretchr/testify/assert"
@@ -22,6 +23,8 @@ func TestLoadCSV(t *testing.T) {
 			fw.GetDB(database.TradeDatabaseName).(database.Counter),
 			fw.GetDB(database.TaxExclusions).(database.Counter),
 		}
+
+		time.Sleep(500 * time.Millisecond)
 
 		for _, counter := range allCounters {
 			count, err := counter.Count()
