@@ -59,8 +59,10 @@ func main() {
 		sugar.Fatalf("Failed to initialise financials module, %v", err)
 	}
 
+	serverModule := modules.NewServerModule(fw)
+
 	// Run app
-	app := framework.NewApp(sugar, telegram, financials)
+	app := framework.NewApp(sugar, telegram, financials, serverModule)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	signal.ListenForSignal(cancel, sugar)

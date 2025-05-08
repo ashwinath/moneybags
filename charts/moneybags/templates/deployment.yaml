@@ -37,14 +37,21 @@ spec:
           - --config
           - /etc/config/config.yaml
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          #livenessProbe:
-            #httpGet:
-              #path: /
-              #port: http
-          #readinessProbe:
-            #httpGet:
-              #path: /
-              #port: http
+          ports:
+          - containerPort: 6000
+            protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 6000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 6000
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
