@@ -26,7 +26,7 @@ This list is not exhaustive but a wishlist that I would work on when I'm free. M
 
 ## Technical Roadmap
 
-- [ ] liveness/readiness probes
+- [x] liveness/readiness probes
 
 ## Telegram API Definition
 
