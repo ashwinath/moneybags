@@ -44,13 +44,13 @@ func (a *alphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSy
 		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage (%s): %s", symbol, url, err)
+		return nil, fmt.Errorf("could not get symbol (%s) result from alphavantage (%s): %s", symbol, url, err)
 	}
 
 	// For testing we use demo key
 	if symbol != "tesco" {
 		if len(res.BestMatches) == 0 {
-			return nil, fmt.Errorf("Could not get symbol (%s) result from alphavantage (%s), length = %d", symbol, url, len(res.BestMatches))
+			return nil, fmt.Errorf("could not get symbol (%s) result from alphavantage (%s), length = %d", symbol, url, len(res.BestMatches))
 		}
 	}
 
@@ -95,7 +95,7 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get currency history (%s->%s) result from alphavantage (%s): %s", from, to, url, err)
+		return nil, fmt.Errorf("could not get currency history (%s->%s) result from alphavantage (%s): %s", from, to, url, err)
 	}
 
 	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
@@ -162,7 +162,7 @@ func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[strin
 		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Could not get stock history (%s) result from alphavantage (%s): %s", url, symbol, err)
+		return nil, fmt.Errorf("could not get stock history (%s) result from alphavantage (%s): %s", url, symbol, err)
 	}
 
 	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)

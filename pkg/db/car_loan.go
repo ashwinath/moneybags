@@ -43,5 +43,5 @@ func (db *carLoanDB) Clear() error {
 
 // Bulk add data
 func (db *carLoanDB) BulkAdd(objs any) error {
-	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
+	return db.db.Clauses(clause.OnConflict{UpdateAll: true}).Create(objs).Error
 }

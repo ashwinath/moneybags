@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	errorFormatWrappedToUser                   = "Error: %s, Message: %s"
+	errorFormatWrappedToUser                   = "error: %s, Message: %s"
 	errorFormatInstructionToken                = "could not parse instruction token: %s"
 	errorFormatTypeToken                       = "unable to parse type: %s"
 	errorFormatAmountToken                     = "unable to parse amount: %s"

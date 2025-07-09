@@ -44,6 +44,10 @@ db-shell:
 run:
 	go run cmd/moneybags.go --config local_config.yaml
 
+.PHONY: debugger
+debugger:
+	dlv debug cmd/moneybags.go -- --config local_config.yaml
+
 .PHONY: build
 build:
 	docker build -t $(REGISTRY)/moneybags:$(commit) -t $(REGISTRY)/moneybags:latest .

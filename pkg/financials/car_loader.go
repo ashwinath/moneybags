@@ -92,19 +92,16 @@ func (l *carLoader) mergeAssetWithLiabilitiesPerCar(assets []db.Asset, carLoans 
 	carLoanPointer := 0
 	mergedAssets := []db.Asset{}
 	for _, a := range assets {
-		if carLoanPointer == len(carLoans) {
-			mergedAssets = append(mergedAssets, a)
-			break
-		}
-
-		carLoan := carLoans[carLoanPointer]
-		if carLoanMonthSameAsAsset(a, carLoan) {
-			// merge
-			a.Amount -= carLoan.AmountLeft
-			carLoanPointer += 1
-		} else {
-			// Starting amount has the full loan amount unpaid
-			a.Amount -= carLoans[0].AmountLeft + carLoans[0].AmountPaid
+		if carLoanPointer < len(carLoans) {
+			carLoan := carLoans[carLoanPointer]
+			if carLoanMonthSameAsAsset(a, carLoan) {
+				// merge
+				a.Amount -= carLoan.AmountLeft
+				carLoanPointer += 1
+			} else {
+				// Starting amount has the full loan amount unpaid
+				a.Amount -= carLoans[0].AmountLeft + carLoans[0].AmountPaid
+			}
 		}
 
 		mergedAssets = append(mergedAssets, a)
@@ -135,7 +132,7 @@ func (l *carLoader) GetLiabilitiesPerCar(car *carpb.Car) ([]db.CarLoan, error) {
 	}
 
 	loanSchedule := []db.CarLoan{}
-	for i := 0; i < int(loan.Duration)*12-1; i++ {
+	for range int(loan.Duration)*12 - 1 {
 		// Get start date
 		amountPaid += paymentPerMonth
 		amountLeft -= paymentPerMonth
@@ -146,7 +143,12 @@ func (l *carLoader) GetLiabilitiesPerCar(car *carpb.Car) ([]db.CarLoan, error) {
 			AmountLeft: amountLeft,
 		}
 		loanSchedule = append(loanSchedule, loan)
+		// beacuase of a stupid bug in golang, february calculation is weird
+		// https://github.com/golang/go/issues/31145#issuecomment-478617982
 		date = date.AddDate(0, 1, 0)
+		if date.Month() == 3 {
+			date = date.AddDate(0, 0, -1)
+		}
 	}
 
 	loanSchedule = append(loanSchedule, db.CarLoan{
@@ -174,13 +176,12 @@ func (l *carLoader) GetAssetsPerCar(car *carpb.Car) ([]db.Asset, error) {
 	}
 
 	deprePerMonth := (car.Total - car.MinParfValue) / float64(car.Lifespan*utils.NumberOfMonthsInAYear)
-	duration := car.Lifespan * utils.NumberOfMonthsInAYear
 
 	var carEndDate time.Time
-	if !carSoldDate.IsZero() {
-		carEndDate = carSoldDate
+	if carSoldDate.IsZero() {
+		carEndDate = carStartDate.AddDate(int(car.Lifespan), 0, 0)
 	} else {
-		carEndDate = carStartDate.AddDate(0, int(duration), 0)
+		carEndDate = carSoldDate
 	}
 
 	// If car is bought after asset date, 1st of every month, skip

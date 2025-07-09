@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	databaseQueryErrorFormat string = "Could not query database, error: %s"
+	databaseQueryErrorFormat string = "could not query database, error: %s"
 	startMonth               int    = 3
 	startYear                int    = 2023
 )

@@ -8,14 +8,13 @@ import (
 	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pkg/config"
 	"github.com/ashwinath/moneybags/pkg/db"
-	database "github.com/ashwinath/moneybags/pkg/db"
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/ashwinath/simple/framework"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 )
 
-func createFW(t *testing.T, baseDB *database.DB) framework.FW {
+func createFW(t *testing.T, baseDB *db.DB) framework.FW {
 	logger, _ := zap.NewProduction()
 	sugar := logger.Sugar()
 
@@ -65,19 +64,19 @@ func createFW(t *testing.T, baseDB *database.DB) framework.FW {
 	assert.Nil(t, err)
 
 	return framework.New(c, sugar, map[string]any{
-		database.AssetDatabaseName:              assetDB,
-		database.AverageExpenditureDatabaseName: averageExpenditureDB,
-		database.ExchangeRateDatabaseName:       exchangeRateDB,
-		database.ExpenseDatabaseName:            expenseDB,
-		database.IncomeDatabaseName:             incomeDB,
-		database.MortgageDatabaseName:           mortgageDB,
-		database.PortfolioDatabaseName:          portfolioDB,
-		database.SharedExpenseDatabaseName:      sharedExpenseDB,
-		database.StockDatabaseName:              stockDB,
-		database.SymbolDatabaseName:             symbolDB,
-		database.TradeDatabaseName:              tradeDB,
-		database.TransactionDatabaseName:        transactionDB,
-		database.TaxExclusions:                  taxExclusionDB,
+		db.AssetDatabaseName:              assetDB,
+		db.AverageExpenditureDatabaseName: averageExpenditureDB,
+		db.ExchangeRateDatabaseName:       exchangeRateDB,
+		db.ExpenseDatabaseName:            expenseDB,
+		db.IncomeDatabaseName:             incomeDB,
+		db.MortgageDatabaseName:           mortgageDB,
+		db.PortfolioDatabaseName:          portfolioDB,
+		db.SharedExpenseDatabaseName:      sharedExpenseDB,
+		db.StockDatabaseName:              stockDB,
+		db.SymbolDatabaseName:             symbolDB,
+		db.TradeDatabaseName:              tradeDB,
+		db.TransactionDatabaseName:        transactionDB,
+		db.TaxExclusions:                  taxExclusionDB,
 	}, map[string]any{})
 }
 

@@ -45,19 +45,19 @@ func (stocksLoader) Name() string {
 
 func (l *stocksLoader) Load() error {
 	if err := l.processSymbols(); err != nil {
-		return fmt.Errorf("Failed to load process symbols: %s", err)
+		return fmt.Errorf("failed to load process symbols: %s", err)
 	}
 
 	if err := l.processCurrencies(); err != nil {
-		return fmt.Errorf("Failed to load process currencies: %s", err)
+		return fmt.Errorf("failed to load process currencies: %s", err)
 	}
 
 	if err := l.processStocks(); err != nil {
-		return fmt.Errorf("Failed to load process stocks: %s", err)
+		return fmt.Errorf("failed to load process stocks: %s", err)
 	}
 
 	if err := l.calculatePortfolio(); err != nil {
-		return fmt.Errorf("Failed to calculate portfolio: %s", err)
+		return fmt.Errorf("failed to calculate portfolio: %s", err)
 	}
 
 	return nil
@@ -247,7 +247,7 @@ func (l *stocksLoader) processStock(symbol db.Symbol) error {
 func (l *stocksLoader) calculatePortfolio() error {
 	symbols, err := l.symbolDB.GetStocks()
 	if err != nil {
-		return fmt.Errorf("failed to retrieve symbols from db.")
+		return fmt.Errorf("failed to retrieve symbols from db")
 	}
 
 	for _, symbol := range symbols {

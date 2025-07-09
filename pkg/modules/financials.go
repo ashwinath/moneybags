@@ -23,14 +23,14 @@ func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) 
 	return &FinancialsModule{
 		fw: fw,
 		loaders: []financials.Loader{
-			financials.NewCSVLoader(fw),
-			financials.NewTransactionLoader(fw),
-			financials.NewStocksLoader(fw, alphavantage),
-			financials.NewInvestmentsLoader(fw),
-			financials.NewSharedExpenseLoader(fw),
-			financials.NewAverageExpenditureLoader(fw),
-			financials.NewMortgageLoader(fw),
-			financials.NewHouseAssetLoader(fw),
+			//financials.NewCSVLoader(fw),
+			//financials.NewTransactionLoader(fw),
+			//financials.NewStocksLoader(fw, alphavantage),
+			//financials.NewInvestmentsLoader(fw),
+			//financials.NewSharedExpenseLoader(fw),
+			//financials.NewAverageExpenditureLoader(fw),
+			//financials.NewMortgageLoader(fw),
+			//financials.NewHouseAssetLoader(fw),
 			financials.NewCarLoader(fw),
 		},
 	}, nil
