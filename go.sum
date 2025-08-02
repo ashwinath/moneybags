@@ -2,6 +2,8 @@ github.com/ashwinath/simple v0.0.0-20250508132456-b73a7e4cb95d h1:F8FQmfvtDH6U29
 github.com/ashwinath/simple v0.0.0-20250508132456-b73a7e4cb95d/go.mod h1:AqBsPWHKLHLNUv8nPKCfO3qTEx5mLUUmtbkxfOy3aWs=
 github.com/ashwinath/simple v0.1.0 h1:vP0EhuFSFiQr/qSJBPV7jCrEP+eVimZv4nhDlgwTgmU=
 github.com/ashwinath/simple v0.1.0/go.mod h1:AqBsPWHKLHLNUv8nPKCfO3qTEx5mLUUmtbkxfOy3aWs=
+github.com/ashwinath/simple v0.1.1 h1:28ebgxtyD3lPCAsR0opmLDIkb5IvUZOLzS+LUomTJNI=
+github.com/ashwinath/simple v0.1.1/go.mod h1:AqBsPWHKLHLNUv8nPKCfO3qTEx5mLUUmtbkxfOy3aWs=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

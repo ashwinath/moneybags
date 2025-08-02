@@ -3,7 +3,7 @@ module github.com/ashwinath/moneybags
 go 1.24.1
 
 require (
-	github.com/ashwinath/simple v0.1.0
+	github.com/ashwinath/simple v0.1.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/stretchr/testify v1.10.0
