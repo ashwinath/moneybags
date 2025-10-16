@@ -1,5 +1,9 @@
 commit=$(shell git rev-parse HEAD)
 
+.PHONY: lint
+lint:
+	@golangci-lint run
+
 .PHONY: proto
 proto:
 	@rm -rf ./pbgo

@@ -57,7 +57,11 @@ func UnmarshalCSV(filepath string, obj any) error {
 		return fmt.Errorf("failed to open file (%s) during csv unmarshalling: %s", filepath, err)
 	}
 
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}()
 
 	if err := gocsv.UnmarshalFile(file, obj); err != nil { // Load clients from file
 		return fmt.Errorf("failed to unmarshal file (%s) during csv unmarshalling: %s", filepath, err)

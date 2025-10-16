@@ -41,7 +41,12 @@ func main() {
 	if err != nil {
 		sugar.Fatalf("Failed to initialise Base DB, %v", err)
 	}
-	defer baseDB.Close()
+
+	defer func() {
+		if err := baseDB.Close(); err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}()
 
 	// Load framework
 	fw := framework.New(c, sugar, createDBs(baseDB, sugar), map[string]any{})

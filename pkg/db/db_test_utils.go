@@ -70,7 +70,11 @@ func dropDatabase(name string) error {
 	}
 
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}()
 
 	db, err := NewBaseDB(c.PostgresDb)
 	if err != nil {
@@ -105,8 +109,16 @@ func RunTest(function func(db *DB)) error {
 		return err
 	}
 
-	defer dropDatabase(*dbName)
-	defer db.Close()
+	defer func() {
+		if err := dropDatabase(*dbName); err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}()
+	defer func() {
+		if err := db.Close(); err != nil {
+			fmt.Println("Error closing database:", err)
+		}
+	}()
 
 	function(db)
 

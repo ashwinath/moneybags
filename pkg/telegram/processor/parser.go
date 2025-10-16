@@ -254,14 +254,7 @@ func (p *parser) classification() (*string, error) {
 		return nil, errors.New(errorEmptyClassificationToken)
 	}
 
-	for {
-		// Not consuming the token as of yet in case we don't want to use it.
-		if p.peekCurrent() == nil {
-			// This is empty amount, e.g. Add own bicycle.
-			// Let parser.amount() handle the error.
-			break
-		}
-
+	for p.peekCurrent() != nil {
 		if _, err := strconv.ParseFloat(*p.peekCurrent(), 64); err == nil {
 			// Found a number
 			break

@@ -73,11 +73,12 @@ func TestTransactionLoader(t *testing.T) {
 		assert.Nil(t, res.Error)
 		assert.Len(t, expensesResult, 2)
 		for _, r := range expensesResult {
-			if r.Type == "Others" {
+			switch r.Type {
+			case "Others":
 				assert.Equal(t, r.Amount, float64(100.46))
-			} else if r.Type == "Reimbursement" {
+			case "Reimbursement":
 				assert.Equal(t, r.Amount, float64(-10))
-			} else {
+			default:
 				assert.Error(t, fmt.Errorf("there should be no other case"))
 			}
 		}
