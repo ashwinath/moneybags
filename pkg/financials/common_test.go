@@ -63,6 +63,9 @@ func createFW(t *testing.T, baseDB *db.DB) framework.FW {
 	taxExclusionDB, err := db.NewTaxExclusionDB(baseDB)
 	assert.Nil(t, err)
 
+	totalCompensationDB, err := db.NewTotalCompensationDB(baseDB)
+	assert.Nil(t, err)
+
 	return framework.New(c, sugar, map[string]any{
 		db.AssetDatabaseName:              assetDB,
 		db.AverageExpenditureDatabaseName: averageExpenditureDB,
@@ -77,6 +80,7 @@ func createFW(t *testing.T, baseDB *db.DB) framework.FW {
 		db.TradeDatabaseName:              tradeDB,
 		db.TransactionDatabaseName:        transactionDB,
 		db.TaxExclusions:                  taxExclusionDB,
+		db.TotalCompensationName:          totalCompensationDB,
 	}, map[string]any{})
 }
 

@@ -16,6 +16,7 @@ type Income struct {
 }
 
 type IncomeDB interface {
+	AggregateByYear([]string) ([]AggregateIncomeByYear, error)
 }
 
 type incomeDB struct {
@@ -49,4 +50,24 @@ func (db *incomeDB) Count() (int64, error) {
 		return 0, r.Error
 	}
 	return count, nil
+}
+
+type AggregateIncomeByYear struct {
+	Year   int
+	Amount float64
+}
+
+func (db *incomeDB) AggregateByYear(types []string) ([]AggregateIncomeByYear, error) {
+	results := []AggregateIncomeByYear{}
+	err := db.db.Table("incomes").
+		Select("date_part('year', date_trunc('year', transaction_date)) as year, sum(amount) as amount").
+		Where("type in ?", types).
+		Group("year").
+		Scan(&results).
+		Error
+
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
 }

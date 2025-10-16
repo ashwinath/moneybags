@@ -32,6 +32,7 @@ func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) 
 			financials.NewMortgageLoader(fw),
 			financials.NewHouseAssetLoader(fw),
 			financials.NewCarLoader(fw),
+			financials.NewIncomeLoader(fw),
 		},
 	}, nil
 }
