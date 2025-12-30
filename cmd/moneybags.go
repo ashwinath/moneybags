@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	logger, _ := zap.NewProduction()
+	logger, _ := zap.NewDevelopment()
 	defer func() {
 		if err := logger.Sync(); err != nil {
 			fmt.Printf("Unable to sync logger: %v", err)
