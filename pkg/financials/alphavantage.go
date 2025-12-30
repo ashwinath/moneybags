@@ -63,7 +63,10 @@ type fxDailyResult struct {
 }
 
 type timeSeriesDailyResult struct {
-	Results map[string]alphavantageOHLC `json:"Time Series (Daily)"`
+	Results      map[string]alphavantageOHLC `json:"Time Series (Daily)"`
+	ErrorMessage string                      `json:"Error Message"`
+	Information  string                      `json:"Information"`
+	Note         string                      `json:"Note"`
 }
 
 type alphavantageOHLC struct {
@@ -158,11 +161,17 @@ func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[strin
 	)
 
 	res := timeSeriesDailyResult{}
-	err := retry.RetrySimple(func() error {
-		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
-	})
+	err := client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	if err != nil {
 		return nil, fmt.Errorf("could not get stock history (%s) result from alphavantage (%s): %s", url, symbol, err)
+	}
+
+	if res.Information != "" || res.Note != "" {
+		return nil, fmt.Errorf("alpha vantage rate limit or info: %s %s", res.Information, res.Note)
+	}
+
+	if res.ErrorMessage != "" {
+		return nil, fmt.Errorf("alpha vantage error: %s", res.ErrorMessage)
 	}
 
 	ohlcs, err := convertAlphaOHLCToOHLC(res.Results)
