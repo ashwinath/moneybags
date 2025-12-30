@@ -1,12 +1,16 @@
 package financials
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetAlphavantageSymbol(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping test in CI environment") // Skips the test at runtime
+	}
 	av := NewAlphavantage("demo")
 
 	sym, err := av.GetSymbolFromAlphavantage("tesco")
@@ -16,6 +20,9 @@ func TestGetAlphavantageSymbol(t *testing.T) {
 }
 
 func TestGetCurrencyHistory(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping test in CI environment") // Skips the test at runtime
+	}
 	av := NewAlphavantage("demo")
 
 	ohlcs, err := av.GetCurrencyHistory("EUR", "USD", false)
@@ -34,6 +41,9 @@ func TestGetCurrencyHistory(t *testing.T) {
 }
 
 func TestGetStockHistory(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping test in CI environment") // Skips the test at runtime
+	}
 	av := NewAlphavantage("demo")
 
 	ohlcs, err := av.GetStockHistory("IBM", false)

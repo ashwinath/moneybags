@@ -15,6 +15,7 @@ jobs:
     env:
       REGISTRY: ghcr.io/ashwinath
       GO_VERSION: 1.25.5
+      CI: "1"
     services:
       postgres:
         image: postgres:16-alpine
