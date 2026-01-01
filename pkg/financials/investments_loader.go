@@ -46,7 +46,9 @@ func (l *investmentsLoader) Load() error {
 	for currentDate.Before(tomorrow) {
 		amount, err := l.portfolioDB.GetPortfolioAmountByDate(currentDate)
 		if err != nil {
-			return fmt.Errorf("failed to get amount for portfolio by date (%s): %s", currentDate, err)
+			l.fw.GetLogger().Errorf("failed to get amount for portfolio by date (%s): %s", currentDate, err)
+			currentDate = currentDate.AddDate(0, 1, 0)
+			continue
 		}
 
 		asset := db.Asset{
