@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/ashwinath/simple/client"
-	"github.com/ashwinath/simple/retry"
 )
+
+const alphaVantageTimeout = 2 * time.Second
 
 type Alphavantage interface {
 	GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error)
@@ -35,14 +37,13 @@ type AlphavantageSymbol struct {
 }
 
 func (a *alphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error) {
+	time.Sleep(alphaVantageTimeout)
 	url := fmt.Sprintf(
 		"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=%s&apikey=%s",
 		symbol, a.apiKey,
 	)
 	res := symbolResult{}
-	err := retry.RetrySimple(func() error {
-		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
-	})
+	err := client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	if err != nil {
 		return nil, fmt.Errorf("could not get symbol (%s) result from alphavantage (%s): %s", symbol, url, err)
 	}
@@ -84,6 +85,7 @@ type OHLC struct {
 }
 
 func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error) {
+	time.Sleep(alphaVantageTimeout)
 	outputSize := "full"
 	if isCompact {
 		outputSize = "compact"
@@ -94,9 +96,7 @@ func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool
 	)
 
 	res := fxDailyResult{}
-	err := retry.RetrySimple(func() error {
-		return client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
-	})
+	err := client.HTTPGet(context.TODO(), url, map[string]string{}, &res)
 	if err != nil {
 		return nil, fmt.Errorf("could not get currency history (%s->%s) result from alphavantage (%s): %s", from, to, url, err)
 	}
@@ -151,6 +151,7 @@ func convertAlphaOHLCToOHLC(alphaOHLC map[string]alphavantageOHLC) (map[string]O
 }
 
 func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error) {
+	time.Sleep(alphaVantageTimeout)
 	outputSize := "full"
 	if isCompact {
 		outputSize = "compact"
