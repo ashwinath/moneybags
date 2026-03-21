@@ -20,6 +20,4 @@ ENV ZONEINFO /zoneinfo.zip
 WORKDIR /usr/src/app
 COPY --from=builder /usr/local/app/moneybags ./moneybags
 
-USER 1000:1000
-
 CMD ["./moneybags"]
