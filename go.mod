@@ -4,7 +4,7 @@ go 1.24.1
 
 require (
 	github.com/ashwinath/simple v0.1.1
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/go-telegram/bot v1.20.0
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.1
