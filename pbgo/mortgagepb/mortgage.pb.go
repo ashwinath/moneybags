@@ -23,7 +23,7 @@ const (
 
 type MortgageConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Mortgages     []*Mortgage            `protobuf:"bytes,1,rep,name=mortgages,proto3" json:"mortgages,omitempty"`
+	Groups        []*MortgageGroup       `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,7 +58,59 @@ func (*MortgageConfig) Descriptor() ([]byte, []int) {
 	return file_mortgage_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *MortgageConfig) GetMortgages() []*Mortgage {
+func (x *MortgageConfig) GetGroups() []*MortgageGroup {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
+type MortgageGroup struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Mortgages     []*Mortgage            `protobuf:"bytes,2,rep,name=mortgages,proto3" json:"mortgages,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MortgageGroup) Reset() {
+	*x = MortgageGroup{}
+	mi := &file_mortgage_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MortgageGroup) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MortgageGroup) ProtoMessage() {}
+
+func (x *MortgageGroup) ProtoReflect() protoreflect.Message {
+	mi := &file_mortgage_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MortgageGroup.ProtoReflect.Descriptor instead.
+func (*MortgageGroup) Descriptor() ([]byte, []int) {
+	return file_mortgage_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *MortgageGroup) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *MortgageGroup) GetMortgages() []*Mortgage {
 	if x != nil {
 		return x.Mortgages
 	}
@@ -70,16 +122,16 @@ type Mortgage struct {
 	Total                   float64                `protobuf:"fixed64,1,opt,name=total,proto3" json:"total,omitempty"`
 	MortgageFirstPayment    string                 `protobuf:"bytes,2,opt,name=mortgage_first_payment,json=mortgageFirstPayment,proto3" json:"mortgage_first_payment,omitempty"`
 	MortgageDurationInYears uint32                 `protobuf:"varint,3,opt,name=mortgage_duration_in_years,json=mortgageDurationInYears,proto3" json:"mortgage_duration_in_years,omitempty"`
-	MortgageEndDate         string                 `protobuf:"bytes,4,opt,name=mortgage_end_date,json=mortgageEndDate,proto3" json:"mortgage_end_date,omitempty"`
-	InterestRatePercentage  float64                `protobuf:"fixed64,5,opt,name=interest_rate_percentage,json=interestRatePercentage,proto3" json:"interest_rate_percentage,omitempty"`
-	Downpayments            []*Downpayment         `protobuf:"bytes,6,rep,name=downpayments,proto3" json:"downpayments,omitempty"`
+	InterestRatePercentage  float64                `protobuf:"fixed64,4,opt,name=interest_rate_percentage,json=interestRatePercentage,proto3" json:"interest_rate_percentage,omitempty"`
+	Downpayments            []*Downpayment         `protobuf:"bytes,5,rep,name=downpayments,proto3" json:"downpayments,omitempty"`
+	MortgageEndDate         *string                `protobuf:"bytes,6,opt,name=mortgage_end_date,json=mortgageEndDate,proto3,oneof" json:"mortgage_end_date,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
 
 func (x *Mortgage) Reset() {
 	*x = Mortgage{}
-	mi := &file_mortgage_proto_msgTypes[1]
+	mi := &file_mortgage_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -91,7 +143,7 @@ func (x *Mortgage) String() string {
 func (*Mortgage) ProtoMessage() {}
 
 func (x *Mortgage) ProtoReflect() protoreflect.Message {
-	mi := &file_mortgage_proto_msgTypes[1]
+	mi := &file_mortgage_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +156,7 @@ func (x *Mortgage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mortgage.ProtoReflect.Descriptor instead.
 func (*Mortgage) Descriptor() ([]byte, []int) {
-	return file_mortgage_proto_rawDescGZIP(), []int{1}
+	return file_mortgage_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Mortgage) GetTotal() float64 {
@@ -128,13 +180,6 @@ func (x *Mortgage) GetMortgageDurationInYears() uint32 {
 	return 0
 }
 
-func (x *Mortgage) GetMortgageEndDate() string {
-	if x != nil {
-		return x.MortgageEndDate
-	}
-	return ""
-}
-
 func (x *Mortgage) GetInterestRatePercentage() float64 {
 	if x != nil {
 		return x.InterestRatePercentage
@@ -149,6 +194,13 @@ func (x *Mortgage) GetDownpayments() []*Downpayment {
 	return nil
 }
 
+func (x *Mortgage) GetMortgageEndDate() string {
+	if x != nil && x.MortgageEndDate != nil {
+		return *x.MortgageEndDate
+	}
+	return ""
+}
+
 type Downpayment struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Date          string                 `protobuf:"bytes,1,opt,name=date,proto3" json:"date,omitempty"`
@@ -159,7 +211,7 @@ type Downpayment struct {
 
 func (x *Downpayment) Reset() {
 	*x = Downpayment{}
-	mi := &file_mortgage_proto_msgTypes[2]
+	mi := &file_mortgage_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -171,7 +223,7 @@ func (x *Downpayment) String() string {
 func (*Downpayment) ProtoMessage() {}
 
 func (x *Downpayment) ProtoReflect() protoreflect.Message {
-	mi := &file_mortgage_proto_msgTypes[2]
+	mi := &file_mortgage_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -184,7 +236,7 @@ func (x *Downpayment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Downpayment.ProtoReflect.Descriptor instead.
 func (*Downpayment) Descriptor() ([]byte, []int) {
-	return file_mortgage_proto_rawDescGZIP(), []int{2}
+	return file_mortgage_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Downpayment) GetDate() string {
@@ -205,16 +257,20 @@ var File_mortgage_proto protoreflect.FileDescriptor
 
 const file_mortgage_proto_rawDesc = "" +
 	"\n" +
-	"\x0emortgage.proto\x12\bmortgage\"B\n" +
-	"\x0eMortgageConfig\x120\n" +
-	"\tmortgages\x18\x01 \x03(\v2\x12.mortgage.MortgageR\tmortgages\"\xb4\x02\n" +
+	"\x0emortgage.proto\x12\bmortgage\"A\n" +
+	"\x0eMortgageConfig\x12/\n" +
+	"\x06groups\x18\x01 \x03(\v2\x17.mortgage.MortgageGroupR\x06groups\"U\n" +
+	"\rMortgageGroup\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x120\n" +
+	"\tmortgages\x18\x02 \x03(\v2\x12.mortgage.MortgageR\tmortgages\"\xcf\x02\n" +
 	"\bMortgage\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x01R\x05total\x124\n" +
 	"\x16mortgage_first_payment\x18\x02 \x01(\tR\x14mortgageFirstPayment\x12;\n" +
-	"\x1amortgage_duration_in_years\x18\x03 \x01(\rR\x17mortgageDurationInYears\x12*\n" +
-	"\x11mortgage_end_date\x18\x04 \x01(\tR\x0fmortgageEndDate\x128\n" +
-	"\x18interest_rate_percentage\x18\x05 \x01(\x01R\x16interestRatePercentage\x129\n" +
-	"\fdownpayments\x18\x06 \x03(\v2\x15.mortgage.DownpaymentR\fdownpayments\"3\n" +
+	"\x1amortgage_duration_in_years\x18\x03 \x01(\rR\x17mortgageDurationInYears\x128\n" +
+	"\x18interest_rate_percentage\x18\x04 \x01(\x01R\x16interestRatePercentage\x129\n" +
+	"\fdownpayments\x18\x05 \x03(\v2\x15.mortgage.DownpaymentR\fdownpayments\x12/\n" +
+	"\x11mortgage_end_date\x18\x06 \x01(\tH\x00R\x0fmortgageEndDate\x88\x01\x01B\x14\n" +
+	"\x12_mortgage_end_date\"3\n" +
 	"\vDownpayment\x12\x12\n" +
 	"\x04date\x18\x01 \x01(\tR\x04date\x12\x10\n" +
 	"\x03sum\x18\x02 \x01(\x01R\x03sumB\x13Z\x11./pbgo/mortgagepbb\x06proto3"
@@ -231,20 +287,22 @@ func file_mortgage_proto_rawDescGZIP() []byte {
 	return file_mortgage_proto_rawDescData
 }
 
-var file_mortgage_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_mortgage_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_mortgage_proto_goTypes = []any{
 	(*MortgageConfig)(nil), // 0: mortgage.MortgageConfig
-	(*Mortgage)(nil),       // 1: mortgage.Mortgage
-	(*Downpayment)(nil),    // 2: mortgage.Downpayment
+	(*MortgageGroup)(nil),  // 1: mortgage.MortgageGroup
+	(*Mortgage)(nil),       // 2: mortgage.Mortgage
+	(*Downpayment)(nil),    // 3: mortgage.Downpayment
 }
 var file_mortgage_proto_depIdxs = []int32{
-	1, // 0: mortgage.MortgageConfig.mortgages:type_name -> mortgage.Mortgage
-	2, // 1: mortgage.Mortgage.downpayments:type_name -> mortgage.Downpayment
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1, // 0: mortgage.MortgageConfig.groups:type_name -> mortgage.MortgageGroup
+	2, // 1: mortgage.MortgageGroup.mortgages:type_name -> mortgage.Mortgage
+	3, // 2: mortgage.Mortgage.downpayments:type_name -> mortgage.Downpayment
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_mortgage_proto_init() }
@@ -252,13 +310,14 @@ func file_mortgage_proto_init() {
 	if File_mortgage_proto != nil {
 		return
 	}
+	file_mortgage_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mortgage_proto_rawDesc), len(file_mortgage_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

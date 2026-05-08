@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io/ashwinath
-      GO_VERSION: 1.25.5
+      GO_VERSION: 1.26.3
       CI: "1"
     services:
       postgres:

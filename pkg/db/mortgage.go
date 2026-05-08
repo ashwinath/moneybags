@@ -11,13 +11,12 @@ const MortgageDatabaseName string = "mortgage"
 
 type Mortgage struct {
 	ID                 uint      `gorm:"primaryKey"`
-	Date               time.Time `gorm:"type:timestamptz;unique"`
+	Date               time.Time `gorm:"type:timestamptz"`
 	InterestPaid       float64
 	PrincipalPaid      float64
 	TotalInterestPaid  float64
 	TotalPrincipalPaid float64
-	TotalInterestLeft  float64
-	TotalPrincipalLeft float64
+	GroupName          string
 }
 
 func (Mortgage) TableName() string {
@@ -25,6 +24,7 @@ func (Mortgage) TableName() string {
 }
 
 type MortgageDB interface {
+	BulkUpdate([]Mortgage) error
 	GetMortgage() ([]Mortgage, error)
 }
 
@@ -50,6 +50,20 @@ func (db *mortgageDB) Clear() error {
 // Bulk add data
 func (db *mortgageDB) BulkAdd(objs any) error {
 	return db.db.Clauses(clause.OnConflict{DoNothing: true}).Create(objs).Error
+}
+
+// Bulk update data
+func (db *mortgageDB) BulkUpdate(mortgages []Mortgage) error {
+	return db.db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"interest_paid",
+			"principal_paid",
+			"total_interest_paid",
+			"total_principal_paid",
+			"group_name",
+		}),
+	}).Create(mortgages).Error
 }
 
 func (db *mortgageDB) GetMortgage() ([]Mortgage, error) {

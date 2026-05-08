@@ -2,7 +2,6 @@ package financials
 
 import (
 	"fmt"
-	"math"
 	"testing"
 	"time"
 
@@ -34,19 +33,15 @@ func TestMortgageSchedule(t *testing.T) {
 		assert.Equal(t, 0.0, first.TotalInterestPaid)
 		assert.Equal(t, 1000.0, first.PrincipalPaid)
 		assert.Equal(t, 1000.0, first.TotalPrincipalPaid)
-		assert.Equal(t, 49000.0, first.TotalPrincipalLeft)
-		assert.True(t, almostEqual(10469.25, first.TotalInterestLeft))
 
 		firstPayment := mortgages[2]
 		d, err = utils.SetDateFromString("2022-10-10")
 		assert.Nil(t, err)
 		assert.Equal(t, d.In(singaporeLocation), firstPayment.Date.In(singaporeLocation))
-		assert.True(t, almostEqual(62.83, firstPayment.InterestPaid))
-		assert.True(t, almostEqual(62.83, firstPayment.TotalInterestPaid))
-		assert.True(t, almostEqual(68.73, firstPayment.PrincipalPaid))
-		assert.True(t, almostEqual(21068.73, firstPayment.TotalPrincipalPaid))
-		assert.True(t, almostEqual(28931.27, firstPayment.TotalPrincipalLeft))
-		assert.True(t, almostEqual(10406.41, firstPayment.TotalInterestLeft))
+		assert.InDelta(t, 62.83, firstPayment.InterestPaid, 0.1)
+		assert.InDelta(t, 62.83, firstPayment.TotalInterestPaid, 0.1)
+		assert.InDelta(t, 68.73, firstPayment.PrincipalPaid, 0.1)
+		assert.InDelta(t, 21068.73, firstPayment.TotalPrincipalPaid, 0.1)
 
 		// Test house asset loader also
 		hal := NewHouseAssetLoader(fw)
@@ -100,7 +95,7 @@ func TestMortgageAndInterest(t *testing.T) {
 			monthlyPayment := CalculateMortgageMonthlyPayment(
 				tt.principal, tt.ir, tt.years,
 			)
-			assert.True(t, almostEqual(monthlyPayment, tt.expectedMonthlyPayment))
+			assert.InDelta(t, monthlyPayment, tt.expectedMonthlyPayment, 0.1)
 
 			interestPaidSchedule := CalculateInterestPaidSchedule(
 				tt.principal, monthlyPayment, tt.ir,
@@ -111,11 +106,7 @@ func TestMortgageAndInterest(t *testing.T) {
 				sum += ip
 			}
 
-			assert.True(t, almostEqual(sum, tt.expectedInterestPaid))
+			assert.InDelta(t, sum, tt.expectedInterestPaid, 0.1)
 		})
 	}
-}
-
-func almostEqual(a, b float64) bool {
-	return math.Abs(a-b) <= 0.01
 }

@@ -1,11 +1,19 @@
-mortgages:
-- total: 50000.0
-  mortgage_first_payment: 2022-10-10
-  mortgage_duration_in_years: 25
-  mortgage_end_date: 2047-10-10
-  interest_rate_percentage: 2.6
-  downpayments:
-  - date: 2021-10-10
-    sum: 1000.0
-  - date: 2021-12-12
-    sum: 20000.0
+groups:
+  - name: "My House"
+    sold: true
+    mortgages:
+      - total: 50000.0
+        mortgage_first_payment: 2022-10-10
+        mortgage_duration_in_years: 25
+        interest_rate_percentage: 2.6
+        mortgage_end_date: 2024-12-10
+        downpayments:
+          - date: 2021-10-10
+            sum: 1000.0
+          - date: 2021-12-12
+            sum: 20000.0
+      - total: 10000
+        mortgage_first_payment: 2025-01-10
+        mortgage_duration_in_years: 10
+        interest_rate_percentage: 3.0
+        downpayments: []

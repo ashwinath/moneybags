@@ -3,6 +3,7 @@ package financials
 import (
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pbgo/mortgagepb"
@@ -13,6 +14,7 @@ import (
 
 type mortgageLoader struct {
 	fw                 framework.FW
+	mortgageDB         db.MortgageDB
 	mortgageBulkLoader db.ClearAndBulkAdder
 	mortgageConfig     *mortgagepb.MortgageConfig
 }
@@ -21,6 +23,7 @@ func NewMortgageLoader(fw framework.FW) Loader {
 	return &mortgageLoader{
 		fw:                 fw,
 		mortgageBulkLoader: fw.GetDB(db.MortgageDatabaseName).(db.ClearAndBulkAdder),
+		mortgageDB:         fw.GetDB(db.MortgageDatabaseName).(db.MortgageDB),
 	}
 }
 
@@ -36,10 +39,51 @@ func (l *mortgageLoader) Load() error {
 		return fmt.Errorf("failed to clear mortgage db: %s", err)
 	}
 
-	for _, m := range l.mortgageConfig.Mortgages {
-		if err := l.loadOneMortgageSchedule(m); err != nil {
-			return fmt.Errorf("failed to load mortage schedule: %s", err)
+	for _, group := range l.mortgageConfig.Groups {
+		for _, m := range group.Mortgages {
+			if err := l.loadOneMortgageSchedule(m, group); err != nil {
+				return fmt.Errorf("failed to load mortage schedule: %s", err)
+			}
 		}
+	}
+
+	// TODO: Query all mortgages and calculate the interest paid and principal paid
+	if err := l.calculateTotalPrincipalAndInterestPaid(); err != nil {
+		return fmt.Errorf("failed to calculate mortgage total principal and interest: %s", err)
+	}
+
+	return nil
+}
+
+type cumulativeGroup struct {
+	TotalPrincipalPaid float64
+	TotalInterestPaid  float64
+}
+
+func (l *mortgageLoader) calculateTotalPrincipalAndInterestPaid() error {
+	mortgages, err := l.mortgageDB.GetMortgage()
+	if err != nil {
+		return fmt.Errorf("unable to query mortgage: %s", err)
+	}
+
+	newMortgages := []db.Mortgage{}
+	cumulative := map[string]*cumulativeGroup{}
+	for _, m := range mortgages {
+		if _, ok := cumulative[m.GroupName]; !ok {
+			cumulative[m.GroupName] = &cumulativeGroup{}
+		}
+		cg := cumulative[m.GroupName]
+		cg.TotalInterestPaid += m.InterestPaid
+		cg.TotalPrincipalPaid += m.PrincipalPaid
+
+		m.TotalInterestPaid = cg.TotalInterestPaid
+		m.TotalPrincipalPaid = cg.TotalPrincipalPaid
+
+		newMortgages = append(newMortgages, m)
+	}
+
+	if err := l.mortgageDB.BulkUpdate(newMortgages); err != nil {
+		return fmt.Errorf("failed to bulk update mortgage schedule: %s", err)
 	}
 
 	return nil
@@ -55,7 +99,7 @@ func (l *mortgageLoader) loadMortgageConfig() error {
 	return nil
 }
 
-func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
+func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage, mg *mortgagepb.MortgageGroup) error {
 	principal := m.Total
 	for _, dp := range m.Downpayments {
 		principal -= dp.Sum
@@ -64,33 +108,17 @@ func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
 	monthlyPayment := CalculateMortgageMonthlyPayment(principal, m.InterestRatePercentage, int(m.MortgageDurationInYears))
 	interestPaidSchedule := CalculateInterestPaidSchedule(principal, monthlyPayment, m.InterestRatePercentage)
 
-	totalInterestToBePaid := 0.0
-	for _, i := range interestPaidSchedule {
-		totalInterestToBePaid += i
-	}
-
-	totalInterestLeft := totalInterestToBePaid
-	totalPrincipalPaid := 0.0
-	totalInterestPaid := 0.0
-	totalPrincipalLeft := m.Total
-
 	mortgageSchedule := []db.Mortgage{}
-
 	// downpayment
 	for _, dp := range m.Downpayments {
-		totalPrincipalLeft -= dp.Sum
-		totalPrincipalPaid += dp.Sum
 		date, err := utils.SetDateFromString(dp.Date)
 		if err != nil {
 			return fmt.Errorf("could not parse downpayment date (%s): %s", dp.Date, err)
 		}
 		schedule := db.Mortgage{
-			Date:               date,
-			PrincipalPaid:      dp.Sum,
-			TotalPrincipalPaid: totalPrincipalPaid,
-			TotalInterestPaid:  totalInterestPaid,
-			TotalPrincipalLeft: totalPrincipalLeft,
-			TotalInterestLeft:  totalInterestLeft,
+			Date:          date,
+			PrincipalPaid: dp.Sum,
+			GroupName:     mg.Name,
 		}
 		mortgageSchedule = append(mortgageSchedule, schedule)
 	}
@@ -100,24 +128,30 @@ func (l *mortgageLoader) loadOneMortgageSchedule(m *mortgagepb.Mortgage) error {
 		return fmt.Errorf("could not parse mortgage first payment date (%s): %s", m.MortgageFirstPayment, err)
 	}
 
-	for _, interestPaid := range interestPaidSchedule {
-		// Interest
-		totalInterestPaid = math.Min(totalInterestPaid+interestPaid, totalInterestToBePaid)
-		totalInterestLeft = math.Max(totalInterestLeft-interestPaid, 0.0)
+	hasEndDate := false
+	var endDate time.Time
+	if m.MortgageEndDate != nil {
+		hasEndDate = true
+		var err error
+		endDate, err = utils.SetDateFromString(*m.MortgageEndDate)
+		if err != nil {
+			return fmt.Errorf("could not parse mortgage end date (%s): %s", *m.MortgageEndDate, err)
+		}
+	}
 
-		// principal
-		principalPaid := monthlyPayment - interestPaid
-		totalPrincipalPaid = math.Min(totalPrincipalPaid+principalPaid, m.Total)
-		totalPrincipalLeft = math.Max(totalPrincipalLeft-principalPaid, 0.0)
+	for _, interestPaid := range interestPaidSchedule {
+		if hasEndDate {
+			ed := utils.SetDateToEndOfMonth(endDate)
+			if mortgageDate.After(ed) {
+				break
+			}
+		}
 
 		schedule := db.Mortgage{
-			Date:               mortgageDate,
-			InterestPaid:       interestPaid,
-			PrincipalPaid:      principalPaid,
-			TotalPrincipalPaid: totalPrincipalPaid,
-			TotalInterestPaid:  totalInterestPaid,
-			TotalPrincipalLeft: totalPrincipalLeft,
-			TotalInterestLeft:  totalInterestLeft,
+			Date:          mortgageDate,
+			InterestPaid:  interestPaid,
+			PrincipalPaid: monthlyPayment - interestPaid,
+			GroupName:     mg.Name,
 		}
 		mortgageSchedule = append(mortgageSchedule, schedule)
 		mortgageDate = mortgageDate.AddDate(0, 1, 0)
