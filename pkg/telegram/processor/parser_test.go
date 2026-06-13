@@ -32,6 +32,7 @@ func TestParser(t *testing.T) {
 			testString: "Add reim food 24.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeReimburse,
 				Classification: "food",
 				Amount:         24.5,
@@ -43,6 +44,7 @@ func TestParser(t *testing.T) {
 			testString: "Add shared reim christmas's dinner 60.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeSharedReimburse,
 				Classification: "christmas's dinner",
 				Amount:         60.5,
@@ -54,6 +56,7 @@ func TestParser(t *testing.T) {
 			testString: "Add special shared reim furniture 2400.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeSpecialSharedReimburse,
 				Classification: "furniture",
 				Amount:         2400.5,
@@ -65,6 +68,7 @@ func TestParser(t *testing.T) {
 			testString: "Add shared lunch 10.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeShared,
 				Classification: "lunch",
 				Amount:         10.5,
@@ -76,6 +80,7 @@ func TestParser(t *testing.T) {
 			testString: "Add special shared washing machine 810.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeSpecialShared,
 				Classification: "washing machine",
 				Amount:         810.5,
@@ -87,6 +92,7 @@ func TestParser(t *testing.T) {
 			testString: "Add special own holiday to japan 810.5",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeSpecialOwn,
 				Classification: "holiday to japan",
 				Amount:         810.5,
@@ -98,6 +104,7 @@ func TestParser(t *testing.T) {
 			testString: "Add own computer and monitors 2010",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeOwn,
 				Classification: "computer and monitors",
 				Amount:         2010.0,
@@ -109,6 +116,7 @@ func TestParser(t *testing.T) {
 			testString: "Add shared dinner 12.5 2020-10-02",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeShared,
 				Classification: "dinner",
 				Amount:         12.5,
@@ -120,8 +128,9 @@ func TestParser(t *testing.T) {
 			name:       "Delete transaction",
 			testString: "Del 100",
 			expected: Chunk{
-				Instruction: Delete,
-				ID:          100,
+				Instruction:    Delete,
+				RawInstruction: "Del",
+				ID:             100,
 			},
 			expectedError: nil,
 		},
@@ -129,7 +138,8 @@ func TestParser(t *testing.T) {
 			name:       "Help",
 			testString: "help",
 			expected: Chunk{
-				Instruction: Help,
+				Instruction:    Help,
+				RawInstruction: "help",
 			},
 			expectedError: nil,
 		},
@@ -137,8 +147,9 @@ func TestParser(t *testing.T) {
 			name:       "Generate",
 			testString: "Gen March 2020",
 			expected: Chunk{
-				Instruction: Generate,
-				StartDate:   parseDateForced(t, "2020-03-01"),
+				Instruction:    Generate,
+				RawInstruction: "Gen",
+				StartDate:      parseDateForced(t, "2020-03-01"),
 			},
 			expectedError: nil,
 		},
@@ -146,9 +157,10 @@ func TestParser(t *testing.T) {
 			name:       "Add credit card",
 			testString: "Add cc 1003.52",
 			expected: Chunk{
-				Instruction: Add,
-				Type:        db.TypeCreditCard,
-				Amount:      1003.52,
+				Instruction:    Add,
+				RawInstruction: "Add",
+				Type:           db.TypeCreditCard,
+				Amount:         1003.52,
 			},
 			expectedError: nil,
 		},
@@ -156,9 +168,10 @@ func TestParser(t *testing.T) {
 			name:       "Add insurance",
 			testString: "Add insurance 200.32",
 			expected: Chunk{
-				Instruction: Add,
-				Type:        db.TypeInsurance,
-				Amount:      200.32,
+				Instruction:    Add,
+				RawInstruction: "Add",
+				Type:           db.TypeInsurance,
+				Amount:         200.32,
 			},
 			expectedError: nil,
 		},
@@ -166,9 +179,10 @@ func TestParser(t *testing.T) {
 			name:       "Add tithe",
 			testString: "Add tithe 500",
 			expected: Chunk{
-				Instruction: Add,
-				Type:        db.TypeTithe,
-				Amount:      500,
+				Instruction:    Add,
+				RawInstruction: "Add",
+				Type:           db.TypeTithe,
+				Amount:         500,
 			},
 			expectedError: nil,
 		},
@@ -176,10 +190,11 @@ func TestParser(t *testing.T) {
 			name:       "Add tax",
 			testString: "Add tax 45 2023-03-23",
 			expected: Chunk{
-				Instruction: Add,
-				Type:        db.TypeTax,
-				Amount:      45,
-				Date:        parseDateForced(t, "2023-03-23"),
+				Instruction:    Add,
+				RawInstruction: "Add",
+				Type:           db.TypeTax,
+				Amount:         45,
+				Date:           parseDateForced(t, "2023-03-23"),
 			},
 			expectedError: nil,
 		},
@@ -188,6 +203,7 @@ func TestParser(t *testing.T) {
 			testString: "Add shared cc reim petrol 20.45 2023-03-25",
 			expected: Chunk{
 				Instruction:    Add,
+				RawInstruction: "Add",
 				Type:           db.TypeSharedCCReimburse,
 				Classification: "petrol",
 				Amount:         20.45,

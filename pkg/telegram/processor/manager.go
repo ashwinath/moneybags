@@ -152,10 +152,11 @@ func (m *ProcessorManager) processChunk(chunk *Chunk, messageTime time.Time) *st
 		return m.processChunkDelete(chunk)
 	case Generate:
 		return m.processChunkGenerate(chunk)
+	case Help:
+		return m.showHelp(nil)
+	default:
+		return m.showHelp(fmt.Errorf(errorInvalidInstruction, chunk.RawInstruction))
 	}
-
-	return m.showHelp(nil)
-
 }
 
 func (m *ProcessorManager) processChunkAdd(chunk *Chunk, messageTime time.Time) *string {

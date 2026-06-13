@@ -40,6 +40,7 @@ const (
 	errorEmptyIDToken                          = "empty ID token"
 	errorEmptyMonthToken                       = "empty month token"
 	errorEmptyYearToken                        = "empty year token"
+	errorInvalidInstruction                    = `"%s" is not a valid command`
 )
 
 var typesWithoutClassification = map[db.TransactionType]struct{}{
@@ -50,7 +51,8 @@ var typesWithoutClassification = map[db.TransactionType]struct{}{
 }
 
 type Chunk struct {
-	Instruction Instruction
+	Instruction   Instruction
+	RawInstruction string
 
 	// For type Add
 	Type           db.TransactionType
@@ -86,13 +88,20 @@ func Parse(message string) (*Chunk, error) {
 }
 
 func (p *parser) Parse() (*Chunk, error) {
+	// Capture raw instruction before it's consumed
+	rawInstruction := ""
+	if token := p.peekCurrent(); token != nil {
+		rawInstruction = *token
+	}
+
 	instruction, err := p.instruction()
 	if err != nil {
 		return nil, p.wrapError(err)
 	}
 
 	chunk := &Chunk{
-		Instruction: instruction,
+		Instruction:   instruction,
+		RawInstruction: rawInstruction,
 	}
 
 	switch instruction {
