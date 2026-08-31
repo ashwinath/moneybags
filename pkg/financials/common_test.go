@@ -133,11 +133,11 @@ func (fakeAlphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageS
 	}, nil
 }
 
-func (fakeAlphavantage) GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error) {
+func (fakeAlphavantage) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 
-func (fakeAlphavantage) GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error) {
+func (fakeAlphavantage) GetStockHistory(symbol string) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 

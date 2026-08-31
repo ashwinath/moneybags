@@ -148,8 +148,7 @@ func (l *stocksLoader) processCurrencies() error {
 }
 
 func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
-	isCompact := symbol.LastProcessedDate != nil
-	history, err := l.alphavantage.GetCurrencyHistory(symbol.Symbol, "SGD", isCompact)
+	history, err := l.alphavantage.GetCurrencyHistory(symbol.Symbol, "SGD")
 	if err != nil {
 		return err
 	}
@@ -204,8 +203,7 @@ func (l *stocksLoader) processStocks() error {
 }
 
 func (l *stocksLoader) processStock(symbol db.Symbol) error {
-	isCompact := symbol.LastProcessedDate != nil
-	history, err := l.alphavantage.GetStockHistory(symbol.Symbol, isCompact)
+	history, err := l.alphavantage.GetStockHistory(symbol.Symbol)
 	if err != nil {
 		return err
 	}

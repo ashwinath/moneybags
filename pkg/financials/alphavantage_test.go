@@ -25,7 +25,7 @@ func TestGetCurrencyHistory(t *testing.T) {
 	}
 	av := NewAlphavantage("demo")
 
-	ohlcs, err := av.GetCurrencyHistory("EUR", "USD", false)
+	ohlcs, err := av.GetCurrencyHistory("EUR", "USD")
 	assert.Nil(t, err)
 
 	assert.Greater(t, len(ohlcs), 1)
@@ -46,7 +46,7 @@ func TestGetStockHistory(t *testing.T) {
 	}
 	av := NewAlphavantage("demo")
 
-	ohlcs, err := av.GetStockHistory("IBM", false)
+	ohlcs, err := av.GetStockHistory("IBM")
 	assert.Nil(t, err)
 
 	assert.Greater(t, len(ohlcs), 1)

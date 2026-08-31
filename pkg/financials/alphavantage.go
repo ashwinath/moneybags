@@ -13,8 +13,8 @@ const alphaVantageTimeout = 2 * time.Second
 
 type Alphavantage interface {
 	GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error)
-	GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error)
-	GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error)
+	GetCurrencyHistory(from string, to string) (map[string]OHLC, error)
+	GetStockHistory(symbol string) (map[string]OHLC, error)
 }
 
 type alphavantage struct {
@@ -84,15 +84,11 @@ type OHLC struct {
 	Close float64
 }
 
-func (a *alphavantage) GetCurrencyHistory(from string, to string, isCompact bool) (map[string]OHLC, error) {
+func (a *alphavantage) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
 	time.Sleep(alphaVantageTimeout)
-	outputSize := "full"
-	if isCompact {
-		outputSize = "compact"
-	}
 	url := fmt.Sprintf(
-		"https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=%s&to_symbol=%s&outputsize=%s&apikey=%s",
-		from, to, outputSize, a.apiKey,
+		"https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=%s&to_symbol=%s&outputsize=compact&apikey=%s",
+		from, to, a.apiKey,
 	)
 
 	res := fxDailyResult{}
@@ -150,15 +146,11 @@ func convertAlphaOHLCToOHLC(alphaOHLC map[string]alphavantageOHLC) (map[string]O
 	return ohlcs, nil
 }
 
-func (a *alphavantage) GetStockHistory(symbol string, isCompact bool) (map[string]OHLC, error) {
+func (a *alphavantage) GetStockHistory(symbol string) (map[string]OHLC, error) {
 	time.Sleep(alphaVantageTimeout)
-	outputSize := "full"
-	if isCompact {
-		outputSize = "compact"
-	}
 	url := fmt.Sprintf(
-		"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=%s&apikey=%s",
-		symbol, outputSize, a.apiKey,
+		"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&outputsize=compact&apikey=%s",
+		symbol, a.apiKey,
 	)
 
 	res := timeSeriesDailyResult{}
