@@ -2,6 +2,7 @@ package financials
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ashwinath/moneybags/pkg/db"
@@ -37,6 +38,10 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 		stockCache:     map[string]float64{},
 		currencyCache:  map[string]float64{},
 	}
+}
+
+func isRateLimitError(err error) bool {
+	return strings.Contains(err.Error(), "rate limit")
 }
 
 func (stocksLoader) Name() string {
@@ -90,6 +95,9 @@ func (l *stocksLoader) processStockSymbols() error {
 		if !exists {
 			aSym, err := l.alphavantage.GetSymbolFromAlphavantage(s)
 			if err != nil {
+				if isRateLimitError(err) {
+					l.fw.GetLogger().Warnf("rate limited while looking up symbol %s, retry later", s)
+				}
 				return err
 			}
 			sym := db.Symbol{
@@ -150,6 +158,9 @@ func (l *stocksLoader) processCurrencies() error {
 func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
 	history, err := l.alphavantage.GetCurrencyHistory(symbol.Symbol, "SGD")
 	if err != nil {
+		if isRateLimitError(err) {
+			l.fw.GetLogger().Warnf("rate limited while fetching currency history for %s, retry later", symbol.Symbol)
+		}
 		return err
 	}
 
@@ -205,6 +216,9 @@ func (l *stocksLoader) processStocks() error {
 func (l *stocksLoader) processStock(symbol db.Symbol) error {
 	history, err := l.alphavantage.GetStockHistory(symbol.Symbol)
 	if err != nil {
+		if isRateLimitError(err) {
+			l.fw.GetLogger().Warnf("rate limited while fetching stock history for %s, retry later", symbol.Symbol)
+		}
 		return err
 	}
 

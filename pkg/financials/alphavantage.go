@@ -9,7 +9,7 @@ import (
 	"github.com/ashwinath/simple/client"
 )
 
-const alphaVantageTimeout = 2 * time.Second
+const alphaVantageTimeout = 12 * time.Second
 
 type Alphavantage interface {
 	GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error)
