@@ -56,7 +56,7 @@ func (db *portfolioDB) GetFirstTradeDate() (time.Time, error) {
 func (db *portfolioDB) GetPortfolioAmountByDate(date time.Time) (float64, error) {
 	var val float64
 	res := db.db.Model(Portfolio{}).
-		Select("sum(nav)").
+		Select("coalesce(sum(nav), 0)").
 		Where("trade_date = ?", date).
 		Scan(&val)
 	return val, res.Error
