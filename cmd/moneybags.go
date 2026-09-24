@@ -57,9 +57,7 @@ func main() {
 		sugar.Fatalf("Failed to initialise telegram module, %v", err)
 	}
 
-	financials, err := modules.NewFinancialsModule(fw, financials.NewAlphavantage(
-		c.FinancialsConfig.AlphavantageApiKey,
-	))
+	financials, err := modules.NewFinancialsModule(fw, financials.NewYahoo())
 	if err != nil {
 		sugar.Fatalf("Failed to initialise financials module, %v", err)
 	}

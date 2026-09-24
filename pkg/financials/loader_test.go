@@ -2,6 +2,7 @@ package financials
 
 import (
 	"testing"
+	"time"
 
 	database "github.com/ashwinath/moneybags/pkg/db"
 	"github.com/stretchr/testify/assert"
@@ -17,8 +18,8 @@ func TestStocksLoader(t *testing.T) {
 		assert.Nil(t, err)
 
 		// stock loader
-		av := NewFakeAlphavantage()
-		stocksLoader := NewStocksLoader(fw, av)
+		provider := NewFakeMarketDataProvider()
+		stocksLoader := NewStocksLoader(fw, provider)
 		err = stocksLoader.Load()
 		assert.Nil(t, err)
 
@@ -94,6 +95,51 @@ func TestStocksLoader(t *testing.T) {
 		res = db.DB.Find(&averageExpenditure)
 		assert.Nil(t, res.Error)
 		assert.Greater(t, len(averageExpenditure), 1)
+	})
+
+	assert.Nil(t, err)
+}
+
+func TestStocksLoaderCleansUpLegacySymbols(t *testing.T) {
+	err := database.RunTest(func(db *database.DB) {
+		fw := createFW(t, db)
+
+		legacySymbol := "AAAA.LON"
+		startDate, err := time.Parse(time.DateOnly, "2021-08-19")
+		assert.Nil(t, err)
+
+		items := []database.Symbol{
+			{SymbolType: database.SymbolTypeStock, Symbol: legacySymbol, BaseCurrency: &[]string{"USD"}[0]},
+			{SymbolType: database.SymbolTypeCurrency, Symbol: "USD"},
+		}
+		assert.Nil(t, db.DB.Create(&items).Error)
+
+		assert.Nil(t, db.DB.Create([]database.Stock{
+			{TradeDate: startDate, Symbol: legacySymbol, Price: 2.0},
+		}).Error)
+
+		assert.Nil(t, db.DB.Create([]database.Portfolio{
+			{TradeDate: startDate, Symbol: legacySymbol, Principal: 20.0, NAV: 20.0, SimpleReturns: 0.0, Quantity: 10.0},
+		}).Error)
+
+		loader := NewCSVLoader(fw)
+		assert.Nil(t, loader.Load())
+
+		stocksLoader := NewStocksLoader(fw, NewFakeMarketDataProvider())
+		assert.Nil(t, stocksLoader.Load())
+
+		var count int64
+		res := db.DB.Model(database.Symbol{}).Where("symbol = ?", legacySymbol).Count(&count)
+		assert.Nil(t, res.Error)
+		assert.Equal(t, int64(0), count)
+
+		res = db.DB.Model(database.Stock{}).Where("symbol = ?", legacySymbol).Count(&count)
+		assert.Nil(t, res.Error)
+		assert.Equal(t, int64(0), count)
+
+		res = db.DB.Model(database.Portfolio{}).Where("symbol = ?", legacySymbol).Count(&count)
+		assert.Nil(t, res.Error)
+		assert.Equal(t, int64(0), count)
 	})
 
 	assert.Nil(t, err)

@@ -27,6 +27,7 @@ type SymbolDB interface {
 	GetCurrencies() ([]Symbol, error)
 	GetStocks() ([]Symbol, error)
 	UpdateLastProcessedDate(symbol string, date time.Time) error
+	DeleteWithSuffix(suffix string) (int64, error)
 }
 
 type symbolDB struct {
@@ -98,4 +99,12 @@ func (db *symbolDB) UpdateLastProcessedDate(symbol string, date time.Time) error
 		Where("symbol = ?", symbol).
 		Update("last_processed_date", date)
 	return res.Error
+}
+
+// DeleteWithSuffix removes all symbols whose symbol ends with the given suffix.
+func (db *symbolDB) DeleteWithSuffix(suffix string) (int64, error) {
+	res := db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Where("symbol LIKE ?", "%"+suffix).
+		Delete(&Symbol{})
+	return res.RowsAffected, res.Error
 }

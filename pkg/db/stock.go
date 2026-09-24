@@ -19,6 +19,7 @@ type Stock struct {
 type StockDB interface {
 	BulkAdd(objs any) error
 	GetStockPrice(date time.Time, symbol string) (float64, error)
+	DeleteWithSuffix(suffix string) (int64, error)
 }
 
 type stockDB struct {
@@ -49,4 +50,12 @@ func (db *stockDB) GetStockPrice(date time.Time, symbol string) (float64, error)
 		First(&val)
 
 	return val, res.Error
+}
+
+// DeleteWithSuffix removes all stocks whose symbol ends with the given suffix.
+func (db *stockDB) DeleteWithSuffix(suffix string) (int64, error) {
+	res := db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Where("symbol LIKE ?", "%"+suffix).
+		Delete(&Stock{})
+	return res.RowsAffected, res.Error
 }

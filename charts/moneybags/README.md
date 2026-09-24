@@ -23,7 +23,6 @@ A Helm chart for Kubernetes
 | moneybags.assets | string | `"date,type,amount\n2020-03-31,CPF,1000\n2020-03-31,Bank,20000\n2020-03-31,Mortgage,-40000\n2020-03-31,Investments,20000"` | CSV values for the assets |
 | moneybags.car | string | `"cars:\n  - name: Toy car\n    total: 140000\n    min_parf_value: 20000\n    lifespan: 10\n    car_start_date: 2020-01-01\n    car_sold_date: 2025-01-02 # optional\n    loan:\n      amount: 10000.0\n      duration: 10\n      interest_rate: 10.0\n      last_month_amount: 8.0\n      start_date: 2024-01-01"` | YAML values for car |
 | moneybags.expenses | string | `"date,type,amount\n2020-03-31,Credit Card,500\n2020-03-31,Reimbursement,-200\n2020-03-31,Tithe,800"` | CSV values for the expenses |
-| moneybags.financials.alphavantageAPIKey | string | `"changeme"` | Alphavantage API key, get from https://www.alphavantage.co/support/#api-key |
 | moneybags.financials.runIntervalInHours | int | `4` | Run financials job data population every x hours |
 | moneybags.income | string | `"date,type,amount\n2021-03-11,Base,500\n2021-03-11,Bonus,200"` | CSV values for the income |
 | moneybags.mortgage | string | `"mortgages:\n- total: 50000.0\n  mortgage_first_payment: 2022-10-10\n  mortgage_duration_in_years: 25\n  mortgage_end_date: 2047-10-10\n  interest_rate_percentage: 2.6\n  downpayments:\n  - date: 2021-10-10\n    sum: 1000.0\n  - date: 2021-12-12\n    sum: 20000.0"` | YAML values for mortgage |
@@ -32,7 +31,7 @@ A Helm chart for Kubernetes
 | moneybags.telegram.allowedUser | string | `"changeme"` | Telegram user that will be allowed to send commands |
 | moneybags.telegram.apiKey | string | `"changeme"` | Telegram bot API Key. Get by talking to Bot Godfather: https://core.telegram.org/bots/tutorial#obtain-your-bot-token |
 | moneybags.telegram.debug | bool | `false` | Enable debugging. Warning: non standard logger used in telegram library |
-| moneybags.trades | string | `"date_purchased,symbol,trade_type,price_each,quantity\n2021-03-11,IWDA.LON,buy,76.34,10"` | CSV values for the trades |
+| moneybags.trades | string | `"date_purchased,symbol,trade_type,price_each,quantity\n2021-03-11,IWDA.L,buy,76.34,10"` | CSV values for the trades |
 | nameOverride | string | `""` | Name override |
 | nodeSelector | object | `{}` | Node Selectors |
 | podAnnotations | object | `{}` | Pod Annotations |

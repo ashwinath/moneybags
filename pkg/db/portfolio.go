@@ -23,6 +23,7 @@ type PortfolioDB interface {
 	BulkAdd(objs any) error
 	GetFirstTradeDate() (time.Time, error)
 	GetPortfolioAmountByDate(date time.Time) (float64, error)
+	DeleteWithSuffix(suffix string) (int64, error)
 }
 
 type portfolioDB struct {
@@ -60,4 +61,12 @@ func (db *portfolioDB) GetPortfolioAmountByDate(date time.Time) (float64, error)
 		Where("trade_date = ?", date).
 		Scan(&val)
 	return val, res.Error
+}
+
+// DeleteWithSuffix removes all portfolios whose symbol ends with the given suffix.
+func (db *portfolioDB) DeleteWithSuffix(suffix string) (int64, error) {
+	res := db.db.Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Where("symbol LIKE ?", "%"+suffix).
+		Delete(&Portfolio{})
+	return res.RowsAffected, res.Error
 }

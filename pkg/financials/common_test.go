@@ -124,20 +124,20 @@ func parseDateForced(t *testing.T, dateString string) time.Time {
 	return parsed
 }
 
-type fakeAlphavantage struct{}
+type fakeMarketDataProvider struct{}
 
-func (fakeAlphavantage) GetSymbolFromAlphavantage(symbol string) (*AlphavantageSymbol, error) {
-	return &AlphavantageSymbol{
+func (fakeMarketDataProvider) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
+	return &SymbolInfo{
 		Symbol:   symbol,
 		Currency: "USD",
 	}, nil
 }
 
-func (fakeAlphavantage) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
+func (fakeMarketDataProvider) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 
-func (fakeAlphavantage) GetStockHistory(symbol string) (map[string]OHLC, error) {
+func (fakeMarketDataProvider) GetStockHistory(symbol string) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 
@@ -151,6 +151,6 @@ func autoGenOHLC() map[string]OHLC {
 	return ret
 }
 
-func NewFakeAlphavantage() Alphavantage {
-	return fakeAlphavantage{}
+func NewFakeMarketDataProvider() MarketDataProvider {
+	return fakeMarketDataProvider{}
 }

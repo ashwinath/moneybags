@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	minYearToBreak = 2015
+	minYearToBreak     = 2015
+	legacySymbolSuffix = ".LON"
 )
 
 type stocksLoader struct {
@@ -21,12 +22,12 @@ type stocksLoader struct {
 	exchangeRateDB db.ExchangeRateDB
 	stockDB        db.StockDB
 	portfolioDB    db.PortfolioDB
-	alphavantage   Alphavantage
+	provider       MarketDataProvider
 	stockCache     map[string]float64
 	currencyCache  map[string]float64
 }
 
-func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
+func NewStocksLoader(fw framework.FW, provider MarketDataProvider) Loader {
 	return &stocksLoader{
 		fw:             fw,
 		tradeDB:        fw.GetDB(db.TradeDatabaseName).(db.TradeDB),
@@ -34,7 +35,7 @@ func NewStocksLoader(fw framework.FW, alphavantage Alphavantage) Loader {
 		exchangeRateDB: fw.GetDB(db.ExchangeRateDatabaseName).(db.ExchangeRateDB),
 		stockDB:        fw.GetDB(db.StockDatabaseName).(db.StockDB),
 		portfolioDB:    fw.GetDB(db.PortfolioDatabaseName).(db.PortfolioDB),
-		alphavantage:   alphavantage,
+		provider:       provider,
 		stockCache:     map[string]float64{},
 		currencyCache:  map[string]float64{},
 	}
@@ -49,6 +50,10 @@ func (stocksLoader) Name() string {
 }
 
 func (l *stocksLoader) Load() error {
+	if err := l.cleanupLegacySymbols(); err != nil {
+		return fmt.Errorf("failed to clean up legacy symbols: %s", err)
+	}
+
 	if err := l.processSymbols(); err != nil {
 		return fmt.Errorf("failed to load process symbols: %s", err)
 	}
@@ -63,6 +68,25 @@ func (l *stocksLoader) Load() error {
 
 	if err := l.calculatePortfolio(); err != nil {
 		return fmt.Errorf("failed to calculate portfolio: %s", err)
+	}
+
+	return nil
+}
+
+// cleanupLegacySymbols removes rows whose symbols carry the legacy ".LON"
+// suffix left over from the previous market data provider.
+func (l *stocksLoader) cleanupLegacySymbols() error {
+	_, err := l.symbolDB.DeleteWithSuffix(legacySymbolSuffix)
+	if err != nil {
+		return err
+	}
+
+	if _, err = l.stockDB.DeleteWithSuffix(legacySymbolSuffix); err != nil {
+		return err
+	}
+
+	if _, err = l.portfolioDB.DeleteWithSuffix(legacySymbolSuffix); err != nil {
+		return err
 	}
 
 	return nil
@@ -93,7 +117,7 @@ func (l *stocksLoader) processStockSymbols() error {
 		}
 
 		if !exists {
-			aSym, err := l.alphavantage.GetSymbolFromAlphavantage(s)
+			info, err := l.provider.GetSymbolInfo(s)
 			if err != nil {
 				if isRateLimitError(err) {
 					l.fw.GetLogger().Warnf("rate limited while looking up symbol %s, retry later", s)
@@ -103,7 +127,7 @@ func (l *stocksLoader) processStockSymbols() error {
 			sym := db.Symbol{
 				SymbolType:   db.SymbolTypeStock,
 				Symbol:       s,
-				BaseCurrency: &aSym.Currency,
+				BaseCurrency: &info.Currency,
 			}
 			if err := l.symbolDB.Insert(&sym); err != nil {
 				return err
@@ -156,7 +180,7 @@ func (l *stocksLoader) processCurrencies() error {
 }
 
 func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
-	history, err := l.alphavantage.GetCurrencyHistory(symbol.Symbol, "SGD")
+	history, err := l.provider.GetCurrencyHistory(symbol.Symbol, "SGD")
 	if err != nil {
 		if isRateLimitError(err) {
 			l.fw.GetLogger().Warnf("rate limited while fetching currency history for %s, retry later", symbol.Symbol)
@@ -214,7 +238,7 @@ func (l *stocksLoader) processStocks() error {
 }
 
 func (l *stocksLoader) processStock(symbol db.Symbol) error {
-	history, err := l.alphavantage.GetStockHistory(symbol.Symbol)
+	history, err := l.provider.GetStockHistory(symbol.Symbol)
 	if err != nil {
 		if isRateLimitError(err) {
 			l.fw.GetLogger().Warnf("rate limited while fetching stock history for %s, retry later", symbol.Symbol)

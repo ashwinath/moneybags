@@ -16,16 +16,13 @@ type FinancialsModule struct {
 	loaders []financials.Loader
 }
 
-func NewFinancialsModule(fw framework.FW, alphavantage financials.Alphavantage) (framework.Module, error) {
-	if fw.GetConfig().(*configpb.Config).FinancialsConfig.AlphavantageApiKey == "" {
-		return nil, fmt.Errorf("alphavantageApiKey not set")
-	}
+func NewFinancialsModule(fw framework.FW, provider financials.MarketDataProvider) (framework.Module, error) {
 	return &FinancialsModule{
 		fw: fw,
 		loaders: []financials.Loader{
 			financials.NewCSVLoader(fw),
 			financials.NewTransactionLoader(fw),
-			financials.NewStocksLoader(fw, alphavantage),
+			financials.NewStocksLoader(fw, provider),
 			financials.NewInvestmentsLoader(fw),
 			financials.NewSharedExpenseLoader(fw),
 			financials.NewAverageExpenditureLoader(fw),

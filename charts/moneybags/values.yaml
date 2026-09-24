@@ -70,13 +70,11 @@ moneybags:
   financials:
     # -- Run financials job data population every x hours
     runIntervalInHours: 4
-    # -- Alphavantage API key, get from https://www.alphavantage.co/support/#api-key
-    alphavantageAPIKey: changeme
 
   # -- CSV values for the trades
   trades: |-
     date_purchased,symbol,trade_type,price_each,quantity
-    2021-03-11,IWDA.LON,buy,76.34,10
+    2021-03-11,IWDA.L,buy,76.34,10
 
   # -- CSV values for the expenses
   expenses: |-
