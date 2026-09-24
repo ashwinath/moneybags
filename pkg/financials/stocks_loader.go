@@ -13,6 +13,8 @@ import (
 const (
 	minYearToBreak     = 2015
 	legacySymbolSuffix = ".LON"
+	backfillDays       = 30
+	overlapDays        = 7
 )
 
 type stocksLoader struct {
@@ -43,6 +45,22 @@ func NewStocksLoader(fw framework.FW, provider MarketDataProvider) Loader {
 
 func isRateLimitError(err error) bool {
 	return strings.Contains(err.Error(), "rate limit")
+}
+
+// getStartDate computes the earliest date that needs to be fetched for a
+// symbol. When existing coverage does not reach the earliest needed date
+// (earliest trade), the full backfill range is returned; otherwise only a
+// small overlap past the last processed date is fetched incrementally.
+func getStartDate(earliestCovered *time.Time, lastProcessed *time.Time, earliestNeeded time.Time) time.Time {
+	if earliestCovered == nil || earliestCovered.After(earliestNeeded) {
+		return earliestNeeded.AddDate(0, 0, -backfillDays)
+	}
+
+	if lastProcessed != nil {
+		return lastProcessed.AddDate(0, 0, -overlapDays)
+	}
+
+	return earliestNeeded.AddDate(0, 0, -backfillDays)
 }
 
 func (stocksLoader) Name() string {
@@ -180,7 +198,22 @@ func (l *stocksLoader) processCurrencies() error {
 }
 
 func (l *stocksLoader) processCurrency(symbol db.Symbol) error {
-	history, err := l.provider.GetCurrencyHistory(symbol.Symbol, "SGD")
+	earliestTradeDate, err := l.tradeDB.GetEarliestTradeDate("")
+	if err != nil {
+		return err
+	}
+
+	if earliestTradeDate == nil {
+		return fmt.Errorf("no trades found when processing currency %s", symbol.Symbol)
+	}
+
+	earliestCovered, err := l.exchangeRateDB.GetEarliestDate(symbol.Symbol)
+	if err != nil {
+		return err
+	}
+
+	startDate := getStartDate(earliestCovered, symbol.LastProcessedDate, *earliestTradeDate)
+	history, err := l.provider.GetCurrencyHistory(symbol.Symbol, "SGD", startDate)
 	if err != nil {
 		if isRateLimitError(err) {
 			l.fw.GetLogger().Warnf("rate limited while fetching currency history for %s, retry later", symbol.Symbol)
@@ -238,7 +271,22 @@ func (l *stocksLoader) processStocks() error {
 }
 
 func (l *stocksLoader) processStock(symbol db.Symbol) error {
-	history, err := l.provider.GetStockHistory(symbol.Symbol)
+	earliestTradeDate, err := l.tradeDB.GetEarliestTradeDate(symbol.Symbol)
+	if err != nil {
+		return err
+	}
+
+	if earliestTradeDate == nil {
+		return fmt.Errorf("no trades found when processing stock %s", symbol.Symbol)
+	}
+
+	earliestCovered, err := l.stockDB.GetEarliestDate(symbol.Symbol)
+	if err != nil {
+		return err
+	}
+
+	startDate := getStartDate(earliestCovered, symbol.LastProcessedDate, *earliestTradeDate)
+	history, err := l.provider.GetStockHistory(symbol.Symbol, startDate)
 	if err != nil {
 		if isRateLimitError(err) {
 			l.fw.GetLogger().Warnf("rate limited while fetching stock history for %s, retry later", symbol.Symbol)

@@ -1,5 +1,7 @@
 package financials
 
+import "time"
+
 // Loader defines the interface for data loaders.
 type Loader interface {
 	Load() error
@@ -10,8 +12,8 @@ type Loader interface {
 // (symbols, currency history, stock history) from external providers.
 type MarketDataProvider interface {
 	GetSymbolInfo(symbol string) (*SymbolInfo, error)
-	GetCurrencyHistory(from string, to string) (map[string]OHLC, error)
-	GetStockHistory(symbol string) (map[string]OHLC, error)
+	GetCurrencyHistory(from string, to string, startDate time.Time) (map[string]OHLC, error)
+	GetStockHistory(symbol string, startDate time.Time) (map[string]OHLC, error)
 }
 
 // SymbolInfo represents information about a trading symbol.

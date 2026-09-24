@@ -19,6 +19,7 @@ type Stock struct {
 type StockDB interface {
 	BulkAdd(objs any) error
 	GetStockPrice(date time.Time, symbol string) (float64, error)
+	GetEarliestDate(symbol string) (*time.Time, error)
 	DeleteWithSuffix(suffix string) (int64, error)
 }
 
@@ -50,6 +51,26 @@ func (db *stockDB) GetStockPrice(date time.Time, symbol string) (float64, error)
 		First(&val)
 
 	return val, res.Error
+}
+
+// GetEarliestDate returns the earliest stored trade date for the given symbol.
+func (db *stockDB) GetEarliestDate(symbol string) (*time.Time, error) {
+	var earliest time.Time
+	res := db.db.Model(&Stock{}).
+		Where("symbol = ?", symbol).
+		Order("trade_date asc").
+		Limit(1).
+		Select("trade_date").
+		Scan(&earliest)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &earliest, nil
 }
 
 // DeleteWithSuffix removes all stocks whose symbol ends with the given suffix.

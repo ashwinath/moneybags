@@ -133,17 +133,17 @@ func (fakeMarketDataProvider) GetSymbolInfo(symbol string) (*SymbolInfo, error) 
 	}, nil
 }
 
-func (fakeMarketDataProvider) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
+func (fakeMarketDataProvider) GetCurrencyHistory(from string, to string, startDate time.Time) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 
-func (fakeMarketDataProvider) GetStockHistory(symbol string) (map[string]OHLC, error) {
+func (fakeMarketDataProvider) GetStockHistory(symbol string, startDate time.Time) (map[string]OHLC, error) {
 	return autoGenOHLC(), nil
 }
 
 func autoGenOHLC() map[string]OHLC {
 	ret := map[string]OHLC{}
-	date, _ := time.Parse(time.DateOnly, "2021-08-19")
+	date, _ := time.Parse(time.DateOnly, "2021-01-01")
 	for date.Before(time.Now().AddDate(0, 0, 1)) {
 		ret[date.Format(time.DateOnly)] = OHLC{Open: 2.00, High: 2.00, Low: 2.00, Close: 2.00}
 		date = date.AddDate(0, 0, 1)

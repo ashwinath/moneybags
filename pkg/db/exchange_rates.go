@@ -19,6 +19,7 @@ type ExchangeRate struct {
 type ExchangeRateDB interface {
 	BulkAdd(objs any) error
 	GetExchangeRateByDate(date time.Time, symbol string) (float64, error)
+	GetEarliestDate(symbol string) (*time.Time, error)
 }
 
 type exchangeRateDB struct {
@@ -49,4 +50,24 @@ func (db *exchangeRateDB) GetExchangeRateByDate(date time.Time, symbol string) (
 		First(&er)
 
 	return er, res.Error
+}
+
+// GetEarliestDate returns the earliest stored trade date for the given symbol.
+func (db *exchangeRateDB) GetEarliestDate(symbol string) (*time.Time, error) {
+	var earliest time.Time
+	res := db.db.Model(&ExchangeRate{}).
+		Where("symbol = ?", symbol).
+		Order("trade_date asc").
+		Limit(1).
+		Select("trade_date").
+		Scan(&earliest)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &earliest, nil
 }

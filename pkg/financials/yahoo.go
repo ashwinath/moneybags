@@ -54,9 +54,10 @@ func (y *yahoo) GetSymbolInfo(symbol string) (*SymbolInfo, error) {
 	}, nil
 }
 
-func (y *yahoo) GetCurrencyHistory(from string, to string) (map[string]OHLC, error) {
+func (y *yahoo) GetCurrencyHistory(from string, to string, startDate time.Time) (map[string]OHLC, error) {
 	ticker := fmt.Sprintf("%s%s=X", from, to)
-	url := fmt.Sprintf("%s/v8/finance/chart/%s?interval=1d&range=5y", yahooBaseURL, ticker)
+	url := fmt.Sprintf("%s/v8/finance/chart/%s?interval=1d&period1=%d&period2=%d",
+		yahooBaseURL, ticker, startDate.Unix(), time.Now().Unix())
 
 	var res yahooChartResponse
 	err := client.HTTPGet(context.TODO(), url, y.headers(), &res)
@@ -71,8 +72,9 @@ func (y *yahoo) GetCurrencyHistory(from string, to string) (map[string]OHLC, err
 	return convertYahooChartToOHLC(res.Chart.Result[0])
 }
 
-func (y *yahoo) GetStockHistory(symbol string) (map[string]OHLC, error) {
-	url := fmt.Sprintf("%s/v8/finance/chart/%s?interval=1d&range=5y", yahooBaseURL, symbol)
+func (y *yahoo) GetStockHistory(symbol string, startDate time.Time) (map[string]OHLC, error) {
+	url := fmt.Sprintf("%s/v8/finance/chart/%s?interval=1d&period1=%d&period2=%d",
+		yahooBaseURL, symbol, startDate.Unix(), time.Now().Unix())
 
 	var res yahooChartResponse
 	err := client.HTTPGet(context.TODO(), url, y.headers(), &res)

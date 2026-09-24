@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -20,6 +22,7 @@ type Trade struct {
 type TradeDB interface {
 	GetUniqueSymbols() ([]string, error)
 	GetTradesSorted(symbol string) ([]Trade, error)
+	GetEarliestTradeDate(symbol string) (*time.Time, error)
 }
 
 type tradeDB struct {
@@ -73,4 +76,30 @@ func (db *tradeDB) GetTradesSorted(symbol string) ([]Trade, error) {
 	}
 
 	return trades, nil
+}
+
+// GetEarliestTradeDate returns the earliest trade date for the given symbol,
+// or for all trades when symbol is empty.
+func (db *tradeDB) GetEarliestTradeDate(symbol string) (*time.Time, error) {
+	var earliest time.Time
+
+	query := db.db.Model(&Trade{})
+	if symbol != "" {
+		query = query.Where("symbol = ?", symbol)
+	}
+
+	res := query.
+		Order("date_purchased asc").
+		Limit(1).
+		Select("date_purchased").
+		Scan(&earliest)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &earliest, nil
 }
