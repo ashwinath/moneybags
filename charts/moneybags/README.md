@@ -4,12 +4,6 @@
 
 A Helm chart for Kubernetes
 
-## Requirements
-
-| Repository | Name | Version |
-|------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 18.12.0 |
-
 ## Values
 
 | Key | Type | Default | Description |
@@ -37,9 +31,11 @@ A Helm chart for Kubernetes
 | podAnnotations | object | `{}` | Pod Annotations |
 | podLabels | object | `{}` | Pod Labels |
 | podSecurityContext | object | `{}` | Pod Security Context |
-| postgresql.auth.postgresPassword | string | `"changeme"` | Password for postgresql database, highly recommended to change this value |
-| postgresql.primary.persistence.enabled | bool | `true` | Persist Postgresql data in a Persistent Volume Claim  |
-| postgresql.resources | object | `{}` | Resources requests and limits for the database |
+| postgres.auth.postgresPassword | string | `"changeme"` | Password for postgresql database, highly recommended to change this value |
+| postgres.hostPath | string | `"/mnt/data/postgres"` | Host path for postgres data volume |
+| postgres.image.repository | string | `"postgres"` | Postgres container image |
+| postgres.image.tag | string | `"18-alpine"` | Postgres container image tag |
+| postgres.resources | object | `{}` | Resources requests and limits for the database |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` | Resources requests and limits for the moneybags |
 | securityContext | object | `{}` | Security Context |

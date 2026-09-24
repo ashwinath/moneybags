@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: {{ include "moneybags.fullname" . }}-postgres
+  name: {{ include "moneybags.fullname" . }}-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: {{ include "moneybags.fullname" . }}-postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: {{ include "moneybags.fullname" . }}-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_DB
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "moneybags.fullname" . }}-postgres
+              key: postgres-password
+        ports:
+        - containerPort: 5432
+          name: postgres
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: {{ .Values.postgres.hostPath }}
+          type: DirectoryOrCreate
