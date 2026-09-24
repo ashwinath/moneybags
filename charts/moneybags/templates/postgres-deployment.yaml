@@ -34,7 +34,7 @@ spec:
           name: postgres
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
+        - mountPath: /var/lib/postgresql
           name: data
       volumes:
       - name: data
