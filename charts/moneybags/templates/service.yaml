@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "moneybags.fullname" . }}-mcp
+  name: {{ include "moneybags.fullname" . }}
   labels:
     {{- include "moneybags.labels" . | nindent 4 }}
 spec:
@@ -11,7 +11,7 @@ spec:
     {{- include "moneybags.selectorLabels" . | nindent 4 }}
   ports:
   - name: mcp
-    port: 6000
+    port: 80
     targetPort: 6000
     protocol: TCP
 {{- end }}
