@@ -62,7 +62,10 @@ func main() {
 		sugar.Fatalf("Failed to initialise financials module, %v", err)
 	}
 
-	serverModule := modules.NewServerModule(fw)
+	serverModule, err := modules.NewServerModule(fw)
+	if err != nil {
+		sugar.Fatalf("Failed to initialise server module, %v", err)
+	}
 
 	// Run app
 	app := framework.NewApp(sugar, telegram, financials, serverModule)

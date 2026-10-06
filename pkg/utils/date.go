@@ -2,10 +2,31 @@ package utils
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 var financialsLocation = time.UTC
+
+// singaporeLocation resolves the timezone that moneybags records dates in,
+// falling back to UTC when the zoneinfo database is unavailable.
+var singaporeLocation = sync.OnceValue(func() *time.Location {
+	loc, err := time.LoadLocation("Asia/Singapore")
+	if err != nil {
+		return time.UTC
+	}
+
+	return loc
+})
+
+// SetDateToDateOnly renders d as yyyy-mm-dd in Singapore time.
+//
+// Timestamps read back from the database arrive in UTC, so the calendar date
+// has to be converted first. Reading it straight off the UTC value reports the
+// previous day for anything recorded before 08:00 Singapore time.
+func SetDateToDateOnly(d time.Time) string {
+	return d.In(singaporeLocation()).Format(time.DateOnly)
+}
 
 func SetDateToEndOfMonth(d time.Time) time.Time {
 	year, month, _ := d.Date()

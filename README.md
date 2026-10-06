@@ -27,6 +27,87 @@ This list is not exhaustive but a wishlist that I would work on when I'm free. M
 ## Technical Roadmap
 
 - [x] liveness/readiness probes
+- [x] MCP server for AI assistants
+
+## MCP API Definition
+
+Moneybags serves the [Model Context Protocol](https://modelcontextprotocol.io) over
+streamable HTTP on the same port as everything else, at `/mcp`.
+
+There is **no authentication**, so keep that port on a private network, a VPN or an
+SSH tunnel. Anything that can reach it can read your transactions.
+
+Sessions are stateless, so moneybags scales behind more than one replica without
+sticky sessions.
+
+### Connecting a client
+
+Point any MCP client at the endpoint:
+
+```json
+{
+  "mcpServers": {
+    "moneybags": {
+      "type": "http",
+      "url": "http://moneybags:6000/mcp"
+    }
+  }
+}
+```
+
+### Tools
+
+#### search_transactions
+
+Searches recorded transactions by their description, optionally restricted to a
+single type.
+
+Argument | Required | Explanation
+---------|----------|------------
+description | no | Matched case-insensitively as a substring, so neither the casing nor the whole note has to match. `coffee` also finds `Starbucks Coffee`. `%` and `_` are matched literally.
+type | no | Restrict to a single transaction type. See the types below.
+- | no | Leaving both arguments out returns the most recent transactions.
+
+Results come back newest first, capped at 100 transactions. When more matched than
+were returned, `truncated` is `true`, so the result is only the most recent slice of
+the matches rather than all of them.
+
+Types are matched leniently: casing, `_`, `-` and repeated whitespace are all
+normalised, and the Telegram shorthands are accepted. So `shared cc reim`,
+`SHARED_CC_REIMBURSE` and `Shared CC Reimburse` are all the same type.
+
+Type | Telegram | Explanation
+-----|----------|------------
+OWN | own | Regular type of spending for ownself.
+REIM | reim | Amount to be reimbursed, usually paying first using CC and friends paying back later.
+SHARED | shared | Amount that is shared but other party had paid first.
+SHARED REIM | shared reim | Amount to be reimbursed, usually paying first using CC and taking from shared account.
+SPECIAL SHARED | special shared | Amount that is shared but other party had paid first and it's a one off thing.
+SPECIAL SHARED REIM | special shared reim | Amount to be reimbursed, not counting into regular spend.
+SPECIAL OWN | special own | Amount that is spent for myself but special events.
+CREDIT CARD | cc | Amount paid using credit card.
+SHARED CC REIMBURSE | shared cc reim | Amount used for the shared credit card but for personal use and to be reimbursed
+INSURANCE | insurance | Amount spent for insurance.
+TITHE | tithe | Amount given to parents.
+TAX | tax | Amount paid to the tax man.
+
+An example response:
+
+```json
+{
+  "transactions": [
+    {
+      "id": 3,
+      "date": "2023-04-05",
+      "type": "SHARED_CC_REIMBURSE",
+      "description": "COFFEE beans",
+      "amount": 12
+    }
+  ],
+  "count": 1,
+  "truncated": false
+}
+```
 
 ## Telegram API Definition
 

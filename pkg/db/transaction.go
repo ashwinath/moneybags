@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -59,6 +60,7 @@ type TransactionDB interface {
 	DeleteTransaction(id uint) (*Transaction, error)
 	AggregateTransactions(o *FindTransactionOptions) (*float64, error)
 	QueryTransactionByOptions(o *FindTransactionOptions) ([]Transaction, error)
+	SearchTransactions(o *SearchTransactionsOptions) ([]Transaction, bool, error)
 	QueryTypeOwnSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult)
 	QueryReimburseSum(startDate, endDate time.Time, result chan<- AsyncAggregateResult)
 	QuerySharedTransactions(startDate, endDate time.Time, result chan<- AsyncTransactionResults)
@@ -151,6 +153,67 @@ func (d *transactionDB) QueryTransactionByOptions(o *FindTransactionOptions) ([]
 	}
 
 	return transactions, nil
+}
+
+// MaxTransactionSearchResults bounds a single search so that an unbounded
+// query, such as one that filters on type alone, cannot return every row.
+const MaxTransactionSearchResults = 100
+
+// SearchTransactionsOptions filters a free text search over transaction descriptions.
+type SearchTransactionsOptions struct {
+	// Description is matched case-insensitively against the transaction's
+	// classification. An empty value matches every transaction.
+	Description string
+	// Types restricts results to the given transaction types. An empty value
+	// matches every type.
+	Types []TransactionType
+}
+
+// SearchTransactions returns the transactions matching o, newest first.
+//
+// The returned bool reports whether the result cap dropped any further matches,
+// so callers can tell a short result set apart from a truncated one. At most
+// MaxTransactionSearchResults transactions are returned.
+func (d *transactionDB) SearchTransactions(o *SearchTransactionsOptions) ([]Transaction, bool, error) {
+	query := d.db.Model(&Transaction{})
+
+	if o.Description != "" {
+		// ILIKE performs the comparison case-insensitively in the database. The
+		// user's text is escaped so that a literal % or _ in a description is
+		// matched instead of being read as a wildcard.
+		query = query.Where(
+			`classification ILIKE ? ESCAPE '\'`,
+			"%"+escapeLikePattern(o.Description)+"%",
+		)
+	}
+
+	if len(o.Types) > 0 {
+		query = query.Where("type in ?", o.Types)
+	}
+
+	// One row beyond the cap is read so that truncation can be reported
+	// accurately rather than guessed at from a full page of results.
+	var transactions []Transaction
+	result := query.
+		Order("date desc").
+		Limit(MaxTransactionSearchResults + 1).
+		Find(&transactions)
+	if result.Error != nil {
+		return nil, false, result.Error
+	}
+
+	truncated := len(transactions) > MaxTransactionSearchResults
+	if truncated {
+		transactions = transactions[:MaxTransactionSearchResults]
+	}
+
+	return transactions, truncated, nil
+}
+
+// escapeLikePattern escapes the wildcards that LIKE and ILIKE treat specially,
+// so that they are matched literally.
+func escapeLikePattern(s string) string {
+	return strings.NewReplacer(`\`, `\\`, `%`, `\%`, `_`, `\_`).Replace(s)
 }
 
 type AsyncAggregateResult struct {
