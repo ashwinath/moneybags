@@ -59,6 +59,13 @@ tolerations: []
 # -- Pod Affinity
 affinity: {}
 
+mcp:
+  service:
+    # -- Expose the MCP endpoint as a ClusterIP Service. Enabled by default.
+    # The endpoint is unauthenticated and only reachable from within the cluster,
+    # so do not change the type to LoadBalancer or NodePort without adding auth.
+    enabled: true
+
 moneybags:
   telegram:
     # -- Telegram bot API Key. Get by talking to Bot Godfather: https://core.telegram.org/bots/tutorial#obtain-your-bot-token
