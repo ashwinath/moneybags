@@ -40,6 +40,7 @@ func TestNewConfig(t *testing.T) {
 		},
 		FinancialsConfig: &configpb.FinancialsConfig{
 			RunIntervalInHours: 4,
+			StocksToExclude:    []string{"CSPX.L"},
 		},
 	}, c)
 }

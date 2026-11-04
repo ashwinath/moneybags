@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	configpb "github.com/ashwinath/moneybags/pbgo/configpb"
 	"github.com/ashwinath/moneybags/pkg/db"
 	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/ashwinath/simple/framework"
@@ -43,8 +44,10 @@ func (l *investmentsLoader) Load() error {
 	allInvestments := []db.Asset{}
 	tomorrow := time.Now().AddDate(0, 0, 1)
 
+	stocksToExclude := l.fw.GetConfig().(*configpb.Config).GetFinancialsConfig().GetStocksToExclude()
+
 	for currentDate.Before(tomorrow) {
-		amount, err := l.portfolioDB.GetPortfolioAmountByDate(currentDate)
+		amount, err := l.portfolioDB.GetPortfolioAmountByDate(currentDate, stocksToExclude)
 		if err != nil {
 			l.fw.GetLogger().Errorf("failed to get amount for portfolio by date (%s): %s", currentDate, err)
 			currentDate = currentDate.AddDate(0, 1, 0)

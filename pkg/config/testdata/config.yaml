@@ -19,3 +19,5 @@ financials_data:
   tax_exclusions_csv_filepath: sample/tax_exclusions.csv
 financials_config:
   run_interval_in_hours: 4
+  stocks_to_exclude:
+    - CSPX.L

@@ -22,7 +22,7 @@ type Portfolio struct {
 type PortfolioDB interface {
 	BulkAdd(objs any) error
 	GetFirstTradeDate() (time.Time, error)
-	GetPortfolioAmountByDate(date time.Time) (float64, error)
+	GetPortfolioAmountByDate(date time.Time, excludedSymbols []string) (float64, error)
 	DeleteWithSuffix(suffix string) (int64, error)
 }
 
@@ -54,12 +54,17 @@ func (db *portfolioDB) GetFirstTradeDate() (time.Time, error) {
 	return val, res.Error
 }
 
-func (db *portfolioDB) GetPortfolioAmountByDate(date time.Time) (float64, error) {
-	var val float64
-	res := db.db.Model(Portfolio{}).
+func (db *portfolioDB) GetPortfolioAmountByDate(date time.Time, excludedSymbols []string) (float64, error) {
+	query := db.db.Model(Portfolio{}).
 		Select("coalesce(sum(nav), 0)").
-		Where("trade_date = ?", date).
-		Scan(&val)
+		Where("trade_date = ?", date)
+
+	if len(excludedSymbols) > 0 {
+		query = query.Where("symbol NOT IN ?", excludedSymbols)
+	}
+
+	var val float64
+	res := query.Scan(&val)
 	return val, res.Error
 }
 

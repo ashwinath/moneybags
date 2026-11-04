@@ -328,6 +328,7 @@ func (x *FinancialsData) GetTaxExclusionsCsvFilepath() string {
 type FinancialsConfig struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	RunIntervalInHours int32                  `protobuf:"varint,1,opt,name=run_interval_in_hours,json=runIntervalInHours,proto3" json:"run_interval_in_hours,omitempty"`
+	StocksToExclude    []string               `protobuf:"bytes,2,rep,name=stocks_to_exclude,json=stocksToExclude,proto3" json:"stocks_to_exclude,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -369,6 +370,13 @@ func (x *FinancialsConfig) GetRunIntervalInHours() int32 {
 	return 0
 }
 
+func (x *FinancialsConfig) GetStocksToExclude() []string {
+	if x != nil {
+		return x.StocksToExclude
+	}
+	return nil
+}
+
 var File_moneybags_proto protoreflect.FileDescriptor
 
 const file_moneybags_proto_rawDesc = "" +
@@ -399,9 +407,10 @@ const file_moneybags_proto_rawDesc = "" +
 	"\x13trades_csv_filepath\x18\x05 \x01(\tR\x11tradesCsvFilepath\x124\n" +
 	"\x16mortgage_yaml_filepath\x18\x06 \x01(\tR\x14mortgageYamlFilepath\x12*\n" +
 	"\x11car_yaml_filepath\x18\a \x01(\tR\x0fcarYamlFilepath\x12=\n" +
-	"\x1btax_exclusions_csv_filepath\x18\b \x01(\tR\x18taxExclusionsCsvFilepath\"E\n" +
+	"\x1btax_exclusions_csv_filepath\x18\b \x01(\tR\x18taxExclusionsCsvFilepath\"q\n" +
 	"\x10FinancialsConfig\x121\n" +
-	"\x15run_interval_in_hours\x18\x01 \x01(\x05R\x12runIntervalInHoursB\x11Z\x0f./pbgo/configpbb\x06proto3"
+	"\x15run_interval_in_hours\x18\x01 \x01(\x05R\x12runIntervalInHours\x12*\n" +
+	"\x11stocks_to_exclude\x18\x02 \x03(\tR\x0fstocksToExcludeB\x11Z\x0f./pbgo/configpbb\x06proto3"
 
 var (
 	file_moneybags_proto_rawDescOnce sync.Once

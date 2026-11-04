@@ -37,4 +37,5 @@ message FinancialsData {
 
 message FinancialsConfig {
     int32 run_interval_in_hours = 1;
+    repeated string stocks_to_exclude = 2;
 }

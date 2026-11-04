@@ -5,6 +5,7 @@ import (
 	"time"
 
 	database "github.com/ashwinath/moneybags/pkg/db"
+	"github.com/ashwinath/moneybags/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -67,9 +68,35 @@ func TestStocksLoader(t *testing.T) {
 		assert.Nil(t, err)
 
 		assets := []database.Asset{}
-		res = db.DB.Where("type = ?", "Investments").Find(&assets)
+		res = db.DB.Where("type = ?", "Investments").Order("transaction_date asc").Find(&assets)
 		assert.Nil(t, res.Error)
 		assert.Greater(t, len(assets), 1)
+
+		// verify the Investments assets exclude CSPX.L (configured in test config)
+		// by mirroring the loader's date computation and comparing amounts
+		portfolioDB := fw.GetDB(database.PortfolioDatabaseName).(database.PortfolioDB)
+		firstDate, err := portfolioDB.GetFirstTradeDate()
+		assert.Nil(t, err)
+
+		currentDate := firstDate
+		if currentDate.Day() != 1 {
+			currentDate = time.Date(currentDate.Year(), currentDate.Month(), 1, currentDate.Hour(), 0, 0, 0, currentDate.Location())
+			currentDate = currentDate.AddDate(0, 1, 0)
+			currentDate = utils.SetDateTo0000Hours(currentDate)
+		}
+
+		for i, asset := range assets[:3] {
+			fullAmount, err := portfolioDB.GetPortfolioAmountByDate(currentDate, nil)
+			assert.Nil(t, err)
+
+			excludedAmount, err := portfolioDB.GetPortfolioAmountByDate(currentDate, []string{"CSPX.L"})
+			assert.Nil(t, err)
+
+			assert.Greater(t, fullAmount, excludedAmount)
+			assert.Equal(t, excludedAmount, asset.Amount, "asset row %d mismatch", i)
+
+			currentDate = currentDate.AddDate(0, 1, 0)
+		}
 
 		// shared expense loader
 		sharedExpenseLoader := NewSharedExpenseLoader(fw)
